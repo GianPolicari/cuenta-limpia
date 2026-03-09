@@ -33,6 +33,13 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
+    const publicRoutes = ['/login', '/register', '/olvide-password', '/reset-password']
+
+    // Explicitly allow public routes (including password reset flow)
+    if (publicRoutes.includes(request.nextUrl.pathname)) {
+        return supabaseResponse
+    }
+
     if (
         !user &&
         request.nextUrl.pathname.startsWith('/dashboard')
