@@ -1,17 +1,46 @@
-import { login } from './actions'
+'use client'
+
+import { useState } from 'react'
+import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { DollarSign } from 'lucide-react'
+import { DollarSign, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
-export default async function LoginPage({
-    searchParams,
-}: {
-    searchParams: Promise<{ error?: string }>
-}) {
-    const params = await searchParams
-    const error = params?.error
+export default function OlvidePasswordPage() {
+    const [email, setEmail] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const supabase = createClient()
+
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        if (!email) {
+            toast.error('Por favor, ingresá un correo electrónico válido')
+            return
+        }
+
+        setIsLoading(true)
+
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password`,
+            })
+
+            if (error) {
+                toast.error(error.message)
+            } else {
+                toast.success('✅ Si el correo existe, recibirás un enlace para recuperar tu cuenta.')
+                setEmail('')
+            }
+        } catch (err: any) {
+            toast.error(err.message || 'Ocurrió un error al intentar enviar el correo.')
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 dark:bg-slate-950">
@@ -27,21 +56,15 @@ export default async function LoginPage({
                         <DollarSign className="h-7 w-7 text-white" />
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                        CuentaLimpia
+                        Recuperar Contraseña
                     </CardTitle>
                     <CardDescription className="text-slate-500 dark:text-slate-400">
-                        Ingresá a tu cuenta para gestionar tus finanzas
+                        Ingresá tu email y te enviaremos un enlace para recuperar tu acceso.
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-6">
-                    {error && (
-                        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-center text-sm text-red-600 dark:text-red-400">
-                            {decodeURIComponent(error)}
-                        </div>
-                    )}
-
-                    <form className="space-y-4">
+                    <form onSubmit={handleResetPassword} className="space-y-4">
                         <div className="space-y-2">
                             <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                                 Email
@@ -52,56 +75,33 @@ export default async function LoginPage({
                                 type="email"
                                 placeholder="tu@email.com"
                                 required
-                                className="border-slate-300 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:placeholder:text-slate-500"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <label htmlFor="password" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    Contraseña
-                                </label>
-                                <Link
-                                    href="/olvide-password"
-                                    className="text-xs font-medium text-slate-500 transition-colors hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 relative z-10"
-                                >
-                                    ¿Olvidaste tu contraseña?
-                                </Link>
-                            </div>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="••••••••"
-                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                disabled={isLoading}
                                 className="border-slate-300 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:placeholder:text-slate-500"
                             />
                         </div>
 
                         <div className="flex flex-col gap-3 pt-2">
                             <Button
-                                formAction={login}
                                 type="submit"
+                                disabled={isLoading}
                                 className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:from-emerald-400 hover:to-emerald-500 hover:shadow-emerald-500/40"
                             >
-                                Iniciar Sesión
+                                {isLoading ? 'Enviando enlace...' : 'Enviar enlace de recuperación'}
                             </Button>
                         </div>
                     </form>
 
-                    <div className="text-center text-sm text-slate-500 dark:text-slate-400">
-                        ¿No tenés cuenta?{' '}
+                    <div className="text-center text-sm">
                         <Link
-                            href="/register"
-                            className="font-medium text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+                            href="/login"
+                            className="inline-flex items-center gap-2 font-medium text-slate-500 transition-colors hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400"
                         >
-                            Crear cuenta
+                            <ArrowLeft className="h-4 w-4" />
+                            Volver al login
                         </Link>
                     </div>
-
-                    <p className="text-center text-xs text-slate-400 dark:text-slate-500">
-                        Tu información financiera, siempre segura.
-                    </p>
                 </CardContent>
             </Card>
         </div>
