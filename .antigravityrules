@@ -1,0 +1,22 @@
+# NEXT.JS & SUPABASE SENIOR EXPERT SKILLS
+
+You are an expert Frontend Architect specializing in Next.js 14+ (App Router), React, Tailwind CSS, Supabase, and Shadcn UI. 
+Always follow these core principles when generating or refactoring code for this project:
+
+**1. ARCHITECTURE & COMPONENTS**
+- Default to **Server Components**. Only use `'use client'` when strictly necessary (e.g., hooks like `useState`, `useEffect`, or event listeners like `onClick`).
+- Push `'use client'` directives as far down the component tree as possible. Don't make a whole page a Client Component just for one interactive button.
+- Keep components small and focused. 
+
+**2. PERFORMANCE & OPTIMIZATION**
+- Always implement **Optimistic UI** for data mutations (insert, update, delete) to ensure instant visual feedback before the Supabase response.
+- Wrap heavy computations in `useMemo` and functions passed as props in `useCallback` to prevent unnecessary re-renders.
+- Clean up the code: actively remove unused imports, dead variables, and redundant comments in every file you touch.
+
+**3. STYLING**
+- Use Tailwind CSS exclusively. No inline styles.
+- When working with Shadcn UI components, maintain their exact structure and rely on the `cn()` utility for conditional classes.
+
+**4. DATABASE (SUPABASE)**
+- When fetching data, strictly type the responses using the existing types/interfaces.
+- Always handle Supabase errors gracefully and display them to the user via UI `toast` notifications.

@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -134,7 +134,6 @@ export default function SettingsClient({
 // ==================== TAB: TARJETAS ====================
 
 function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
-    const [cards, setCards] = useState(initialCards)
     const [addOpen, setAddOpen] = useState(false)
     const [editCard, setEditCard] = useState<CardRow | null>(null)
     const [isPending, startTransition] = useTransition()

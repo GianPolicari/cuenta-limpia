@@ -11,7 +11,7 @@ async function fetchDolarBlue() {
         if (!text) throw new Error('Empty response')
         const data = JSON.parse(text)
         return { venta: data.venta as number, compra: data.compra as number, variacion: (data.variacion ?? 0) as number }
-    } catch (error) {
+    } catch {
         return { venta: 0, compra: 0, variacion: 0 }
     }
 }

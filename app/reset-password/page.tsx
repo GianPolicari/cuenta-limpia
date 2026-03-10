@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { DollarSign, ShieldCheck } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function ResetPasswordPage() {
@@ -36,8 +36,8 @@ export default function ResetPasswordPage() {
                 toast.success('✅ Contraseña actualizada correctamente')
                 router.push('/dashboard')
             }
-        } catch (err: any) {
-            toast.error(err.message || 'Ocurrió un error al actualizar la contraseña.')
+        } catch {
+            toast.error('Ocurrió un error al actualizar la contraseña.')
         } finally {
             setIsLoading(false)
         }

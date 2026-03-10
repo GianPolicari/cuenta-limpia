@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useTransition, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useTransition, useEffect, useMemo, useCallback } from 'react'
+
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -64,13 +64,13 @@ export default function IngresosEgresosClient({
     const [year, setYear] = useState(String(initialYear))
     const [addOpen, setAddOpen] = useState(false)
     const [editTx, setEditTx] = useState<TxRow | null>(null)
+    const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
     const [dynamicCats, setDynamicCats] = useState<CatRow[]>([])
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: 'fecha', direction: 'desc' })
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
-    const router = useRouter()
     const now = new Date()
     const years = Array.from({ length: 5 }, (_, i) => String(now.getFullYear() - 2 + i))
 
@@ -78,36 +78,55 @@ export default function IngresosEgresosClient({
     useEffect(() => {
         let cancelled = false
         async function fetch() {
+            setIsLoadingTransactions(true)
             const res = await getTransactions(Number(month), Number(year))
             if (!cancelled && res.data) {
                 setTransactions(res.data)
                 setCurrentPage(1)
             }
+            if (!cancelled) setIsLoadingTransactions(false)
         }
         fetch()
         return () => { cancelled = true }
     }, [month, year])
 
     // KPIs
-    const totalIncome = transactions.filter(t => t.transaction_type === 'income').reduce((s, t) => s + t.amount, 0)
-    const totalExpense = transactions.filter(t => t.transaction_type === 'expense').reduce((s, t) => s + t.amount, 0)
-    const balance = totalIncome - totalExpense
+    const totalIncome = useMemo(() => transactions.filter((t: TxRow) => t.transaction_type === 'income').reduce((s: number, t: TxRow) => s + t.amount, 0), [transactions])
+    const totalExpense = useMemo(() => transactions.filter((t: TxRow) => t.transaction_type === 'expense').reduce((s: number, t: TxRow) => s + t.amount, 0), [transactions])
+    const balance = useMemo(() => totalIncome - totalExpense, [totalIncome, totalExpense])
 
     // Fetch categories by type when add/edit form type changes
-    async function fetchCategoriesForType(type: string) {
+    const fetchCategoriesForType = useCallback(async (type: string) => {
         if (type === 'expense') setDynamicCats(expenseCategories.length > 0 ? expenseCategories : await getCategoriesByType('expense'))
         else setDynamicCats(incomeCategories.length > 0 ? incomeCategories : await getCategoriesByType('income'))
-    }
+    }, [expenseCategories, incomeCategories])
 
     function handleAdd(formData: FormData) {
+        const previousTransactions = [...transactions]
+        const tempId = `temp-${Date.now()}`
+        const optimisticTx: TxRow = {
+            id: tempId,
+            description: formData.get('description') as string,
+            amount: Number(formData.get('amount')),
+            category: formData.get('category') as string,
+            transaction_type: formData.get('transaction_type') as string,
+            transaction_date: (formData.get('date') as string) || new Date().toISOString().split('T')[0],
+            card_id: (formData.get('card_id') as string) === 'none' ? null : (formData.get('card_id') as string),
+        }
+
+        setTransactions((prev: TxRow[]) => [optimisticTx, ...prev])
+        setAddOpen(false)
+
         startTransition(async () => {
             const result = await addTransaction(formData)
             if (result.error) {
+                setTransactions(previousTransactions)
                 setError(result.error)
-                toast.error("Error al añadir", { description: result.error })
+                toast.error("Error al añadir", { description: "Revirtiendo cambios... " + result.error })
+                setAddOpen(true)
                 return
             }
-            setError(null); setAddOpen(false)
+            setError(null)
             toast.success("✅ Operación guardada")
             const res = await getTransactions(Number(month), Number(year))
             if (res.data) setTransactions(res.data)
@@ -116,14 +135,31 @@ export default function IngresosEgresosClient({
 
     function handleEdit(formData: FormData) {
         if (!editTx) return
+
+        const previousTransactions = [...transactions]
+        const optimisticTx: TxRow = {
+            ...editTx,
+            description: formData.get('description') as string,
+            amount: Number(formData.get('amount')),
+            category: formData.get('category') as string,
+            transaction_type: formData.get('transaction_type') as string,
+            transaction_date: (formData.get('date') as string) || editTx.transaction_date,
+            card_id: (formData.get('card_id') as string) === 'none' ? null : (formData.get('card_id') as string),
+        }
+
+        setTransactions((prev: TxRow[]) => prev.map((t: TxRow) => t.id === editTx.id ? optimisticTx : t))
+        setEditTx(null)
+
         startTransition(async () => {
             const result = await updateTransaction(editTx.id, formData)
             if (result.error) {
+                setTransactions(previousTransactions)
                 setError(result.error)
-                toast.error("Error al actualizar", { description: result.error })
+                toast.error("Error al actualizar", { description: "Revirtiendo cambios... " + result.error })
+                setEditTx(editTx)
                 return
             }
-            setError(null); setEditTx(null)
+            setError(null)
             toast.success("✅ Operación actualizada")
             const res = await getTransactions(Number(month), Number(year))
             if (res.data) setTransactions(res.data)
@@ -131,18 +167,26 @@ export default function IngresosEgresosClient({
     }
 
     function handleDelete(id: string) {
+        const previousTransactions = [...transactions]
+        setTransactions((prev: TxRow[]) => prev.filter((t: TxRow) => t.id !== id))
+
         startTransition(async () => {
-            await deleteTransaction(id)
-            toast.success("🗑️ Eliminado correctamente")
-            const res = await getTransactions(Number(month), Number(year))
-            if (res.data) setTransactions(res.data)
+            try {
+                await deleteTransaction(id)
+                toast.success("🗑️ Eliminado correctamente")
+                const res = await getTransactions(Number(month), Number(year))
+                if (res.data) setTransactions(res.data)
+            } catch {
+                setTransactions(previousTransactions)
+                toast.error("Error al eliminar", { description: "Revirtiendo cambios..." })
+            }
         })
     }
 
-    function cardName(cardId: string | null) {
+    const cardName = useCallback((cardId: string | null) => {
         if (!cardId) return null
         return cards.find(c => c.id === cardId)?.name ?? null
-    }
+    }, [cards])
 
     function handleSort(key: string) {
         setSortConfig(prev => {
@@ -152,35 +196,37 @@ export default function IngresosEgresosClient({
         })
     }
 
-    const sortedTransactions = [...transactions].sort((a, b) => {
-        if (!sortConfig) return 0
-        const { key, direction } = sortConfig
-        const dir = direction === 'asc' ? 1 : -1
-        if (key === 'fecha') {
-            const da = new Date(a.transaction_date).getTime()
-            const db = new Date(b.transaction_date).getTime()
-            return da < db ? -dir : da > db ? dir : 0
-        }
-        if (key === 'categoria') {
-            const ca = a.category ?? ''
-            const cb = b.category ?? ''
-            return ca.localeCompare(cb) * dir
-        }
-        if (key === 'tarjeta') {
-            const ca = cardName(a.card_id) ?? ''
-            const cb = cardName(b.card_id) ?? ''
-            return ca.localeCompare(cb) * dir
-        }
-        if (key === 'tipo') {
-            const ta = a.transaction_type ?? ''
-            const tb = b.transaction_type ?? ''
-            return ta.localeCompare(tb) * dir
-        }
-        if (key === 'monto') {
-            return (a.amount - b.amount) * dir
-        }
-        return 0
-    })
+    const sortedTransactions = useMemo(() => {
+        return [...transactions].sort((a: TxRow, b: TxRow) => {
+            if (!sortConfig) return 0
+            const { key, direction } = sortConfig
+            const dir = direction === 'asc' ? 1 : -1
+            if (key === 'fecha') {
+                const da = new Date(a.transaction_date).getTime()
+                const db = new Date(b.transaction_date).getTime()
+                return da < db ? -dir : da > db ? dir : 0
+            }
+            if (key === 'categoria') {
+                const ca = a.category ?? ''
+                const cb = b.category ?? ''
+                return ca.localeCompare(cb) * dir
+            }
+            if (key === 'tarjeta') {
+                const ca = cardName(a.card_id) ?? ''
+                const cb = cardName(b.card_id) ?? ''
+                return ca.localeCompare(cb) * dir
+            }
+            if (key === 'tipo') {
+                const ta = a.transaction_type ?? ''
+                const tb = b.transaction_type ?? ''
+                return ta.localeCompare(tb) * dir
+            }
+            if (key === 'monto') {
+                return (a.amount - b.amount) * dir
+            }
+            return 0
+        })
+    }, [transactions, sortConfig, cardName])
 
     const renderSortArrow = (key: string) => {
         if (sortConfig?.key !== key) return null
@@ -196,7 +242,7 @@ export default function IngresosEgresosClient({
         const headers = ["Fecha", "Descripción", "Categoría", "Tarjeta", "Tipo", "Monto"]
         const csvRows = [headers.join(",")]
 
-        sortedTransactions.forEach(tx => {
+        sortedTransactions.forEach((tx: TxRow) => {
             const fecha = formatDate(tx.transaction_date)
             let desc = tx.description || "—"
             if (desc.includes(",")) desc = `"${desc}"`
@@ -221,16 +267,18 @@ export default function IngresosEgresosClient({
         toast.success("Exportado a CSV exitosamente")
     }
 
-    const cardExpensesTable = transactions.filter(t => t.transaction_type === 'expense' && t.card_id !== null)
-    const cardGrouped = cardExpensesTable.reduce((acc, t) => {
-        const c = cards.find(card => card.id === t.card_id)
-        const cName = c?.name || 'Eliminada'
-        const cColor = c?.color || '#94a3b8'
-        if (!acc[cName]) acc[cName] = { amount: 0, color: cColor }
-        acc[cName].amount += t.amount
-        return acc
-    }, {} as Record<string, { amount: number, color: string }>)
-    const cardChartData = Object.entries(cardGrouped).map(([name, data]) => ({ name, amount: data.amount, color: data.color }))
+    const cardChartData = useMemo(() => {
+        const cardExpensesTable = transactions.filter((t: TxRow) => t.transaction_type === 'expense' && t.card_id !== null)
+        const cardGrouped = cardExpensesTable.reduce((acc: Record<string, { amount: number, color: string }>, t: TxRow) => {
+            const c = cards.find(card => card.id === t.card_id)
+            const cName = c?.name || 'Eliminada'
+            const cColor = c?.color || '#94a3b8'
+            if (!acc[cName]) acc[cName] = { amount: 0, color: cColor }
+            acc[cName].amount += t.amount
+            return acc
+        }, {} as Record<string, { amount: number, color: string }>)
+        return Object.entries(cardGrouped).map(([name, data]) => ({ name, amount: data.amount, color: data.color }))
+    }, [transactions, cards])
 
     const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage)
     const paginatedTransactions = sortedTransactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -323,7 +371,12 @@ export default function IngresosEgresosClient({
             </Dialog>
 
             {/* Table */}
-            {transactions.length === 0 ? (
+            {isLoadingTransactions ? (
+                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60 p-20 flex flex-col items-center justify-center min-h-[400px]">
+                    <Loader2 className="h-10 w-10 animate-spin text-emerald-500 mb-4" />
+                    <p className="text-slate-500 dark:text-slate-400 font-medium">Cargando operaciones...</p>
+                </Card>
+            ) : transactions.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white/60 py-20 dark:border-slate-800 dark:bg-slate-900/60">
                     <Inbox className="mb-4 h-12 w-12 text-slate-400 dark:text-slate-600" />
                     <h3 className="text-lg font-semibold text-slate-500 dark:text-slate-400">Sin operaciones</h3>
@@ -355,7 +408,7 @@ export default function IngresosEgresosClient({
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {paginatedTransactions.map(tx => {
+                                {paginatedTransactions.map((tx: TxRow) => {
                                     const isIncome = tx.transaction_type === 'income'
                                     const linkedCard = cardName(tx.card_id)
                                     return (
@@ -461,7 +514,7 @@ export default function IngresosEgresosClient({
                                         cursor={{ fill: 'transparent' }}
                                         contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
                                         itemStyle={{ color: '#ec4899', fontWeight: 'bold' }}
-                                        formatter={(value: any) => [formatARS(value as number), 'Total Gasto']}
+                                        formatter={(value: number = 0) => [formatARS(value), 'Total Gasto']}
                                         labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
                                     />
                                     <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
