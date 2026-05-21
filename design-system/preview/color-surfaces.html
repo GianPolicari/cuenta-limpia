@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<style>
+.wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel { padding: 18px; border-radius: 14px; border: 1px solid var(--color-border); }
+.panel.light { background: #F8F8FB; color: #0B0B12; }
+.panel.dark  { background: #0B0B12; color: #F4F4F8; border-color: #262633; }
+.surf { padding: 12px; border-radius: 10px; margin-top: 8px; font-size: 12px; font-weight: 500; }
+.light .surf.s1 { background: #FFFFFF; border:1px solid #E6E6EC; }
+.light .surf.s2 { background: #F1F1F6; }
+.dark .surf.s1 { background: #15151F; border:1px solid #262633; }
+.dark .surf.s2 { background: #1C1C28; }
+.title { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.7; }
+.line { font-size: 13px; margin-top: 4px; }
+.line b { font-weight: 600; }
+.dim { opacity: 0.6; }
+.dim2 { opacity: 0.4; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel light">
+    <div class="title">Light</div>
+    <div class="surf s1">surface · #FFFFFF</div>
+    <div class="surf s2">surface-2 · #F1F1F6</div>
+    <div class="line"><b>fg-1</b> primary text</div>
+    <div class="line dim"><b>fg-2</b> secondary text</div>
+    <div class="line dim2"><b>fg-3</b> tertiary text</div>
+  </div>
+  <div class="panel dark">
+    <div class="title">Dark</div>
+    <div class="surf s1">surface · #15151F</div>
+    <div class="surf s2">surface-2 · #1C1C28</div>
+    <div class="line"><b>fg-1</b> primary text</div>
+    <div class="line dim"><b>fg-2</b> secondary text</div>
+    <div class="line dim2"><b>fg-3</b> tertiary text</div>
+  </div>
+</div>
+</body></html>

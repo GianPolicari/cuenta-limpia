@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+body { background: var(--color-bg); padding: 20px; }
+.col { display: flex; flex-direction: column; gap: 10px; max-width: 420px; margin: 0 auto; }
+.toast { display: flex; align-items: flex-start; gap: 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow-md); }
+.toast .ico { width: 24px; height: 24px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.toast .ico i { width: 14px; height: 14px; }
+.t-success .ico { background: var(--color-income-subtle); color: var(--color-income-strong); }
+.t-error .ico { background: var(--color-expense-subtle); color: var(--color-expense-strong); }
+.t-info .ico { background: var(--color-info-subtle); color: var(--color-info-strong); }
+.t-warn .ico { background: var(--color-pending-subtle); color: var(--color-pending-strong); }
+.txt { flex: 1; }
+.tt { font-size: 14px; font-weight: 600; color: var(--color-fg-1); }
+.td { font-size: 12px; color: var(--color-fg-2); margin-top: 2px; }
+.x { color: var(--color-fg-3); cursor: pointer; }
+.x i { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+<div class="col">
+  <div class="toast t-success">
+    <div class="ico"><i data-lucide="check"></i></div>
+    <div class="txt"><div class="tt">Operación guardada</div><div class="td">Compra en Carrefour · $ 12.450</div></div>
+    <div class="x"><i data-lucide="x"></i></div>
+  </div>
+  <div class="toast t-error">
+    <div class="ico"><i data-lucide="alert-circle"></i></div>
+    <div class="txt"><div class="tt">No pudimos guardar</div><div class="td">Revisá la conexión y probá de nuevo.</div></div>
+    <div class="x"><i data-lucide="x"></i></div>
+  </div>
+  <div class="toast t-warn">
+    <div class="ico"><i data-lucide="alert-triangle"></i></div>
+    <div class="txt"><div class="tt">Cuota próxima a vencer</div><div class="td">Heladera Whirlpool · 3 de 12 · vence 05/06</div></div>
+    <div class="x"><i data-lucide="x"></i></div>
+  </div>
+  <div class="toast t-info">
+    <div class="ico"><i data-lucide="info"></i></div>
+    <div class="txt"><div class="tt">Dólar MEP actualizado</div><div class="td">$ 1.408 · +0,8% en el día</div></div>
+    <div class="x"><i data-lucide="x"></i></div>
+  </div>
+</div>
+<script>lucide.createIcons();</script></body></html>

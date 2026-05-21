@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<style>
+.grid { display:grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+.cell { display:flex; flex-direction:column; gap:4px; }
+.bar { height: 64px; border-radius: 8px; border:1px solid var(--color-border); }
+.lbl { font-size: 10px; color: var(--color-fg-3); font-family: ui-monospace, monospace; text-align:center; }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div class="cell"><div class="bar" style="background:#F8F8FB"></div><div class="lbl">50</div></div>
+  <div class="cell"><div class="bar" style="background:#F1F1F6"></div><div class="lbl">100</div></div>
+  <div class="cell"><div class="bar" style="background:#E6E6EC"></div><div class="lbl">200</div></div>
+  <div class="cell"><div class="bar" style="background:#D1D1DA"></div><div class="lbl">300</div></div>
+  <div class="cell"><div class="bar" style="background:#A1A1AD"></div><div class="lbl">400</div></div>
+  <div class="cell"><div class="bar" style="background:#8A8A95"></div><div class="lbl">500</div></div>
+  <div class="cell"><div class="bar" style="background:#4A4A55"></div><div class="lbl">600</div></div>
+  <div class="cell"><div class="bar" style="background:#2E2E38"></div><div class="lbl">700</div></div>
+  <div class="cell"><div class="bar" style="background:#1C1C28"></div><div class="lbl">800</div></div>
+  <div class="cell"><div class="bar" style="background:#0B0B12"></div><div class="lbl">900</div></div>
+</div>
+<div style="margin-top: 14px;" class="subname">6+ step neutral scale for text, borders, surfaces. Same tokens flip for dark mode.</div>
+</body></html>

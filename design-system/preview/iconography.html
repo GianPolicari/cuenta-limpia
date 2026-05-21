@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+.grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 14px 18px; }
+.cell { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--color-fg-1); }
+.cell i { width: 24px; height: 24px; stroke-width: 2; }
+.cell span { font-family: ui-monospace, monospace; font-size: 10px; color: var(--color-fg-3); }
+.legend { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border); font-size: 12px; color: var(--color-fg-2); }
+.sizes { display: flex; align-items: center; gap: 14px; }
+.sizes i { color: var(--color-primary); }
+.sizes b { font-family: ui-monospace, monospace; font-size: 11px; color: var(--color-fg-3); margin-left: 2px; }
+</style>
+</head>
+<body>
+<div class="legend">
+  <b>Lucide</b> · stroke-width 2
+  <div class="sizes">
+    <i data-lucide="arrow-up-right" style="width:16px;height:16px;"></i><b>16</b>
+    <i data-lucide="arrow-up-right" style="width:20px;height:20px;"></i><b>20</b>
+    <i data-lucide="arrow-up-right" style="width:24px;height:24px;"></i><b>24</b>
+    <i data-lucide="arrow-up-right" style="width:32px;height:32px;"></i><b>32</b>
+  </div>
+</div>
+<div class="grid">
+  <div class="cell"><i data-lucide="arrow-up-right"></i><span>income</span></div>
+  <div class="cell"><i data-lucide="arrow-down-right"></i><span>expense</span></div>
+  <div class="cell"><i data-lucide="arrow-left-right"></i><span>tx</span></div>
+  <div class="cell"><i data-lucide="layout-dashboard"></i><span>dashboard</span></div>
+  <div class="cell"><i data-lucide="credit-card"></i><span>card</span></div>
+  <div class="cell"><i data-lucide="wallet"></i><span>wallet</span></div>
+  <div class="cell"><i data-lucide="settings"></i><span>settings</span></div>
+  <div class="cell"><i data-lucide="plus"></i><span>add</span></div>
+  <div class="cell"><i data-lucide="pencil"></i><span>edit</span></div>
+  <div class="cell"><i data-lucide="trash-2"></i><span>delete</span></div>
+  <div class="cell"><i data-lucide="inbox"></i><span>empty</span></div>
+  <div class="cell"><i data-lucide="loader-2"></i><span>loading</span></div>
+  <div class="cell"><i data-lucide="trending-up"></i><span>trend↑</span></div>
+  <div class="cell"><i data-lucide="trending-down"></i><span>trend↓</span></div>
+  <div class="cell"><i data-lucide="dollar-sign"></i><span>usd</span></div>
+  <div class="cell"><i data-lucide="download"></i><span>export</span></div>
+</div>
+<script>lucide.createIcons();</script></body></html>

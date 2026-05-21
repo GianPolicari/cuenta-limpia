@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+body { background: var(--color-bg); padding: 22px; }
+.list { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 14px; padding: 6px; }
+.row { display: grid; grid-template-columns: 40px 1fr auto; gap: 14px; padding: 12px 14px; align-items: center; }
+.row + .row { border-top: 1px solid var(--color-border); }
+.sk { background: linear-gradient(90deg, var(--color-surface-2) 0%, var(--gray-200) 50%, var(--color-surface-2) 100%); background-size: 200% 100%; animation: shimmer 1.6s linear infinite; border-radius: 6px; }
+.dot { width: 40px; height: 40px; border-radius: 12px; }
+.line { height: 12px; }
+.line.short { width: 60%; }
+.amt { height: 14px; width: 80px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.note { font-size: 11px; color: var(--color-fg-3); margin-top: 10px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="list">
+  
+  <div class="row">
+    <div class="sk dot"></div>
+    <div><div class="sk line"></div><div class="sk line short" style="margin-top:6px;"></div></div>
+    <div class="sk amt"></div>
+  </div>
+  <div class="row">
+    <div class="sk dot"></div>
+    <div><div class="sk line"></div><div class="sk line short" style="margin-top:6px;"></div></div>
+    <div class="sk amt"></div>
+  </div>
+  <div class="row">
+    <div class="sk dot"></div>
+    <div><div class="sk line"></div><div class="sk line short" style="margin-top:6px;"></div></div>
+    <div class="sk amt"></div>
+  </div>
+</div>
+<div class="note">1.6s shimmer · loop · respects prefers-reduced-motion</div>
+<script>lucide.createIcons();</script></body></html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<style>
+.row { display:flex; gap: 10px; align-items: stretch; }
+.swatch { flex: 1; height: 84px; border-radius: 12px; display: flex; align-items: flex-end; padding: 10px; color:#fff; font-weight: 600; font-size: 12px; }
+.legend { margin-top: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 12px; color: var(--color-fg-2); }
+.dot { display:inline-block; width: 10px; height: 10px; border-radius: 999px; vertical-align: middle; margin-right: 8px; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="swatch" style="background:#7C6BFF">1</div>
+  <div class="swatch" style="background:#10B981">2</div>
+  <div class="swatch" style="background:#F59E0B">3</div>
+  <div class="swatch" style="background:#3B82F6">4</div>
+  <div class="swatch" style="background:#EC4899">5</div>
+  <div class="swatch" style="background:#14B8A6">6</div>
+  <div class="swatch" style="background:#6366F1">7</div>
+  <div class="swatch" style="background:#F87171">8</div>
+</div>
+<div class="legend">
+  <div><span class="dot" style="background:#7C6BFF"></span>chart-1 violet</div>
+  <div><span class="dot" style="background:#10B981"></span>chart-2 emerald</div>
+  <div><span class="dot" style="background:#F59E0B"></span>chart-3 amber</div>
+  <div><span class="dot" style="background:#3B82F6"></span>chart-4 blue</div>
+  <div><span class="dot" style="background:#EC4899"></span>chart-5 pink</div>
+  <div><span class="dot" style="background:#14B8A6"></span>chart-6 teal</div>
+  <div><span class="dot" style="background:#6366F1"></span>chart-7 indigo</div>
+  <div><span class="dot" style="background:#F87171"></span>chart-8 coral</div>
+</div>
+</body></html>

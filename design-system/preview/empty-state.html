@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+body { background: var(--color-bg); padding: 24px; }
+.empty { background: var(--color-surface); border: 1px dashed var(--color-border-strong); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 460px; margin: 0 auto; }
+.ill { width: 72px; height: 72px; border-radius: 999px; background: var(--color-primary-subtle); display: inline-flex; align-items: center; justify-content: center; color: var(--color-primary); margin-bottom: 14px; }
+.ill i { width: 32px; height: 32px; }
+h3 { font-size: 18px; font-weight: 700; color: var(--color-fg-1); margin: 0 0 4px; }
+p { font-size: 14px; color: var(--color-fg-2); margin: 0 0 16px; max-width: 320px; }
+.cta { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; background: var(--color-primary); color: #fff; border-radius: 10px; font-weight: 600; font-size: 14px; box-shadow: 0 8px 24px -6px rgba(91,71,224,0.30); }
+.cta i { width: 16px; height: 16px; }
+</style>
+</head>
+<body>
+<div class="empty">
+  <div class="ill"><i data-lucide="inbox"></i></div>
+  <h3>Sin operaciones todavía</h3>
+  <p>Registrá tu primer ingreso o gasto y empezá a ver a dónde va tu plata.</p>
+  <div class="cta"><i data-lucide="plus"></i>Nueva operación</div>
+</div>
+<script>lucide.createIcons();</script></body></html>

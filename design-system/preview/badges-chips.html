@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-fg-3); width: 100%; margin-bottom: 4px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1; }
+.badge i { width: 12px; height: 12px; stroke-width: 2.5; }
+.b-in { background: var(--color-income-subtle); color: var(--color-income); }
+.b-out { background: var(--color-expense-subtle); color: var(--color-expense); }
+.b-pend { background: var(--color-pending-subtle); color: var(--color-pending); }
+.b-info { background: var(--color-info-subtle); color: var(--color-info); }
+.b-neutral { background: var(--gray-100); color: var(--color-fg-2); border: 1px solid var(--color-border); }
+.b-brand { background: var(--color-primary-subtle); color: var(--color-primary); }
+.chip { padding: 6px 12px; border-radius: 8px; font-size: 13px; background: var(--gray-100); color: var(--color-fg-2); font-weight: 500; border: 1px solid var(--color-border); }
+</style>
+</head>
+<body>
+<div class="row">
+  <span class="lbl">Status badges — never color alone</span>
+  <span class="badge b-in"><i data-lucide="arrow-up-right"></i>Ingreso</span>
+  <span class="badge b-out"><i data-lucide="arrow-down-right"></i>Gasto</span>
+  <span class="badge b-pend"><i data-lucide="clock"></i>Cuota 3 de 12</span>
+  <span class="badge b-info"><i data-lucide="credit-card"></i>Débito</span>
+  <span class="badge b-brand">Nuevo</span>
+  <span class="badge b-neutral">Sin categoría</span>
+</div>
+<div class="row" style="margin-top: 8px;">
+  <span class="lbl">Category chips</span>
+  <span class="chip">Supermercado</span>
+  <span class="chip">Transporte</span>
+  <span class="chip">Alquiler</span>
+  <span class="chip">Servicios</span>
+  <span class="chip">Salidas</span>
+  <span class="chip">Salud</span>
+</div>
+<script>lucide.createIcons();</script></body></html>

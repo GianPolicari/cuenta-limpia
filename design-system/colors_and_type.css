@@ -1,0 +1,350 @@
+/* =============================================================
+   CuentaLimpia Design System — colors, type, spacing, radii, shadows
+   Use --color-* / --type-* / --space-* tokens. Never raw values.
+   ============================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+:root {
+    /* ---------- FONT FAMILY ---------- */
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system,
+        "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo,
+        Consolas, monospace;
+
+    /* ---------- TYPE SCALE ---------- */
+    --type-display-size: 40px;
+    --type-display-lh: 44px;
+    --type-display-weight: 700;
+    --type-display-tracking: -0.02em;
+
+    --type-h1-size: 28px;
+    --type-h1-lh: 34px;
+    --type-h1-weight: 700;
+    --type-h1-tracking: -0.01em;
+
+    --type-h2-size: 22px;
+    --type-h2-lh: 28px;
+    --type-h2-weight: 600;
+    --type-h2-tracking: -0.01em;
+
+    --type-h3-size: 18px;
+    --type-h3-lh: 24px;
+    --type-h3-weight: 600;
+    --type-h3-tracking: 0;
+
+    --type-body-size: 16px;
+    --type-body-lh: 24px;
+    --type-body-weight: 400;
+
+    --type-body-strong-weight: 600;
+
+    --type-label-size: 14px;
+    --type-label-lh: 20px;
+    --type-label-weight: 500;
+
+    --type-caption-size: 12px;
+    --type-caption-lh: 16px;
+    --type-caption-weight: 500;
+    --type-caption-tracking: 0.01em;
+
+    --type-mono-size: 14px;
+    --type-mono-lh: 20px;
+    --type-mono-weight: 500;
+
+    /* ---------- SPACING (4px base) ---------- */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+    --space-3xl: 48px;
+    --space-4xl: 64px;
+    --space-5xl: 96px;
+
+    /* ---------- BREAKPOINTS ---------- */
+    --bp-mobile: 375px;
+    --bp-tablet: 768px;
+    --bp-desktop: 1280px;
+
+    /* ---------- RADII ---------- */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    /* ---------- DURATIONS / EASING ---------- */
+    --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --duration-fast: 120ms;
+    --duration-base: 180ms;
+    --duration-slow: 240ms;
+}
+
+/* ====================== LIGHT THEME ====================== */
+:root,
+.light {
+    /* Brand */
+    --color-primary: #5B47E0;       /* violet 600 — primary actions, brand */
+    --color-primary-hover: #4F3DCC; /* hover state for primary */
+    --color-primary-press: #4131B5; /* pressed */
+    --color-primary-subtle: #EEEBFF; /* tinted bg, focus ring */
+    --color-primary-contrast: #FFFFFF;
+
+    /* Semantic — income (positive) */
+    --color-income: #059669;        /* emerald 600 — body-safe contrast */
+    --color-income-strong: #10B981; /* emerald 500 — KPIs, icons, large nums */
+    --color-income-subtle: #D1FAE5;
+
+    /* Semantic — expense (negative) */
+    --color-expense: #DC2626;       /* red 600 — body-safe */
+    --color-expense-strong: #EF4444; /* red 500 — KPIs, icons */
+    --color-expense-subtle: #FEE2E2;
+
+    /* Semantic — pending (installments, scheduled) */
+    --color-pending: #B45309;       /* amber 700 — body-safe */
+    --color-pending-strong: #F59E0B; /* amber 500 — icons */
+    --color-pending-subtle: #FEF3C7;
+
+    /* Semantic — info */
+    --color-info: #2563EB;
+    --color-info-strong: #3B82F6;
+    --color-info-subtle: #DBEAFE;
+
+    /* Surfaces */
+    --color-bg: #F8F8FB;
+    --color-surface: #FFFFFF;
+    --color-surface-2: #F1F1F6;
+    --color-surface-elevated: #FFFFFF;
+    --color-overlay: rgba(11, 11, 18, 0.5);
+
+    /* Foreground */
+    --color-fg-1: #0B0B12;
+    --color-fg-2: #4A4A55;
+    --color-fg-3: #8A8A95;
+    --color-fg-inverse: #FFFFFF;
+
+    /* Borders */
+    --color-border: #E6E6EC;
+    --color-border-strong: #D1D1DA;
+    --color-border-focus: var(--color-primary);
+
+    /* Grayscale (6 steps + bookends) */
+    --gray-50: #F8F8FB;
+    --gray-100: #F1F1F6;
+    --gray-200: #E6E6EC;
+    --gray-300: #D1D1DA;
+    --gray-400: #A1A1AD;
+    --gray-500: #8A8A95;
+    --gray-600: #4A4A55;
+    --gray-700: #2E2E38;
+    --gray-800: #1C1C28;
+    --gray-900: #0B0B12;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px 0 rgba(11, 11, 18, 0.04);
+    --shadow-sm: 0 1px 3px 0 rgba(11, 11, 18, 0.06),
+        0 1px 2px -1px rgba(11, 11, 18, 0.04);
+    --shadow-md: 0 4px 12px -2px rgba(11, 11, 18, 0.08),
+        0 2px 6px -2px rgba(11, 11, 18, 0.04);
+    --shadow-lg: 0 12px 32px -6px rgba(11, 11, 18, 0.12);
+    --shadow-brand: 0 8px 24px -6px rgba(91, 71, 224, 0.30);
+
+    /* Chart series (order matters) */
+    --chart-1: #7C6BFF; /* brand violet (chart-only tone) */
+    --chart-2: #10B981; /* emerald */
+    --chart-3: #F59E0B; /* amber */
+    --chart-4: #3B82F6; /* blue */
+    --chart-5: #EC4899; /* pink */
+    --chart-6: #14B8A6; /* teal */
+    --chart-7: #6366F1; /* indigo */
+    --chart-8: #F87171; /* coral */
+}
+
+/* ====================== DARK THEME ====================== */
+.dark {
+    /* Brand */
+    --color-primary: #7C6BFF;       /* violet 400 — primary on dark */
+    --color-primary-hover: #9080FF;
+    --color-primary-press: #6A57FF;
+    --color-primary-subtle: rgba(124, 107, 255, 0.14);
+    --color-primary-contrast: #0B0B12;
+
+    /* Semantic — income */
+    --color-income: #34D399;        /* emerald 400 — body-safe on dark */
+    --color-income-strong: #34D399;
+    --color-income-subtle: rgba(52, 211, 153, 0.14);
+
+    /* Semantic — expense */
+    --color-expense: #F87171;       /* red 400 — body-safe on dark */
+    --color-expense-strong: #F87171;
+    --color-expense-subtle: rgba(248, 113, 113, 0.14);
+
+    /* Semantic — pending */
+    --color-pending: #FBBF24;       /* amber 400 */
+    --color-pending-strong: #FBBF24;
+    --color-pending-subtle: rgba(251, 191, 36, 0.14);
+
+    /* Semantic — info */
+    --color-info: #60A5FA;
+    --color-info-strong: #60A5FA;
+    --color-info-subtle: rgba(96, 165, 250, 0.14);
+
+    /* Surfaces */
+    --color-bg: #0B0B12;
+    --color-surface: #15151F;
+    --color-surface-2: #1C1C28;
+    --color-surface-elevated: #1F1F2C;
+    --color-overlay: rgba(0, 0, 0, 0.6);
+
+    /* Foreground */
+    --color-fg-1: #F4F4F8;
+    --color-fg-2: #A1A1AD;
+    --color-fg-3: #6B6B78;
+    --color-fg-inverse: #0B0B12;
+
+    /* Borders */
+    --color-border: #262633;
+    --color-border-strong: #33333F;
+    --color-border-focus: var(--color-primary);
+
+    /* Grayscale inverted */
+    --gray-50: #0B0B12;
+    --gray-100: #15151F;
+    --gray-200: #1C1C28;
+    --gray-300: #262633;
+    --gray-400: #4A4A55;
+    --gray-500: #6B6B78;
+    --gray-600: #A1A1AD;
+    --gray-700: #C6C6CE;
+    --gray-800: #E6E6EC;
+    --gray-900: #F4F4F8;
+
+    /* Shadows (more opaque, faint violet wash) */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5),
+        0 1px 2px -1px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.55),
+        0 2px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 32px -6px rgba(0, 0, 0, 0.6);
+    --shadow-brand: 0 8px 24px -6px rgba(124, 107, 255, 0.45);
+
+    /* Chart series */
+    --chart-1: #9080FF;
+    --chart-2: #34D399;
+    --chart-3: #FBBF24;
+    --chart-4: #60A5FA;
+    --chart-5: #F472B6;
+    --chart-6: #2DD4BF;
+    --chart-7: #818CF8;
+    --chart-8: #FCA5A5;
+}
+
+/* ====================== BASE SEMANTIC ELEMENTS ====================== */
+body {
+    font-family: var(--font-sans);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-lh);
+    font-weight: var(--type-body-weight);
+    color: var(--color-fg-1);
+    background: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+h1,
+.h1 {
+    font-size: var(--type-h1-size);
+    line-height: var(--type-h1-lh);
+    font-weight: var(--type-h1-weight);
+    letter-spacing: var(--type-h1-tracking);
+    color: var(--color-fg-1);
+    margin: 0;
+}
+
+h2,
+.h2 {
+    font-size: var(--type-h2-size);
+    line-height: var(--type-h2-lh);
+    font-weight: var(--type-h2-weight);
+    letter-spacing: var(--type-h2-tracking);
+    color: var(--color-fg-1);
+    margin: 0;
+}
+
+h3,
+.h3 {
+    font-size: var(--type-h3-size);
+    line-height: var(--type-h3-lh);
+    font-weight: var(--type-h3-weight);
+    color: var(--color-fg-1);
+    margin: 0;
+}
+
+.display {
+    font-size: var(--type-display-size);
+    line-height: var(--type-display-lh);
+    font-weight: var(--type-display-weight);
+    letter-spacing: var(--type-display-tracking);
+    color: var(--color-fg-1);
+    font-variant-numeric: tabular-nums lining-nums;
+}
+
+p {
+    margin: 0;
+}
+
+.body {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-lh);
+    color: var(--color-fg-1);
+}
+
+.body-strong {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-lh);
+    font-weight: var(--type-body-strong-weight);
+    color: var(--color-fg-1);
+}
+
+.label {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-lh);
+    font-weight: var(--type-label-weight);
+    color: var(--color-fg-2);
+}
+
+.caption {
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-lh);
+    font-weight: var(--type-caption-weight);
+    letter-spacing: var(--type-caption-tracking);
+    color: var(--color-fg-3);
+}
+
+.mono,
+.amount {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum", "lnum";
+}
+
+/* Focus ring — single treatment everywhere */
+*:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary-subtle);
+    border-color: var(--color-primary) !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}

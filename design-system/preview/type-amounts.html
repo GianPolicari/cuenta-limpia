@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<style>
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.cell { background: var(--color-surface-2); border-radius: 14px; padding: 18px; }
+.lbl { font-size: 11px; font-weight: 600; color: var(--color-fg-2); letter-spacing: 0.04em; text-transform: uppercase; }
+.amt { font-size: 40px; line-height: 44px; font-weight: 700; font-variant-numeric: tabular-nums lining-nums; margin-top: 6px; letter-spacing: -0.02em; }
+.amt.in { color: var(--color-income); }
+.amt.out { color: var(--color-expense); }
+.sub { font-size: 13px; color: var(--color-fg-3); margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="cell">
+    <div class="lbl">Ingresos del mes</div>
+    <div class="amt in">+ $ 248.500</div>
+    <div class="sub">12 ingresos registrados</div>
+  </div>
+  <div class="cell">
+    <div class="lbl">Gastos del mes</div>
+    <div class="amt out">− $ 184.220</div>
+    <div class="sub">38 transacciones</div>
+  </div>
+</div>
+<div style="margin-top: 14px;" class="subname">font-variant-numeric: tabular-nums · sign always shown · es-AR locale.</div>
+</body></html>

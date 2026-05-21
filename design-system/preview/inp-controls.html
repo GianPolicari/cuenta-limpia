@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+.row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.section { display: flex; flex-direction: column; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--color-border); }
+.section:last-child { border-bottom: none; }
+.lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-fg-3); }
+.sel { height: 36px; min-width: 140px; padding: 0 12px; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 10px; font-size: 14px; color: var(--color-fg-1); cursor: pointer; }
+.sel i { width: 14px; height: 14px; color: var(--color-fg-3); }
+.toggle { position: relative; width: 44px; height: 24px; background: var(--gray-300); border-radius: 999px; cursor: pointer; transition: 180ms; }
+.toggle.on { background: var(--color-primary); }
+.toggle .thumb { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 999px; transition: 180ms; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+.toggle.on .thumb { transform: translateX(20px); }
+.chk { width: 18px; height: 18px; border: 1.5px solid var(--color-border-strong); border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; }
+.chk.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.chk.on i { width: 12px; height: 12px; stroke-width: 3; }
+.rad { width: 18px; height: 18px; border: 1.5px solid var(--color-border-strong); border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; }
+.rad.on { border-color: var(--color-primary); }
+.rad.on::after { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--color-primary); }
+.opt { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--color-fg-1); }
+</style>
+</head>
+<body>
+<div class="section">
+  <span class="lbl">Select · Date</span>
+  <div class="row">
+    <div class="sel">Mayo <i data-lucide="chevron-down"></i></div>
+    <div class="sel">2026 <i data-lucide="chevron-down"></i></div>
+    <div class="sel"><span style="display:inline-flex;gap:8px;align-items:center;"><i data-lucide="calendar"></i>26/05/2026</span><i data-lucide="chevron-down"></i></div>
+  </div>
+</div>
+<div class="section">
+  <span class="lbl">Toggle · Checkbox · Radio</span>
+  <div class="row">
+    <div class="opt"><div class="toggle on"><div class="thumb"></div></div> Ver en USD MEP</div>
+    <div class="opt"><div class="toggle"><div class="thumb"></div></div> Notificaciones</div>
+    <div class="opt"><div class="chk on"><i data-lucide="check"></i></div> Es una cuota</div>
+    <div class="opt"><div class="chk"></div> Recordar email</div>
+    <div class="opt"><div class="rad on"></div> Gasto</div>
+    <div class="opt"><div class="rad"></div> Ingreso</div>
+  </div>
+</div>
+<script>lucide.createIcons();</script></body></html>

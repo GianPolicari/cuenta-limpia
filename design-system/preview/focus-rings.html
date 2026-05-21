@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+body { padding: 22px 24px; }
+.row { display: flex; gap: 18px; align-items: center; padding: 12px 0; }
+.row + .row { border-top: 1px solid var(--color-border); }
+.lbl { font-family: ui-monospace, monospace; font-size: 11px; color: var(--color-fg-3); width: 88px; }
+.demo { display: flex; gap: 12px; align-items: center; }
+.btn { height: 38px; padding: 0 14px; border-radius: 10px; background: var(--color-primary); color: #fff; font-weight: 600; font-size: 13px; border: 1px solid var(--color-primary); }
+.btn.focus { box-shadow: 0 0 0 3px var(--color-primary-subtle); }
+.inp { height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-surface-2); font-size: 13px; }
+.inp.focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-subtle); }
+.inp.err { border-color: var(--color-expense); box-shadow: 0 0 0 3px var(--color-expense-subtle); }
+.cap { font-size: 11px; color: var(--color-fg-3); }
+</style>
+</head>
+<body>
+<div class="row"><div class="lbl">:focus-visible</div><div class="demo"><button class="btn focus">Guardar</button><input class="inp focus" value="Mayo 2026"/><span class="cap">3px subtle ring + 1px primary border</span></div></div>
+<div class="row"><div class="lbl">:invalid / err</div><div class="demo"><input class="inp err" value="123"/><span class="cap">red ring + red border + helper text</span></div></div>
+<div class="row"><div class="lbl">:disabled</div><div class="demo"><button class="btn" style="opacity:0.5;cursor:not-allowed;">Guardar</button><span class="cap">opacity 0.5, pointer-events none</span></div></div>
+<script>lucide.createIcons();</script></body></html>

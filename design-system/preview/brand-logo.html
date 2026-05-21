@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<style>
+.wrap { display: flex; align-items: center; gap: 32px; }
+.tile { display:flex; flex-direction:column; align-items:center; gap:10px; }
+.tile.dark { background: var(--color-bg); padding: 18px 28px; border-radius: 12px; }
+.dark { --color-bg: #0B0B12; --color-fg-1: #F4F4F8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tile"><img src="../assets/logo.svg" width="64" height="64"/><div class="subname">Mark · 64px</div></div>
+  <div class="tile"><img src="../assets/logo-wordmark.svg" height="56"/><div class="subname">Wordmark · light</div></div>
+  <div class="tile dark"><img src="../assets/logo-wordmark-dark.svg" height="56"/><div class="subname" style="color:#A1A1AD">Wordmark · dark</div></div>
+</div>
+</body></html>

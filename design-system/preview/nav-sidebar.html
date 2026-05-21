@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+body { background: var(--color-bg); padding: 20px; }
+.sb { width: 240px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 18px 12px; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 0 6px 14px; border-bottom: 1px solid var(--color-border); margin-bottom: 12px; }
+.brand img { width: 32px; height: 32px; }
+.brand b { font-size: 16px; font-weight: 700; color: var(--color-fg-1); letter-spacing: -0.01em; }
+.item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--color-fg-2); cursor: pointer; }
+.item i { width: 18px; height: 18px; }
+.item.active { background: var(--color-primary-subtle); color: var(--color-primary); font-weight: 600; }
+.item:not(.active):hover { background: var(--color-surface-2); color: var(--color-fg-1); }
+.wrap { display: flex; gap: 24px; align-items: flex-start; }
+.preview { flex: 1; padding-top: 12px; }
+.note { font-size: 12px; color: var(--color-fg-3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="sb">
+    <div class="brand"><img src="../assets/logo.svg" alt=""/><b>CuentaLimpia</b></div>
+    <div class="item active"><i data-lucide="layout-dashboard"></i>Dashboard</div>
+    <div class="item"><i data-lucide="arrow-left-right"></i>Ingresos &amp; Egresos</div>
+    <div class="item"><i data-lucide="credit-card"></i>Tarjetas</div>
+    <div class="item"><i data-lucide="settings"></i>Configuración</div>
+  </aside>
+  <div class="preview">
+    <div class="note">Active state uses <span class="token">--color-primary-subtle</span> background and <span class="token">--color-primary</span> text. Hover lifts to <span class="token">--color-surface-2</span>.</div>
+  </div>
+</div>
+<script>lucide.createIcons();</script></body></html>

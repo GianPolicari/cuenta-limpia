@@ -1,0 +1,82 @@
+/* Shared base for design-system preview cards.
+   Each card is ~700×variable px. Include this + colors_and_type.css. */
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--color-surface);
+    color: var(--color-fg-1);
+    padding: 28px 32px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.muted {
+    color: var(--color-fg-3);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.token {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: var(--color-fg-2);
+    background: var(--color-surface-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.swatch {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.swatch.sm {
+    width: 44px;
+    height: 44px;
+}
+
+.swatch.lg {
+    width: 92px;
+    height: 92px;
+}
+
+.hex {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 12px;
+    color: var(--color-fg-2);
+    letter-spacing: 0.02em;
+}
+
+.name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-fg-1);
+    line-height: 1.2;
+}
+
+.subname {
+    font-size: 11px;
+    color: var(--color-fg-3);
+    line-height: 1.3;
+}

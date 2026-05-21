@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+.field { display: flex; flex-direction: column; gap: 6px; }
+.lbl { font-size: 14px; font-weight: 500; color: var(--color-fg-2); }
+.inp { height: 40px; padding: 0 14px; font: inherit; font-size: 14px; color: var(--color-fg-1); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 10px; transition: all 180ms var(--ease-out); }
+.inp::placeholder { color: var(--color-fg-3); }
+.inp:hover { border-color: var(--color-border-strong); }
+.inp[data-state="focus"] { box-shadow: 0 0 0 3px var(--color-primary-subtle); border-color: var(--color-primary); background: var(--color-surface); }
+.inp[data-state="error"] { border-color: var(--color-expense); box-shadow: 0 0 0 3px var(--color-expense-subtle); }
+.help { font-size: 12px; color: var(--color-fg-3); }
+.help.err { color: var(--color-expense); }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.amt-wrap { position: relative; }
+.amt-wrap .sym { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-fg-2); font-weight: 600; font-size: 14px; }
+.amt-wrap .inp { padding-left: 28px; font-variant-numeric: tabular-nums lining-nums; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="field">
+    <label class="lbl">Descripción</label>
+    <input class="inp" placeholder="Ej: Compra en Carrefour" value="Compra en Carrefour"/>
+  </div>
+  <div class="field">
+    <label class="lbl">Monto</label>
+    <div class="amt-wrap"><span class="sym">$</span><input class="inp" placeholder="0,00" value="12.450"/></div>
+  </div>
+</div>
+<div class="row" style="margin-top: 14px;">
+  <div class="field">
+    <label class="lbl">Email</label>
+    <input class="inp" data-state="focus" placeholder="tu@email.com"/>
+    <span class="help">Te enviaremos el resumen mensual.</span>
+  </div>
+  <div class="field">
+    <label class="lbl">Contraseña</label>
+    <input class="inp" data-state="error" value="123" type="password"/>
+    <span class="help err">Mínimo 6 caracteres.</span>
+  </div>
+</div>
+<script>lucide.createIcons();</script></body></html>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<style>
+.grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.cell { display: flex; flex-direction: column; gap: 6px; }
+.bar { height: 64px; border-radius: 10px; border: 1px solid var(--color-border); }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div class="cell"><div class="bar" style="background:#EEEBFF"></div><div class="name">subtle</div><div class="hex">#EEEBFF</div></div>
+  <div class="cell"><div class="bar" style="background:#C9C1FF"></div><div class="name">200</div><div class="hex">#C9C1FF</div></div>
+  <div class="cell"><div class="bar" style="background:#7C6BFF"></div><div class="name">400 · chart</div><div class="hex">#7C6BFF</div></div>
+  <div class="cell"><div class="bar" style="background:#5B47E0"></div><div class="name">600 · default</div><div class="hex">#5B47E0</div></div>
+  <div class="cell"><div class="bar" style="background:#4131B5"></div><div class="name">700 · press</div><div class="hex">#4131B5</div></div>
+</div>
+<div style="margin-top:14px; display:flex; gap:18px; align-items:center;">
+  <span class="token">--color-primary</span>
+  <span class="subname">Brand · primary CTAs · active nav · brand mark</span>
+</div>
+</body></html>

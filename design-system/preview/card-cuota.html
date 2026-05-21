@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+body { background: var(--color-bg); }
+.list { display: grid; gap: 10px; }
+.row { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 1fr auto auto; gap: 18px; align-items: center; box-shadow: var(--shadow-xs); }
+.left { display: flex; flex-direction: column; gap: 6px; }
+.t { font-weight: 600; font-size: 14px; color: var(--color-fg-1); }
+.s { font-size: 12px; color: var(--color-fg-3); display: flex; align-items: center; gap: 6px; }
+.s i { width: 12px; height: 12px; color: var(--color-fg-3); }
+.progress { width: 140px; }
+.bar { height: 6px; background: var(--color-surface-2); border-radius: 999px; overflow: hidden; }
+.fill { height: 100%; background: var(--color-pending-strong); border-radius: 999px; }
+.steps { font-size: 11px; color: var(--color-fg-3); margin-top: 4px; text-align: right; }
+.amt { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums lining-nums; text-align: right; color: var(--color-fg-1); }
+.amt-cap { font-size: 11px; color: var(--color-fg-3); }
+</style>
+</head>
+<body>
+<div class="list">
+  <div class="row">
+    <div class="left">
+      <div class="t">Heladera Whirlpool</div>
+      <div class="s"><i data-lucide="credit-card"></i>Visa Galicia · iniciado 02/03</div>
+    </div>
+    <div class="progress">
+      <div class="bar"><div class="fill" style="width:25%"></div></div>
+      <div class="steps">3 de 12 cuotas</div>
+    </div>
+    <div><div class="amt">$ 41.500</div><div class="amt-cap">por mes</div></div>
+  </div>
+  <div class="row">
+    <div class="left">
+      <div class="t">Notebook ASUS</div>
+      <div class="s"><i data-lucide="credit-card"></i>Visa Galicia · iniciado 15/11</div>
+    </div>
+    <div class="progress">
+      <div class="bar"><div class="fill" style="width:67%"></div></div>
+      <div class="steps">8 de 12 cuotas</div>
+    </div>
+    <div><div class="amt">$ 28.300</div><div class="amt-cap">por mes</div></div>
+  </div>
+</div>
+<script>lucide.createIcons();</script></body></html>

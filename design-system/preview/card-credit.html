@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+body { background: var(--color-bg); }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.cc { aspect-ratio: 1.586 / 1; border-radius: 18px; padding: 20px; color: #fff; position: relative; overflow: hidden; box-shadow: var(--shadow-md); display: flex; flex-direction: column; justify-content: space-between; }
+.cc.violet { background: linear-gradient(135deg, #7C6BFF 0%, #4131B5 100%); }
+.cc.dark { background: linear-gradient(135deg, #2E2E38 0%, #0B0B12 100%); }
+.cc.coral { background: linear-gradient(135deg, #F87171 0%, #DC2626 100%); }
+.cc-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.cc-bank { font-size: 13px; font-weight: 600; opacity: 0.9; letter-spacing: 0.02em; }
+.cc-type { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
+.cc-num { font-size: 18px; font-weight: 600; letter-spacing: 0.18em; font-variant-numeric: tabular-nums; }
+.cc-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+.cc-name { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.06em; }
+.cc-bal { text-align: right; }
+.cc-bal-l { font-size: 10px; opacity: 0.7; letter-spacing: 0.05em; text-transform: uppercase; }
+.cc-bal-v { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums lining-nums; }
+.cc-cuotas { position: absolute; top: 18px; right: 18px; background: rgba(255,255,255,0.18); backdrop-filter: blur(4px); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="cc violet">
+    <div class="cc-top"><div class="cc-bank">Galicia</div><div class="cc-cuotas">3 cuotas activas</div></div>
+    <div class="cc-num">•••• •••• •••• 4827</div>
+    <div class="cc-bottom"><div><div class="cc-name">Lucía Romero</div><div class="cc-type">Visa Crédito</div></div><div class="cc-bal"><div class="cc-bal-l">Saldo</div><div class="cc-bal-v">$ 145.620</div></div></div>
+  </div>
+  <div class="cc dark">
+    <div class="cc-top"><div class="cc-bank">Santander</div><div class="cc-type">Mastercard Débito</div></div>
+    <div class="cc-num">•••• •••• •••• 0193</div>
+    <div class="cc-bottom"><div><div class="cc-name">Lucía Romero</div><div class="cc-type">Débito</div></div><div class="cc-bal"><div class="cc-bal-l">Disponible</div><div class="cc-bal-v">$ 92.100</div></div></div>
+  </div>
+</div>
+<script>lucide.createIcons();</script></body></html>

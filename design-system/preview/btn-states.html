@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="_base.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-sans); font-weight: 600; border: 1px solid transparent; cursor: pointer; transition: all 180ms var(--ease-out); white-space: nowrap; }
+.btn[data-size="md"] { height: 40px; padding: 0 16px; font-size: 14px; border-radius: 10px; }
+.btn[data-size="sm"] { height: 32px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
+.btn[data-size="lg"] { height: 48px; padding: 0 20px; font-size: 15px; border-radius: 12px; }
+.btn .lucide { width: 16px; height: 16px; stroke-width: 2; }
+/* Primary */
+.btn[data-v="primary"] { background: var(--color-primary); color: var(--color-primary-contrast); box-shadow: 0 8px 24px -6px rgba(91,71,224,0.30); }
+.btn[data-v="primary"]:hover { background: var(--color-primary-hover); }
+.btn[data-v="primary"][data-state="press"] { background: var(--color-primary-press); box-shadow: var(--shadow-sm); }
+/* Secondary */
+.btn[data-v="secondary"] { background: var(--color-surface-2); color: var(--color-fg-1); border-color: var(--color-border); }
+.btn[data-v="secondary"]:hover { background: var(--gray-200); }
+/* Ghost */
+.btn[data-v="ghost"] { background: transparent; color: var(--color-fg-2); }
+.btn[data-v="ghost"]:hover { background: var(--color-surface-2); color: var(--color-fg-1); }
+/* Destructive */
+.btn[data-v="destructive"] { background: var(--color-expense-strong); color: #fff; }
+.btn[data-v="destructive"]:hover { background: var(--color-expense); }
+/* Disabled */
+.btn[data-state="disabled"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+/* Focus */
+.btn[data-state="focus"] { box-shadow: 0 0 0 3px var(--color-primary-subtle); border-color: var(--color-primary); }
+.grid { display: grid; gap: 14px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.cap { font-size: 11px; color: var(--color-fg-3); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; width: 96px; }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div class="row">
+    <button class="btn" data-v="primary" data-size="md">Default</button>
+    <button class="btn" data-v="primary" data-size="md" style="background: var(--color-primary-hover)">Hover</button>
+    <button class="btn" data-v="primary" data-size="md" data-state="press">Press</button>
+    <button class="btn" data-v="primary" data-size="md" data-state="focus">Focus</button>
+    <button class="btn" data-v="primary" data-size="md" data-state="disabled">Disabled</button>
+    <button class="btn" data-v="primary" data-size="md"><i data-lucide="loader-2" style="animation: spin 1s linear infinite;"></i>Guardando…</button>
+  </div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<script>lucide.createIcons();</script></body></html>
