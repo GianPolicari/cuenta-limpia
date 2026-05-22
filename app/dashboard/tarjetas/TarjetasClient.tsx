@@ -79,13 +79,16 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
 
         startTransition(async () => {
             const result = await createCard(formData)
-            if (result.error) {
+            if (result.error || !result.card) {
                 setCards(previousCards)
                 toast.error('⚠ No pudimos agregar la tarjeta. Probá de nuevo.')
-                setFormError(result.error)
+                setFormError(result.error ?? 'Error inesperado')
                 setAddOpen(true)
                 return
             }
+            setCards((prev) =>
+                prev.map((c) => c.id === tempId ? result.card! : c)
+            )
             toast.success('✅ Tarjeta agregada')
         })
     }

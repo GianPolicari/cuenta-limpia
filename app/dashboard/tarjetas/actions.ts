@@ -16,17 +16,17 @@ export async function createCard(formData: FormData) {
         return { error: 'Completá el nombre y el tipo de tarjeta.' }
     }
 
-    const { error } = await supabase.from('cards').insert({
+    const { data, error } = await supabase.from('cards').insert({
         name,
         card_type,
         color,
         user_id: user.id,
-    })
+    }).select('id, name, card_type, color').single()
 
-    if (error) return { error: error.message }
+    if (error) return { error: error.message, card: null }
 
     revalidatePath('/dashboard/tarjetas')
-    return { error: null }
+    return { error: null, card: data }
 }
 
 export async function deleteCard(id: string) {

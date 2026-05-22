@@ -623,24 +623,18 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
         const name = (fd.get('card-name') as string)?.trim()
         const color = (fd.get('card-color') as string) || null
         if (!name) return
-        const optimisticCard: CardRow = {
-            id: `temp-card-${Date.now()}`,
-            name,
-            card_type: newCardType,
-            color,
-        }
         startCardTransition(async () => {
             const formData = new FormData()
             formData.set('name', name)
             formData.set('card_type', newCardType)
             if (color) formData.set('color', color)
             const result = await createCard(formData)
-            if (result.error) {
+            if (result.error || !result.card) {
                 toast.error('⚠ No pudimos crear la tarjeta.')
                 return
             }
-            onCardCreated(optimisticCard)
-            setCardId(optimisticCard.id)
+            onCardCreated(result.card)
+            setCardId(result.card.id)
             setNewCardOpen(false)
             toast.success('✅ Tarjeta creada')
         })
