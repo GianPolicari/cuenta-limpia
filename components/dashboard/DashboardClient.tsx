@@ -4,16 +4,13 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { DollarSign, TrendingDown, CreditCard, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { KpiCard } from '@/components/ui/kpi-card'
+import { Amount } from '@/components/ui/amount'
+import { Badge } from '@/components/ui/badge'
 import CategoryChart from '@/components/dashboard/CategoryChart'
 import MonthlyChart from '@/components/dashboard/MonthlyChart'
-
-function formatARS(value: number) {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(value)
-}
-
-function formatUSD(value: number) {
-    return `US$ ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}`
-}
+import { formatMoney } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
 interface DashboardClientProps {
     dolar: { venta: number; compra: number; variacion: number }
@@ -86,9 +83,7 @@ export default function DashboardClient({
     const displayGastos = isUsdMep ? gastosMes / mepPrice : gastosMes
     const displayBalance = isUsdMep ? balance / mepPrice : balance
 
-    const formatCurrency = (value: number) => {
-        return isUsdMep ? formatUSD(value) : formatARS(value)
-    }
+    const currency = isUsdMep ? 'USD' : 'ARS'
 
     // Category aggregation
     const catMap = new Map<string, number>()
@@ -125,32 +120,32 @@ export default function DashboardClient({
             {/* Header with Dolar Blue + MEP Toggle */}
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white lg:text-3xl">Dashboard</h1>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Resumen de tus finanzas personales</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">Dashboard</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">Resumen de tus finanzas personales</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4">
                     {/* Time Filter Selects */}
                     <div className="flex items-center gap-2">
                         <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                            <SelectTrigger className="w-36 border-slate-300 bg-white text-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-white">
+                            <SelectTrigger className="w-36 border-border bg-card text-sm text-foreground">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 dark:text-white">
+                            <SelectContent>
                                 {MONTHS.map((m, i) => (
-                                    <SelectItem key={i} value={String(i + 1)} className="dark:focus:bg-slate-800">
+                                    <SelectItem key={i} value={String(i + 1)}>
                                         {m}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                         <Select value={selectedYear} onValueChange={setSelectedYear}>
-                            <SelectTrigger className="w-24 border-slate-300 bg-white text-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-white">
+                            <SelectTrigger className="w-24 border-border bg-card text-sm text-foreground">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 dark:text-white">
+                            <SelectContent>
                                 {years.map((y) => (
-                                    <SelectItem key={y} value={y} className="dark:focus:bg-slate-800">
+                                    <SelectItem key={y} value={y}>
                                         {y}
                                     </SelectItem>
                                 ))}
@@ -161,40 +156,47 @@ export default function DashboardClient({
                     {/* USD MEP Toggle */}
                     <button
                         onClick={() => setShowUSD(!showUSD)}
-                        className={`group flex items-center gap-2.5 rounded-xl border px-4 py-2.5 backdrop-blur-sm transition-all duration-300 ${showUSD
-                            ? 'border-emerald-500/40 bg-emerald-500/10 shadow-lg shadow-emerald-500/10'
-                            : 'border-slate-300 bg-slate-100/60 dark:border-slate-800 dark:bg-slate-900/60'
-                            }`}
+                        className={cn(
+                            'group flex items-center gap-2.5 rounded-xl border px-4 py-2.5 transition-all duration-300',
+                            showUSD
+                                ? 'border-income/40 bg-income-subtle'
+                                : 'border-border bg-card'
+                        )}
                     >
-                        <div className={`relative flex h-8 w-14 items-center rounded-full p-1 transition-colors duration-300 ${showUSD ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'
-                            }`}>
-                            <div className={`h-6 w-6 rounded-full bg-white shadow-md transition-transform duration-300 ${showUSD ? 'translate-x-6' : 'translate-x-0'
-                                }`} />
+                        <div className={cn(
+                            'relative flex h-8 w-14 items-center rounded-full p-1 transition-colors duration-300',
+                            showUSD ? 'bg-income' : 'bg-secondary'
+                        )}>
+                            <div className={cn(
+                                'h-6 w-6 rounded-full bg-background shadow-md transition-transform duration-300',
+                                showUSD ? 'translate-x-6' : 'translate-x-0'
+                            )} />
                         </div>
                         <div className="text-left leading-none">
-                            <p className={`text-xs font-semibold transition-colors ${showUSD ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400'
-                                }`}>
+                            <p className={cn(
+                                'text-xs font-semibold transition-colors',
+                                showUSD ? 'text-income' : 'text-muted-foreground'
+                            )}>
                                 Ver en USD MEP
                             </p>
                         </div>
                     </button>
 
                     {/* Dolar MEP Ticker */}
-                    <div className="flex items-center gap-3 rounded-xl border border-slate-300 bg-slate-100/60 px-4 py-2 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
-                            <DollarSign className="h-5 w-5 text-emerald-400" />
+                    <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-2">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-income-subtle">
+                            <DollarSign className="h-5 w-5 text-income" />
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Dólar MEP</p>
+                            <p className="text-xs font-medium text-muted-foreground">Dólar MEP</p>
                             <div className="flex items-center gap-2">
-                                <span className="text-lg font-bold text-slate-900 dark:text-white">
+                                <span className="text-lg font-bold tabular-nums text-foreground">
                                     ${liveMep.toLocaleString('es-AR')}
                                 </span>
-                                <span className={`flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-xs font-semibold ${dolarPositive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
-                                    }`}>
-                                    {dolarPositive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                                <Badge variant={dolarPositive ? 'income' : 'expense'}>
+                                    {dolarPositive ? <ArrowUpRight /> : <ArrowDownRight />}
                                     {Math.abs(dolar.variacion)}%
-                                </span>
+                                </Badge>
                             </div>
                         </div>
                     </div>
@@ -203,68 +205,43 @@ export default function DashboardClient({
 
             {/* KPI Cards */}
             <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">Ingresos del Mes</CardTitle>
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10"><ArrowUpRight className="h-5 w-5 text-emerald-400" /></div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-slate-900 dark:text-white">{formatCurrency(displayIngresos)}</div>
-                        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">ingresos registrados</p>
-                    </CardContent>
-                </Card>
+                <KpiCard title="Ingresos del Mes" icon={ArrowUpRight} tone="income" hint="ingresos registrados">
+                    {formatMoney(displayIngresos, currency)}
+                </KpiCard>
 
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">Gastos del Mes</CardTitle>
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10"><TrendingDown className="h-5 w-5 text-red-400" /></div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-slate-900 dark:text-white">{formatCurrency(displayGastos)}</div>
-                        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{monthExpensesCount} transacciones este mes</p>
-                    </CardContent>
-                </Card>
+                <KpiCard title="Gastos del Mes" icon={TrendingDown} tone="expense" hint={`${monthExpensesCount} transacciones este mes`}>
+                    {formatMoney(displayGastos, currency)}
+                </KpiCard>
 
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">Balance del Mes</CardTitle>
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10"><DollarSign className="h-5 w-5 text-blue-400" /></div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className={`text-2xl font-bold ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                            {formatCurrency(displayBalance)}
-                        </div>
-                        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Ingresos vs Gastos</p>
-                    </CardContent>
-                </Card>
+                <KpiCard title="Balance del Mes" icon={DollarSign} tone="info" hint="Ingresos vs Gastos">
+                    <Amount
+                        value={displayBalance}
+                        kind={balance >= 0 ? 'income' : 'expense'}
+                        currency={currency}
+                        showIcon={false}
+                    />
+                </KpiCard>
 
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">Transacciones</CardTitle>
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10"><CreditCard className="h-5 w-5 text-indigo-400" /></div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-slate-900 dark:text-white">{transactions.length}</div>
-                        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">registradas en total</p>
-                    </CardContent>
-                </Card>
+                <KpiCard title="Transacciones" icon={CreditCard} tone="brand" hint="registradas en total">
+                    {transactions.length}
+                </KpiCard>
             </div>
 
             {/* Charts Row */}
             <div className="grid gap-6 lg:grid-cols-2">
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
+                <Card>
                     <CardHeader>
-                        <CardTitle className="text-slate-900 dark:text-white">Gastos por Categoría</CardTitle>
-                        <CardDescription className="text-slate-500 dark:text-slate-400">
+                        <CardTitle className="text-foreground">Gastos por Categoría</CardTitle>
+                        <CardDescription>
                             Distribución del mes actual {showUSD && '(USD MEP)'}
                         </CardDescription>
                     </CardHeader>
                     <CardContent><CategoryChart data={convertedCategoryData} showUSD={showUSD} /></CardContent>
                 </Card>
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
+                <Card>
                     <CardHeader>
-                        <CardTitle className="text-slate-900 dark:text-white">Ingresos vs Gastos</CardTitle>
-                        <CardDescription className="text-slate-500 dark:text-slate-400">
+                        <CardTitle className="text-foreground">Ingresos vs Gastos</CardTitle>
+                        <CardDescription>
                             Evolución mensual {showUSD && '(USD MEP)'}
                         </CardDescription>
                     </CardHeader>

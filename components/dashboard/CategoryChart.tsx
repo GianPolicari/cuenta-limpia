@@ -8,6 +8,7 @@ import {
     Tooltip,
     Legend,
 } from 'recharts'
+import { formatMoney } from '@/lib/format'
 
 interface CategoryData {
     name: string
@@ -20,24 +21,26 @@ interface CategoryChartProps {
 }
 
 const COLORS = [
-    '#10b981', // emerald-500
-    '#6366f1', // indigo-500
-    '#f59e0b', // amber-500
-    '#ef4444', // red-500
-    '#8b5cf6', // violet-500
-    '#06b6d4', // cyan-500
-    '#ec4899', // pink-500
-    '#14b8a6', // teal-500
+    'var(--chart-1)',
+    'var(--chart-2)',
+    'var(--chart-3)',
+    'var(--chart-4)',
+    'var(--chart-5)',
+    'var(--chart-6)',
+    'var(--chart-7)',
+    'var(--chart-8)',
 ]
 
 function CustomTooltip({ active, payload, showUSD }: { active?: boolean; payload?: Array<{ name: string; value: number }>; showUSD?: boolean }) {
     if (active && payload && payload.length) {
         return (
-            <div className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 shadow-xl">
-                <p className="text-sm font-medium text-white">{payload[0].name}</p>
-                <p className="text-sm text-emerald-400">
-                    {showUSD ? 'US$ ' : '$'}
-                    {payload[0].value.toLocaleString(showUSD ? 'en-US' : 'es-AR', { minimumFractionDigits: showUSD ? 2 : 0, maximumFractionDigits: showUSD ? 2 : 0 })}
+            <div
+                className="shadow-md"
+                style={{ background: 'var(--popover)', borderRadius: '10px', padding: '12px' }}
+            >
+                <p className="text-sm font-medium text-popover-foreground">{payload[0].name}</p>
+                <p className="text-sm text-muted-foreground">
+                    {formatMoney(payload[0].value, showUSD ? 'USD' : 'ARS')}
                 </p>
             </div>
         )
@@ -48,7 +51,7 @@ function CustomTooltip({ active, payload, showUSD }: { active?: boolean; payload
 export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
     if (!data || data.length === 0) {
         return (
-            <div className="flex h-[300px] items-center justify-center text-slate-500">
+            <div className="flex h-[300px] items-center justify-center text-muted-foreground">
                 Sin datos de categorías este mes
             </div>
         )
@@ -81,7 +84,7 @@ export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
                     iconType="circle"
                     iconSize={8}
                     formatter={(value: string) => (
-                        <span className="text-xs text-slate-400">{value}</span>
+                        <span className="text-xs text-muted-foreground">{value}</span>
                     )}
                 />
             </PieChart>
