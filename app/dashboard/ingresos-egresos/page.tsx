@@ -20,7 +20,7 @@ export default async function IngresosEgresosPage() {
             initialYear={year}
             expenseCategories={expenseCats}
             incomeCategories={incomeCats}
-            cards={cards}
+            initialCards={cards}
         />
     )
 }

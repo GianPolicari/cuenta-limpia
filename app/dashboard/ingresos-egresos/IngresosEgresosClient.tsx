@@ -25,6 +25,7 @@ import {
 import { toast } from 'sonner'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
 import { getTransactions, addTransaction, updateTransaction, deleteTransaction, getCategoriesByType } from './actions'
+import { createCard } from '@/app/dashboard/tarjetas/actions'
 
 // ==================== TYPES ====================
 
@@ -51,7 +52,7 @@ interface Props {
     initialYear: number
     expenseCategories: CatRow[]
     incomeCategories: CatRow[]
-    cards: CardRow[]
+    initialCards: CardRow[]
 }
 
 export default function IngresosEgresosClient({
@@ -60,9 +61,10 @@ export default function IngresosEgresosClient({
     initialYear,
     expenseCategories,
     incomeCategories,
-    cards,
+    initialCards,
 }: Props) {
     const [transactions, setTransactions] = useState(initialTransactions)
+    const [cards, setCards] = useState<CardRow[]>(initialCards)
     const [month, setMonth] = useState(String(initialMonth))
     const [year, setYear] = useState(String(initialYear))
     const [addOpen, setAddOpen] = useState(false)
@@ -107,20 +109,52 @@ export default function IngresosEgresosClient({
 
     function handleAdd(formData: FormData) {
         const previousTransactions = [...transactions]
-        const tempId = `temp-${Date.now()}`
-        const optimisticTx: TxRow = {
-            id: tempId,
-            description: formData.get('description') as string,
-            amount: Number(formData.get('amount')),
-            category: formData.get('category') as string,
-            transaction_type: formData.get('transaction_type') as string,
-            transaction_date: (formData.get('date') as string) || new Date().toISOString().split('T')[0],
-            card_id: (formData.get('card_id') as string) === 'none' ? null : (formData.get('card_id') as string),
-            cuota_actual: null,
-            total_cuotas: null,
+        const isInstallment = formData.get('isInstallment') === 'true'
+        const installmentsCount = parseInt(formData.get('installmentsCount') as string) || 1
+        const txType = formData.get('transaction_type') as string
+        const description = formData.get('description') as string
+        const amount = Number(formData.get('amount'))
+        const category = formData.get('category') as string
+        const dateStr = (formData.get('date') as string) || new Date().toISOString().split('T')[0]
+        const cardId = (formData.get('card_id') as string) || null
+
+        let optimisticRows: TxRow[]
+
+        if (isInstallment && txType === 'expense' && installmentsCount > 1) {
+            const installmentAmount = amount / installmentsCount
+            const [y, mo, d] = dateStr.split('-').map(Number)
+            optimisticRows = Array.from({ length: installmentsCount }, (_, i) => {
+                const dateObj = new Date(y, mo - 1 + i, d)
+                const yr = dateObj.getFullYear()
+                const mn = String(dateObj.getMonth() + 1).padStart(2, '0')
+                const dy = String(dateObj.getDate()).padStart(2, '0')
+                return {
+                    id: `temp-${Date.now()}-${i}`,
+                    description,
+                    amount: installmentAmount,
+                    category: category || null,
+                    transaction_type: txType,
+                    transaction_date: `${yr}-${mn}-${dy}`,
+                    card_id: cardId,
+                    cuota_actual: i + 1,
+                    total_cuotas: installmentsCount,
+                }
+            })
+        } else {
+            optimisticRows = [{
+                id: `temp-${Date.now()}`,
+                description,
+                amount,
+                category: category || null,
+                transaction_type: txType,
+                transaction_date: dateStr,
+                card_id: cardId,
+                cuota_actual: null,
+                total_cuotas: null,
+            }]
         }
 
-        setTransactions((prev: TxRow[]) => [optimisticTx, ...prev])
+        setTransactions((prev: TxRow[]) => [...optimisticRows, ...prev])
         setAddOpen(false)
 
         startTransition(async () => {
@@ -133,7 +167,9 @@ export default function IngresosEgresosClient({
                 return
             }
             setError(null)
-            toast.success("✅ Operación guardada")
+            toast.success(isInstallment && installmentsCount > 1
+                ? `✅ ${installmentsCount} cuotas guardadas`
+                : "✅ Operación guardada")
             const res = await getTransactions(Number(month), Number(year))
             if (res.data) setTransactions(res.data)
         })
@@ -189,6 +225,10 @@ export default function IngresosEgresosClient({
             }
         })
     }
+
+    const handleCardCreated = useCallback((card: CardRow) => {
+        setCards((prev) => [...prev, card].sort((a, b) => a.name.localeCompare(b.name)))
+    }, [])
 
     const cardName = useCallback((cardId: string | null) => {
         if (!cardId) return null
@@ -352,7 +392,7 @@ export default function IngresosEgresosClient({
                             <DialogDescription>Registrá un ingreso o gasto.</DialogDescription>
                         </DialogHeader>
                         {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
-                        <TxForm onSubmit={handleAdd} isPending={isPending} onCancel={() => setAddOpen(false)} cards={cards} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} />
+                        <TxForm onSubmit={handleAdd} isPending={isPending} onCancel={() => setAddOpen(false)} cards={cards} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} onCardCreated={handleCardCreated} />
                     </DialogContent>
                 </Dialog>
             </div>
@@ -364,7 +404,7 @@ export default function IngresosEgresosClient({
                         <DialogTitle>Editar operación</DialogTitle>
                     </DialogHeader>
                     {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
-                    {editTx && <TxForm onSubmit={handleEdit} isPending={isPending} onCancel={() => setEditTx(null)} cards={cards} defaults={editTx} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} />}
+                    {editTx && <TxForm onSubmit={handleEdit} isPending={isPending} onCancel={() => setEditTx(null)} cards={cards} defaults={editTx} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} onCardCreated={handleCardCreated} />}
                 </DialogContent>
             </Dialog>
 
@@ -562,111 +602,199 @@ export default function IngresosEgresosClient({
 
 // ==================== TRANSACTION FORM ====================
 
-function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, dynamicCats }: {
+function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, dynamicCats, onCardCreated }: {
     onSubmit: (fd: FormData) => void; isPending: boolean; onCancel: () => void;
     cards: CardRow[]; defaults?: TxRow;
     onTypeChange: (type: string) => void; dynamicCats: CatRow[]
+    onCardCreated: (card: CardRow) => void
 }) {
     const [txType, setTxType] = useState(defaults?.transaction_type ?? 'expense')
     const [category, setCategory] = useState(defaults?.category ?? '')
     const [cardId, setCardId] = useState(defaults?.card_id ?? 'none')
     const [isInstallment, setIsInstallment] = useState(false)
-    const [installmentsCount, setInstallmentsCount] = useState(1)
+    const [installmentsCount, setInstallmentsCount] = useState(2)
+    const [newCardOpen, setNewCardOpen] = useState(false)
+    const [newCardType, setNewCardType] = useState('Crédito')
+    const [isCreatingCard, startCardTransition] = useTransition()
 
-    // Fetch categories when type changes
     useEffect(() => { onTypeChange(txType) }, [txType, onTypeChange])
 
+    function handleCreateCard(fd: FormData) {
+        const name = (fd.get('card-name') as string)?.trim()
+        const color = (fd.get('card-color') as string) || null
+        if (!name) return
+        const optimisticCard: CardRow = {
+            id: `temp-card-${Date.now()}`,
+            name,
+            card_type: newCardType,
+            color,
+        }
+        startCardTransition(async () => {
+            const formData = new FormData()
+            formData.set('name', name)
+            formData.set('card_type', newCardType)
+            if (color) formData.set('color', color)
+            const result = await createCard(formData)
+            if (result.error) {
+                toast.error('⚠ No pudimos crear la tarjeta.')
+                return
+            }
+            onCardCreated(optimisticCard)
+            setCardId(optimisticCard.id)
+            setNewCardOpen(false)
+            toast.success('✅ Tarjeta creada')
+        })
+    }
+
     return (
-        <form action={(fd) => {
-            fd.set('transaction_type', txType)
-            fd.set('category', category)
-            if (cardId !== 'none') fd.set('card_id', cardId)
-            fd.set('isInstallment', String(isInstallment))
-            fd.set('installmentsCount', String(installmentsCount))
-            onSubmit(fd)
-        }} className="space-y-4">
-            <div className="space-y-2">
-                <Label>Descripción</Label>
-                <Input name="description" placeholder="Ej: Compra en Carrefour" required defaultValue={defaults?.description ?? ''} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+        <>
+            <form action={(fd) => {
+                fd.set('transaction_type', txType)
+                fd.set('category', category)
+                if (cardId !== 'none') fd.set('card_id', cardId)
+                fd.set('isInstallment', String(isInstallment))
+                fd.set('installmentsCount', String(installmentsCount))
+                onSubmit(fd)
+            }} className="space-y-4">
                 <div className="space-y-2">
-                    <Label>Monto</Label>
-                    <Input name="amount" type="number" step="0.01" min="0" placeholder="0.00" required defaultValue={defaults?.amount ?? ''} />
+                    <Label>Descripción</Label>
+                    <Input name="description" placeholder="Ej: Compra en Carrefour" required defaultValue={defaults?.description ?? ''} />
                 </div>
-                <div className="space-y-2">
-                    <Label>Fecha</Label>
-                    <Input name="date" type="date" required defaultValue={defaults?.transaction_date ?? new Date().toISOString().split('T')[0]} className="dark:[color-scheme:dark]" />
-                </div>
-            </div>
-            <div className="space-y-2">
-                <Label>Tipo</Label>
-                <div className="flex gap-2">
-                    <Button type="button" variant="outline" onClick={() => setTxType('expense')}
-                        className={cn('flex-1', txType === 'expense' && 'border-expense/40 bg-expense-subtle text-expense hover:bg-expense-subtle')}>
-                        Gasto
-                    </Button>
-                    <Button type="button" variant="outline" onClick={() => setTxType('income')}
-                        className={cn('flex-1', txType === 'income' && 'border-income/40 bg-income-subtle text-income hover:bg-income-subtle')}>
-                        Ingreso
-                    </Button>
-                </div>
-            </div>
-            <div className="space-y-2">
-                <Label>Categoría</Label>
-                <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger><SelectValue placeholder="Seleccionar categoría" /></SelectTrigger>
-                    <SelectContent>
-                        {dynamicCats.length > 0
-                            ? dynamicCats.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)
-                            : <SelectItem value="_empty" disabled className="text-muted-foreground">Sin categorías — creá una en Configuración</SelectItem>
-                        }
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="space-y-2">
-                <Label>Tarjeta (opcional)</Label>
-                <Select value={cardId} onValueChange={setCardId}>
-                    <SelectTrigger><SelectValue placeholder="Sin tarjeta" /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="none">Sin tarjeta</SelectItem>
-                        {cards.map(c => <SelectItem key={c.id} value={c.id}>{c.name} ({c.card_type})</SelectItem>)}
-                    </SelectContent>
-                </Select>
-            </div>
-            {txType === 'expense' && !defaults && (
-                <div className="space-y-4 rounded-lg border border-border bg-secondary p-4">
-                    <div className="flex items-center space-x-2">
-                        <input
-                            type="checkbox"
-                            id="isInstallment"
-                            checked={isInstallment}
-                            onChange={(e) => setIsInstallment(e.target.checked)}
-                            className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
-                        />
-                        <Label htmlFor="isInstallment" className="cursor-pointer">¿Es un pago en cuotas?</Label>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Monto</Label>
+                        <Input name="amount" type="number" step="0.01" min="0" placeholder="0.00" required defaultValue={defaults?.amount ?? ''} />
                     </div>
-                    {isInstallment && (
-                        <div className="mt-3 block space-y-2">
-                            <Label>Cantidad de cuotas</Label>
-                            <Input
-                                type="number"
-                                min="2"
-                                max="24"
-                                value={installmentsCount}
-                                onChange={(e) => setInstallmentsCount(Number(e.target.value))}
-                                className="w-full"
-                            />
-                        </div>
-                    )}
+                    <div className="space-y-2">
+                        <Label>Fecha</Label>
+                        <Input name="date" type="date" required defaultValue={defaults?.transaction_date ?? new Date().toISOString().split('T')[0]} className="dark:[color-scheme:dark]" />
+                    </div>
                 </div>
-            )}
-            <DialogFooter className="pt-2">
-                <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
-                <Button type="submit" disabled={isPending} className="font-semibold">
-                    {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando...</> : 'Guardar'}
-                </Button>
-            </DialogFooter>
-        </form>
+
+                {/* Fix 1: badge de cuota en modo edición */}
+                {defaults?.total_cuotas && (
+                    <div className="flex items-center gap-2 rounded-lg border border-pending/20 bg-pending-subtle px-3 py-2 text-sm">
+                        <Badge variant="pending">Cuota {defaults.cuota_actual} de {defaults.total_cuotas}</Badge>
+                        <span className="text-muted-foreground">Editás solo esta cuota.</span>
+                    </div>
+                )}
+
+                <div className="space-y-2">
+                    <Label>Tipo</Label>
+                    <div className="flex gap-2">
+                        <Button type="button" variant="outline" onClick={() => setTxType('expense')}
+                            className={cn('flex-1', txType === 'expense' && 'border-expense/40 bg-expense-subtle text-expense hover:bg-expense-subtle')}>
+                            Gasto
+                        </Button>
+                        <Button type="button" variant="outline" onClick={() => setTxType('income')}
+                            className={cn('flex-1', txType === 'income' && 'border-income/40 bg-income-subtle text-income hover:bg-income-subtle')}>
+                            Ingreso
+                        </Button>
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label>Categoría</Label>
+                    <Select value={category} onValueChange={setCategory}>
+                        <SelectTrigger><SelectValue placeholder="Seleccionar categoría" /></SelectTrigger>
+                        <SelectContent>
+                            {dynamicCats.length > 0
+                                ? dynamicCats.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)
+                                : <SelectItem value="_empty" disabled className="text-muted-foreground">Sin categorías — creá una en Configuración</SelectItem>
+                            }
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* Fix 2: tarjeta con opción de crear inline */}
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <Label>Tarjeta (opcional)</Label>
+                        <button
+                            type="button"
+                            onClick={() => setNewCardOpen(true)}
+                            className="text-xs text-primary hover:underline"
+                        >
+                            + Nueva tarjeta
+                        </button>
+                    </div>
+                    <Select value={cardId} onValueChange={setCardId}>
+                        <SelectTrigger><SelectValue placeholder="Sin tarjeta" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="none">Sin tarjeta</SelectItem>
+                            {cards.map(c => <SelectItem key={c.id} value={c.id}>{c.name} ({c.card_type})</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {txType === 'expense' && !defaults && (
+                    <div className="space-y-3 rounded-lg border border-border bg-secondary p-4">
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="isInstallment"
+                                checked={isInstallment}
+                                onChange={(e) => setIsInstallment(e.target.checked)}
+                                className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
+                            />
+                            <Label htmlFor="isInstallment" className="cursor-pointer">¿Es un pago en cuotas?</Label>
+                        </div>
+                        {isInstallment && (
+                            <div className="space-y-2">
+                                <Label>Cantidad de cuotas</Label>
+                                <Input
+                                    type="number"
+                                    min="2"
+                                    max="24"
+                                    value={installmentsCount}
+                                    onChange={(e) => setInstallmentsCount(Number(e.target.value))}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
+                <DialogFooter className="pt-2">
+                    <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+                    <Button type="submit" disabled={isPending} className="font-semibold">
+                        {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando...</> : 'Guardar'}
+                    </Button>
+                </DialogFooter>
+            </form>
+
+            {/* Mini dialog nueva tarjeta */}
+            <Dialog open={newCardOpen} onOpenChange={setNewCardOpen}>
+                <DialogContent className="sm:max-w-sm">
+                    <DialogHeader>
+                        <DialogTitle>Nueva tarjeta</DialogTitle>
+                        <DialogDescription>Sumá una tarjeta para asociarla a esta operación.</DialogDescription>
+                    </DialogHeader>
+                    <form action={handleCreateCard} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="card-name">Nombre</Label>
+                            <Input id="card-name" name="card-name" placeholder="Ej: Visa Galicia" required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Tipo</Label>
+                            <Select value={newCardType} onValueChange={setNewCardType}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Crédito">Crédito</SelectItem>
+                                    <SelectItem value="Débito">Débito</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="card-color">Color (opcional)</Label>
+                            <Input id="card-color" name="card-color" type="color" defaultValue="#5B47E0" className="h-10 w-16 p-1" />
+                        </div>
+                        <DialogFooter className="pt-2">
+                            <Button type="button" variant="outline" onClick={() => setNewCardOpen(false)}>Cancelar</Button>
+                            <Button type="submit" disabled={isCreatingCard} className="font-semibold">
+                                {isCreatingCard ? <><Loader2 className="h-4 w-4 animate-spin" /> Creando...</> : 'Crear tarjeta'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }
