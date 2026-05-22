@@ -369,7 +369,7 @@ export default function IngresosEgresosClient({
             <Dialog open={!!deleteTx} onOpenChange={o => !o && setDeleteTx(null)}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>¿Eliminar este gasto?</DialogTitle>
+                        <DialogTitle>¿Eliminar esta operación?</DialogTitle>
                         <DialogDescription>No se puede deshacer.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="pt-2">

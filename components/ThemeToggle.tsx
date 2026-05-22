@@ -19,12 +19,12 @@ export function ThemeToggle() {
         <button
             aria-label="Cambiar tema"
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-slate-700/50 bg-slate-800/80 text-slate-300 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-emerald-500/50 hover:bg-slate-700/80 hover:text-emerald-400 hover:shadow-emerald-500/10 dark:border-slate-700/50 dark:bg-slate-800/80 dark:text-slate-300"
+            className="fixed bottom-20 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-primary hover:bg-accent hover:text-primary lg:bottom-6 lg:right-6"
         >
             {isDark ? (
-                <Sun className="h-5 w-5 transition-transform duration-300 hover:rotate-45" />
+                <Sun className="h-5 w-5 transition-transform duration-300 hover:rotate-45" aria-hidden="true" />
             ) : (
-                <Moon className="h-5 w-5 transition-transform duration-300 hover:-rotate-12" />
+                <Moon className="h-5 w-5 transition-transform duration-300 hover:-rotate-12" aria-hidden="true" />
             )}
         </button>
     )

@@ -302,11 +302,11 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex gap-1">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-info" onClick={() => setEditCard(c)}>
-                                                    <Pencil className="h-3.5 w-3.5" />
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-info" aria-label={`Editar ${c.name}`} onClick={() => setEditCard(c)}>
+                                                    <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-expense" disabled={isPending} onClick={() => setDeleteTarget(c)}>
-                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-expense" aria-label={`Eliminar ${c.name}`} disabled={isPending} onClick={() => setDeleteTarget(c)}>
+                                                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -506,11 +506,11 @@ function CategoryGroup({ title, items, variant, onEdit, onDelete, isPending }: {
                     <div key={c.id} className="flex items-center justify-between rounded-lg border border-border bg-secondary/40 px-3 py-2">
                         <Badge variant={variant}>{c.name}</Badge>
                         <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-info" onClick={() => onEdit(c)}>
-                                <Pencil className="h-3 w-3" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-info" aria-label={`Editar ${c.name}`} onClick={() => onEdit(c)}>
+                                <Pencil className="h-3 w-3" aria-hidden="true" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-expense" disabled={isPending} onClick={() => onDelete(c)}>
-                                <Trash2 className="h-3 w-3" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-expense" aria-label={`Eliminar ${c.name}`} disabled={isPending} onClick={() => onDelete(c)}>
+                                <Trash2 className="h-3 w-3" aria-hidden="true" />
                             </Button>
                         </div>
                     </div>
