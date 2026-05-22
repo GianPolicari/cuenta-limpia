@@ -44,7 +44,6 @@ interface SettingsClientProps {
     initialCategories: CategoryRow[]
 }
 
-const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 const CARD_TYPES = ['Crédito', 'Débito']
 export default function SettingsClient({
     email,
@@ -143,12 +142,6 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
 
-    // Month/Year filter (UI-only for now)
-    const now = new Date()
-    const [filterMonth, setFilterMonth] = useState(String(now.getMonth()))
-    const [filterYear, setFilterYear] = useState(String(now.getFullYear()))
-    const years = Array.from({ length: 5 }, (_, i) => String(now.getFullYear() - 2 + i))
-
     function handleAdd(formData: FormData) {
         startTransition(async () => {
             const result = await addCard(formData)
@@ -195,31 +188,8 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
 
     return (
         <div className="space-y-4">
-            {/* Filter + Add button */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2">
-                    <Select value={filterMonth} onValueChange={setFilterMonth}>
-                        <SelectTrigger className="w-36 text-sm">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {MONTHS.map((m, i) => (
-                                <SelectItem key={i} value={String(i)}>{m}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Select value={filterYear} onValueChange={setFilterYear}>
-                        <SelectTrigger className="w-24 text-sm">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {years.map((y) => (
-                                <SelectItem key={y} value={y}>{y}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-
+            {/* Add button */}
+            <div className="flex justify-end">
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
                         <Button className="gap-2">
