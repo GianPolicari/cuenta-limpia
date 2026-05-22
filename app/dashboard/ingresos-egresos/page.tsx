@@ -1,6 +1,6 @@
 import IngresosEgresosClient from './IngresosEgresosClient'
 import { getTransactions, getCategoriesByType, getCards } from './actions'
-import { seedDefaultCategories } from '@/app/dashboard/configuracion/actions'
+import { seedDefaultCategories, getBudgets } from '@/app/dashboard/configuracion/actions'
 
 export default async function IngresosEgresosPage() {
     const now = new Date()
@@ -9,11 +9,12 @@ export default async function IngresosEgresosPage() {
 
     await seedDefaultCategories()
 
-    const [txRes, expenseCats, incomeCats, cards] = await Promise.all([
+    const [txRes, expenseCats, incomeCats, cards, budgetsRes] = await Promise.all([
         getTransactions(month, year),
         getCategoriesByType('expense'),
         getCategoriesByType('income'),
         getCards(),
+        getBudgets(),
     ])
 
     return (
@@ -24,6 +25,7 @@ export default async function IngresosEgresosPage() {
             expenseCategories={expenseCats}
             incomeCategories={incomeCats}
             initialCards={cards}
+            initialBudgets={budgetsRes.data ?? []}
         />
     )
 }

@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/USUARIO/Documents/zz.G. Personal/000- Proyectos/**)",
+      "Bash(unzip -l \"CuentaLimpia Design System.zip\")",
+      "Bash(mkdir -p /tmp/cl-ds)",
+      "Bash(unzip -o \"CuentaLimpia Design System.zip\" -d /tmp/cl-ds)",
+      "Read(//tmp/**)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm run *)",
+      "Bash(git commit *)",
+      "Bash(npx eslint *)",
+      "Bash(echo \"---LINT EXIT: $?---\")",
+      "Bash(echo \"---BUILD EXIT: $?---\")",
+      "Bash(git --no-pager diff --stat components/dashboard/)",
+      "Bash(echo \"LINT_EXIT=$?\")",
+      "Bash(echo \"BUILD_EXIT=$?\")",
+      "mcp__supabase__list_projects",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000__TRACKED_VAR__)",
+      "Bash(curl -s http://localhost:3000/login)",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "Read(//c/Users/USUARIO/**)",
+      "Bash(claude mcp *)",
+      "Read(//c/Users/USUARIO/.claude/plugins/**)",
+      "Read(//c/Users/USUARIO/.claude/plugins/cache/**)",
+      "Bash(node -e \"try{const c=require\\('./.credentials.json'\\);console.log\\('top-level keys:',Object.keys\\(c\\)\\);for\\(const k of Object.keys\\(c\\)\\){if\\(c[k]&&typeof c[k]==='object'\\)console.log\\(' ',k,'->',Object.keys\\(c[k]\\)\\)}}catch\\(e\\){console.log\\('err',e.message\\)}\")",
+      "Bash(node -e ' *)",
+      "PowerShell(Start-Process \"https://api.supabase.com/v1/oauth/authorize?response_type=code&client_id=28781afe-6474-4f07-ae02-fe72b7417a02&code_challenge=3xTJRQ0Q9IC9QkKFz4_yb62StQgpe07F9ku7SNNNK4o&code_challenge_method=S256&redirect_uri=http%3A%2F%2Flocalhost%3A43365%2Fcallback&state=JxId719g-tk3eluHlzkhg2PefvEA_t7gFyyvQl2E7VM&scope=organizations%3Aread+projects%3Aread+projects%3Awrite+database%3Awrite+database%3Aread+analytics%3Aread+secrets%3Aread+edge_functions%3Aread+edge_functions%3Awrite+environment%3Aread+environment%3Awrite+storage%3Aread&resource=https%3A%2F%2Fmcp.supabase.com%2Fmcp\")",
+      "mcp__plugin_supabase_supabase__list_tables",
+      "mcp__plugin_supabase_supabase__apply_migration",
+      "mcp__plugin_supabase_supabase__execute_sql",
+      "Bash(npx supabase@latest --version)",
+      "Bash(git stash *)"
+    ]
+  }
+}

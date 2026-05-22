@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { signOut } from '@/app/login/actions'
-import { getCards, getCategories, seedDefaultCategories } from './actions'
+import { getCards, getCategories, getBudgets, seedDefaultCategories } from './actions'
 import SettingsClient from './SettingsClient'
 
 export default async function ConfiguracionPage() {
@@ -18,9 +18,10 @@ export default async function ConfiguracionPage() {
 
     await seedDefaultCategories()
 
-    const [cardsRes, categoriesRes] = await Promise.all([
+    const [cardsRes, categoriesRes, budgetsRes] = await Promise.all([
         getCards(),
         getCategories(),
+        getBudgets(),
     ])
 
     return (
@@ -30,6 +31,7 @@ export default async function ConfiguracionPage() {
             signOut={signOut}
             initialCards={cardsRes.data ?? []}
             initialCategories={categoriesRes.data ?? []}
+            initialBudgets={budgetsRes.data ?? []}
         />
     )
 }

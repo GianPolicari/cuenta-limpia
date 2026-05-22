@@ -37,6 +37,7 @@ type TxRow = {
 }
 type CatRow = { id: string; name: string }
 type CardRow = { id: string; name: string; card_type: string; color: string | null }
+type BudgetRow = { id: string; category_name: string; monthly_amount: number }
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
@@ -53,6 +54,7 @@ interface Props {
     expenseCategories: CatRow[]
     incomeCategories: CatRow[]
     initialCards: CardRow[]
+    initialBudgets: BudgetRow[]
 }
 
 export default function IngresosEgresosClient({
@@ -62,6 +64,7 @@ export default function IngresosEgresosClient({
     expenseCategories,
     incomeCategories,
     initialCards,
+    initialBudgets,
 }: Props) {
     const [transactions, setTransactions] = useState(initialTransactions)
     const [cards, setCards] = useState<CardRow[]>(initialCards)
@@ -390,6 +393,9 @@ export default function IngresosEgresosClient({
                 </KpiCard>
             </div>
 
+            {/* Budget progress section */}
+            <BudgetSection budgets={initialBudgets} transactions={transactions} />
+
             {/* Search + type filter */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <div className="relative flex-1">
@@ -669,6 +675,76 @@ export default function IngresosEgresosClient({
                     )}
                 </div>
             )}
+        </div>
+    )
+}
+
+// ==================== BUDGET SECTION ====================
+
+function BudgetSection({ budgets, transactions }: { budgets: BudgetRow[]; transactions: TxRow[] }) {
+    if (budgets.length === 0) return null
+
+    const budgetItems = budgets
+        .map((b) => {
+            const spent = transactions
+                .filter((t) => t.transaction_type === 'expense' && t.category === b.category_name)
+                .reduce((sum, t) => sum + t.amount, 0)
+            const pct = b.monthly_amount > 0 ? (spent / b.monthly_amount) * 100 : 0
+            return { ...b, spent, pct }
+        })
+        .sort((a, b) => {
+            // Primero las que superaron, luego por % descendente
+            if (a.pct >= 100 && b.pct < 100) return -1
+            if (b.pct >= 100 && a.pct < 100) return 1
+            return b.pct - a.pct
+        })
+
+    return (
+        <div className="mb-6">
+            <h2 className="mb-3 text-base font-semibold text-foreground">Presupuesto del mes</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
+                {budgetItems.map((b) => {
+                    const clampedPct = Math.min(b.pct, 100)
+                    const barColor =
+                        b.pct >= 100
+                            ? 'bg-expense'
+                            : b.pct >= 75
+                                ? 'bg-pending'
+                                : 'bg-income'
+
+                    return (
+                        <Card key={b.id}>
+                            <CardContent className="py-3 px-4">
+                                <div className="mb-2 flex items-center justify-between gap-2">
+                                    <span className="truncate text-sm font-medium text-foreground">{b.category_name}</span>
+                                    <span className="shrink-0 text-xs text-muted-foreground">
+                                        {Math.round(b.pct)}% del presupuesto
+                                    </span>
+                                </div>
+                                <div className="mb-1.5 h-2 w-full overflow-hidden rounded-full bg-secondary">
+                                    <div
+                                        className={cn('h-full rounded-full transition-all duration-500', barColor)}
+                                        style={{ width: `${clampedPct}%` }}
+                                        role="progressbar"
+                                        aria-valuenow={Math.round(b.pct)}
+                                        aria-valuemin={0}
+                                        aria-valuemax={100}
+                                        aria-label={`Progreso de presupuesto de ${b.category_name}`}
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="text-xs text-muted-foreground">
+                                        {formatARS(b.spent)} gastado
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                        de {formatARS(b.monthly_amount)}
+                                    </span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )
+                })}
+            </div>
         </div>
     )
 }

@@ -19,19 +19,21 @@ import {
 } from '@/components/ui/dialog'
 import {
     User, CreditCard, Tag, Mail, Calendar, Shield,
-    LogOut, Plus, Trash2, Pencil, Loader2,
+    LogOut, Plus, Trash2, Pencil, Loader2, Check,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import {
     addCard, updateCard, deleteCard,
     addCategory, updateCategory, deleteCategory,
+    upsertBudget, deleteBudget,
 } from './actions'
 
 // ==================== TYPES ====================
 
 type CardRow = { id: string; name: string; card_type: string; color: string | null }
 type CategoryRow = { id: string; name: string; type: string }
+type BudgetRow = { id: string; category_name: string; monthly_amount: number }
 
 
 // ==================== MAIN COMPONENT ====================
@@ -42,6 +44,7 @@ interface SettingsClientProps {
     signOut: () => Promise<void>
     initialCards: CardRow[]
     initialCategories: CategoryRow[]
+    initialBudgets: BudgetRow[]
 }
 
 const CARD_TYPES = ['Crédito', 'Débito']
@@ -51,6 +54,7 @@ export default function SettingsClient({
     signOut,
     initialCards,
     initialCategories,
+    initialBudgets,
 }: SettingsClientProps) {
     return (
         <div className="min-h-screen bg-background p-6 lg:p-8">
@@ -124,7 +128,7 @@ export default function SettingsClient({
                     <TarjetasTab initialCards={initialCards} />
                 </TabsContent>
                 <TabsContent value="categorias">
-                    <CategoriasTab initialCategories={initialCategories} />
+                    <CategoriasTab initialCategories={initialCategories} initialBudgets={initialBudgets} />
                 </TabsContent>
 
             </Tabs>
@@ -341,16 +345,50 @@ function CardForm({ onSubmit, isPending, onCancel, defaults }: {
 
 // ==================== TAB: CATEGORÍAS ====================
 
-function CategoriasTab({ initialCategories }: { initialCategories: CategoryRow[] }) {
+function CategoriasTab({ initialCategories, initialBudgets }: { initialCategories: CategoryRow[]; initialBudgets: BudgetRow[] }) {
     const [addOpen, setAddOpen] = useState(false)
     const [editCat, setEditCat] = useState<CategoryRow | null>(null)
     const [deleteTarget, setDeleteTarget] = useState<CategoryRow | null>(null)
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
+    const [budgets, setBudgets] = useState<BudgetRow[]>(initialBudgets)
     const router = useRouter()
 
     const expenseCats = initialCategories.filter((c) => c.type === 'expense')
     const incomeCats = initialCategories.filter((c) => c.type === 'income')
+
+    function handleUpsertBudget(categoryName: string, amount: number) {
+        // Optimistic update
+        setBudgets((prev) => {
+            const exists = prev.find((b) => b.category_name === categoryName)
+            if (exists) return prev.map((b) => b.category_name === categoryName ? { ...b, monthly_amount: amount } : b)
+            return [...prev, { id: `temp-${Date.now()}`, category_name: categoryName, monthly_amount: amount }]
+        })
+        startTransition(async () => {
+            const result = await upsertBudget(categoryName, amount)
+            if (result.error) {
+                setBudgets(initialBudgets)
+                toast.error("No pudimos guardar el presupuesto. Probá de nuevo.", { description: result.error })
+            } else {
+                toast.success("Presupuesto guardado")
+                router.refresh()
+            }
+        })
+    }
+
+    function handleDeleteBudget(categoryName: string) {
+        // Optimistic update
+        setBudgets((prev) => prev.filter((b) => b.category_name !== categoryName))
+        startTransition(async () => {
+            const result = await deleteBudget(categoryName)
+            if (result.error) {
+                setBudgets(initialBudgets)
+                toast.error("No pudimos eliminar el presupuesto. Probá de nuevo.", { description: result.error })
+            } else {
+                router.refresh()
+            }
+        })
+    }
 
     function handleAdd(formData: FormData) {
         startTransition(async () => {
@@ -454,7 +492,7 @@ function CategoriasTab({ initialCategories }: { initialCategories: CategoryRow[]
                 />
             ) : (
                 <div className="grid gap-4 lg:grid-cols-2">
-                    <CategoryGroup title="Gastos" items={expenseCats} variant="expense" onEdit={setEditCat} onDelete={setDeleteTarget} isPending={isPending} />
+                    <CategoryGroup title="Gastos" items={expenseCats} variant="expense" onEdit={setEditCat} onDelete={setDeleteTarget} isPending={isPending} budgets={budgets} onUpsertBudget={handleUpsertBudget} onDeleteBudget={handleDeleteBudget} />
                     <CategoryGroup title="Ingresos" items={incomeCats} variant="income" onEdit={setEditCat} onDelete={setDeleteTarget} isPending={isPending} />
                 </div>
             )}
@@ -462,8 +500,16 @@ function CategoriasTab({ initialCategories }: { initialCategories: CategoryRow[]
     )
 }
 
-function CategoryGroup({ title, items, variant, onEdit, onDelete, isPending }: {
-    title: string; items: CategoryRow[]; variant: 'expense' | 'income'; onEdit: (c: CategoryRow) => void; onDelete: (c: CategoryRow) => void; isPending: boolean
+function CategoryGroup({ title, items, variant, onEdit, onDelete, isPending, budgets, onUpsertBudget, onDeleteBudget }: {
+    title: string
+    items: CategoryRow[]
+    variant: 'expense' | 'income'
+    onEdit: (c: CategoryRow) => void
+    onDelete: (c: CategoryRow) => void
+    isPending: boolean
+    budgets?: BudgetRow[]
+    onUpsertBudget?: (categoryName: string, amount: number) => void
+    onDeleteBudget?: (categoryName: string) => void
 }) {
     if (items.length === 0) return null
     return (
@@ -473,20 +519,113 @@ function CategoryGroup({ title, items, variant, onEdit, onDelete, isPending }: {
             </CardHeader>
             <CardContent className="space-y-2">
                 {items.map((c) => (
-                    <div key={c.id} className="flex items-center justify-between rounded-lg border border-border bg-secondary/40 px-3 py-2">
-                        <Badge variant={variant}>{c.name}</Badge>
-                        <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-info" aria-label={`Editar ${c.name}`} onClick={() => onEdit(c)}>
-                                <Pencil className="h-3 w-3" aria-hidden="true" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-expense" aria-label={`Eliminar ${c.name}`} disabled={isPending} onClick={() => onDelete(c)}>
-                                <Trash2 className="h-3 w-3" aria-hidden="true" />
-                            </Button>
+                    <div key={c.id} className="space-y-2 rounded-lg border border-border bg-secondary/40 px-3 py-2">
+                        <div className="flex items-center justify-between">
+                            <Badge variant={variant}>{c.name}</Badge>
+                            <div className="flex gap-1">
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-info" aria-label={`Editar ${c.name}`} onClick={() => onEdit(c)}>
+                                    <Pencil className="h-3 w-3" aria-hidden="true" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-expense" aria-label={`Eliminar ${c.name}`} disabled={isPending} onClick={() => onDelete(c)}>
+                                    <Trash2 className="h-3 w-3" aria-hidden="true" />
+                                </Button>
+                            </div>
                         </div>
+                        {variant === 'expense' && onUpsertBudget && onDeleteBudget && (
+                            <BudgetInput
+                                categoryName={c.name}
+                                currentBudget={budgets?.find((b) => b.category_name === c.name)?.monthly_amount ?? null}
+                                onSave={onUpsertBudget}
+                                onClear={onDeleteBudget}
+                                isPending={isPending}
+                            />
+                        )}
                     </div>
                 ))}
             </CardContent>
         </Card>
+    )
+}
+
+function BudgetInput({ categoryName, currentBudget, onSave, onClear, isPending }: {
+    categoryName: string
+    currentBudget: number | null
+    onSave: (categoryName: string, amount: number) => void
+    onClear: (categoryName: string) => void
+    isPending: boolean
+}) {
+    const [value, setValue] = useState(currentBudget !== null ? String(currentBudget) : '')
+    const [dirty, setDirty] = useState(false)
+
+    // Sync if parent updates (e.g. after refresh)
+    useState(() => {
+        setValue(currentBudget !== null ? String(currentBudget) : '')
+        setDirty(false)
+    })
+
+    function handleSave() {
+        const num = parseFloat(value.replace(',', '.'))
+        if (!value.trim() || isNaN(num) || num <= 0) {
+            if (currentBudget !== null) {
+                onClear(categoryName)
+                setValue('')
+                setDirty(false)
+            }
+            return
+        }
+        onSave(categoryName, num)
+        setDirty(false)
+    }
+
+    return (
+        <div className="flex items-center gap-2">
+            <Label htmlFor={`budget-${categoryName}`} className="shrink-0 text-xs text-muted-foreground">
+                Presupuesto mensual
+            </Label>
+            <div className="flex flex-1 items-center gap-1">
+                <span className="text-xs text-muted-foreground">$</span>
+                <Input
+                    id={`budget-${categoryName}`}
+                    type="number"
+                    min="1"
+                    step="1"
+                    placeholder="Sin tope"
+                    value={value}
+                    onChange={(e) => { setValue(e.target.value); setDirty(true) }}
+                    onBlur={handleSave}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave() } }}
+                    className="h-7 text-xs"
+                    aria-label={`Presupuesto mensual para ${categoryName}`}
+                    disabled={isPending}
+                />
+                {dirty && value.trim() !== '' && (
+                    <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-income hover:bg-income-subtle"
+                        onClick={handleSave}
+                        aria-label="Guardar presupuesto"
+                        disabled={isPending}
+                    >
+                        <Check className="h-3 w-3" aria-hidden="true" />
+                    </Button>
+                )}
+                {currentBudget !== null && !dirty && (
+                    <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-muted-foreground hover:text-expense"
+                        onClick={() => { onClear(categoryName); setValue(''); setDirty(false) }}
+                        aria-label={`Eliminar presupuesto de ${categoryName}`}
+                        disabled={isPending}
+                    >
+                        <Trash2 className="h-3 w-3" aria-hidden="true" />
+                    </Button>
+                )}
+            </div>
+        </div>
     )
 }
 

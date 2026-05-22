@@ -110,4 +110,41 @@ export async function deleteCategory(id: string) {
     return { error: null }
 }
 
+// ==================== BUDGETS ====================
+
+export async function getBudgets() {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .order('category_name')
+    if (error) return { data: null, error: error.message }
+    return { data, error: null }
+}
+
+export async function upsertBudget(categoryName: string, amount: number) {
+    const supabase = await createClient()
+    const { error } = await supabase
+        .from('budgets')
+        .upsert(
+            { category_name: categoryName, monthly_amount: amount },
+            { onConflict: 'user_id,category_name' }
+        )
+    if (error) return { error: error.message }
+    revalidatePath('/dashboard/configuracion')
+    revalidatePath('/dashboard/ingresos-egresos')
+    return { error: null }
+}
+
+export async function deleteBudget(categoryName: string) {
+    const supabase = await createClient()
+    const { error } = await supabase
+        .from('budgets')
+        .delete()
+        .eq('category_name', categoryName)
+    if (error) return { error: error.message }
+    revalidatePath('/dashboard/configuracion')
+    revalidatePath('/dashboard/ingresos-egresos')
+    return { error: null }
+}
 
