@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Design System reference material — not app source.
+    "design-system/**",
   ]),
 ]);
 
