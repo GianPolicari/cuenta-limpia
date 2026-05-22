@@ -55,10 +55,12 @@ export async function addTransaction(formData: FormData) {
             rowsToInsert.push({
                 amount: installmentAmount,
                 transaction_date: formattedDate,
-                description: `${description} (Cuota ${i + 1}/${installmentsCount})`,
+                description,
                 category: category || null,
                 transaction_type,
                 card_id,
+                cuota_actual: i + 1,
+                total_cuotas: installmentsCount,
             });
         }
 

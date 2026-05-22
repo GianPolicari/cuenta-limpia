@@ -16,7 +16,7 @@ import { Amount } from '@/components/ui/amount'
 import { Badge } from '@/components/ui/badge'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { EmptyState } from '@/components/ui/empty-state'
-import { formatARS } from '@/lib/format'
+import { formatARS, formatCuota } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import {
     ArrowUpRight, ArrowDownRight, Wallet, Plus, Trash2,
@@ -31,7 +31,8 @@ import { getTransactions, addTransaction, updateTransaction, deleteTransaction, 
 type TxRow = {
     id: string; description: string | null; amount: number;
     category: string | null; transaction_type: string | null;
-    transaction_date: string; card_id: string | null
+    transaction_date: string; card_id: string | null;
+    cuota_actual: number | null; total_cuotas: number | null;
 }
 type CatRow = { id: string; name: string }
 type CardRow = { id: string; name: string; card_type: string; color: string | null }
@@ -115,6 +116,8 @@ export default function IngresosEgresosClient({
             transaction_type: formData.get('transaction_type') as string,
             transaction_date: (formData.get('date') as string) || new Date().toISOString().split('T')[0],
             card_id: (formData.get('card_id') as string) === 'none' ? null : (formData.get('card_id') as string),
+            cuota_actual: null,
+            total_cuotas: null,
         }
 
         setTransactions((prev: TxRow[]) => [optimisticTx, ...prev])
@@ -430,7 +433,12 @@ export default function IngresosEgresosClient({
                                     return (
                                         <TableRow key={tx.id} className="hover:bg-muted/50">
                                             <TableCell className="text-muted-foreground">{formatDate(tx.transaction_date)}</TableCell>
-                                            <TableCell className="font-medium text-foreground">{tx.description ?? '—'}</TableCell>
+                                            <TableCell className="font-medium text-foreground">
+                                                <span>{tx.description ?? '—'}</span>
+                                                {formatCuota(tx.cuota_actual, tx.total_cuotas) && (
+                                                    <Badge variant="pending" className="ml-2">{formatCuota(tx.cuota_actual, tx.total_cuotas)}</Badge>
+                                                )}
+                                            </TableCell>
                                             <TableCell>
                                                 {tx.category ? (
                                                     <Badge variant="neutral">{tx.category}</Badge>
