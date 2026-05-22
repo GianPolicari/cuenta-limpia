@@ -248,13 +248,14 @@ export default function IngresosEgresosClient({
     }
 
     const sortedTransactions = useMemo(() => {
-        const q = searchQuery.toLowerCase().trim()
+        const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+        const q = norm(searchQuery.trim())
         const filtered = transactions.filter((t: TxRow) => {
             if (filterType !== 'all' && t.transaction_type !== filterType) return false
             if (!q) return true
             return (
-                (t.description?.toLowerCase().includes(q) ?? false) ||
-                (t.category?.toLowerCase().includes(q) ?? false)
+                (t.description ? norm(t.description).includes(q) : false) ||
+                (t.category ? norm(t.category).includes(q) : false)
             )
         })
         return filtered.sort((a: TxRow, b: TxRow) => {
@@ -621,43 +622,51 @@ export default function IngresosEgresosClient({
             )}
 
             {/* Expenses By Card Chart */}
-            {cardChartData.length > 0 && (
+            {cards.length > 0 && (
                 <div className="mt-8">
                     <h2 className="mb-4 text-xl font-bold text-foreground">Gastos por tarjeta</h2>
-                    <Card className="p-6">
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={cardChartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.3} />
-                                    <XAxis
-                                        dataKey="name"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
-                                        dy={10}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
-                                        tickFormatter={(value) => `$${value.toLocaleString('es-AR')}`}
-                                    />
-                                    <Tooltip
-                                        cursor={{ fill: 'transparent' }}
-                                        contentStyle={{ backgroundColor: 'var(--popover)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--popover-foreground)' }}
-                                        itemStyle={{ color: 'var(--expense)', fontWeight: 'bold' }}
-                                        formatter={(value: number = 0) => [formatARS(value), 'Total gastado']}
-                                        labelStyle={{ color: 'var(--muted-foreground)', marginBottom: '4px' }}
-                                    />
-                                    <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={40}>
-                                        {cardChartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color || 'var(--chart-1)'} />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </Card>
+                    {cardChartData.length === 0 ? (
+                        <EmptyState
+                            icon={CreditCard}
+                            title="Sin gastos con tarjeta este mes"
+                            description="Cuando registrés un gasto asociado a una tarjeta, acá vas a ver el desglose."
+                        />
+                    ) : (
+                        <Card className="p-6">
+                            <div className="h-[300px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={cardChartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.3} />
+                                        <XAxis
+                                            dataKey="name"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                                            dy={10}
+                                        />
+                                        <YAxis
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                                            tickFormatter={(value) => `$${value.toLocaleString('es-AR')}`}
+                                        />
+                                        <Tooltip
+                                            cursor={{ fill: 'transparent' }}
+                                            contentStyle={{ backgroundColor: 'var(--popover)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--popover-foreground)' }}
+                                            itemStyle={{ color: 'var(--expense)', fontWeight: 'bold' }}
+                                            formatter={(value: number = 0) => [formatARS(value), 'Total gastado']}
+                                            labelStyle={{ color: 'var(--muted-foreground)', marginBottom: '4px' }}
+                                        />
+                                        <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={40}>
+                                            {cardChartData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color || 'var(--chart-1)'} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </Card>
+                    )}
                 </div>
             )}
         </div>
