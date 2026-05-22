@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
@@ -44,22 +45,22 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 dark:bg-slate-950">
-            {/* Background gradient effect */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
-                <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-emerald-500/5 blur-3xl" />
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
+            {/* Ambient violet glow */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+                <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
             </div>
 
-            <Card className="relative w-full max-w-md border-slate-200 bg-white/80 shadow-2xl shadow-emerald-500/5 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/80">
+            <Card className="relative w-full max-w-md backdrop-blur-xl">
                 <CardHeader className="space-y-3 text-center">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30">
-                        <ShieldCheck className="h-7 w-7 text-white" />
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7C6BFF] to-[#5B47E0] shadow-brand">
+                        <ShieldCheck className="h-7 w-7 text-white" aria-hidden />
                     </div>
-                    <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
                         Nueva Contraseña
                     </CardTitle>
-                    <CardDescription className="text-slate-500 dark:text-slate-400">
+                    <CardDescription className="text-muted-foreground">
                         Ingresá una nueva contraseña segura para tu cuenta.
                     </CardDescription>
                 </CardHeader>
@@ -67,9 +68,7 @@ export default function ResetPasswordPage() {
                 <CardContent className="space-y-6">
                     <form onSubmit={handleUpdatePassword} className="space-y-4">
                         <div className="space-y-2">
-                            <label htmlFor="newPassword" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                Nueva Contraseña
-                            </label>
+                            <Label htmlFor="newPassword">Nueva Contraseña</Label>
                             <Input
                                 id="newPassword"
                                 name="newPassword"
@@ -80,7 +79,6 @@ export default function ResetPasswordPage() {
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 minLength={6}
                                 disabled={isLoading}
-                                className="border-slate-300 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:placeholder:text-slate-500"
                             />
                         </div>
 
@@ -88,7 +86,7 @@ export default function ResetPasswordPage() {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:from-emerald-400 hover:to-emerald-500 hover:shadow-emerald-500/40"
+                                className="w-full font-semibold shadow-brand"
                             >
                                 {isLoading ? 'Actualizando...' : 'Actualizar contraseña'}
                             </Button>
