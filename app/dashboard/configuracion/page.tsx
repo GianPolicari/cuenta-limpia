@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { signOut } from '@/app/login/actions'
-import { getCards, getCategories } from './actions'
+import { getCards, getCategories, seedDefaultCategories } from './actions'
 import SettingsClient from './SettingsClient'
 
 export default async function ConfiguracionPage() {
@@ -15,6 +15,8 @@ export default async function ConfiguracionPage() {
             createdAt = user.created_at ? new Date(user.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' }) : ''
         }
     } catch { /* */ }
+
+    await seedDefaultCategories()
 
     const [cardsRes, categoriesRes] = await Promise.all([
         getCards(),

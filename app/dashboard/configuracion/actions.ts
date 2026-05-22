@@ -48,6 +48,29 @@ export async function deleteCard(id: string) {
 
 // ==================== CUSTOM CATEGORIES ====================
 
+const DEFAULT_CATEGORIES = [
+    { name: 'Alimentación', type: 'expense' },
+    { name: 'Transporte', type: 'expense' },
+    { name: 'Servicios', type: 'expense' },
+    { name: 'Salud', type: 'expense' },
+    { name: 'Entretenimiento', type: 'expense' },
+    { name: 'Indumentaria', type: 'expense' },
+    { name: 'Educación', type: 'expense' },
+    { name: 'Restaurantes', type: 'expense' },
+    { name: 'Sueldo', type: 'income' },
+    { name: 'Freelance', type: 'income' },
+    { name: 'Otros ingresos', type: 'income' },
+]
+
+export async function seedDefaultCategories() {
+    const supabase = await createClient()
+    const { count } = await supabase
+        .from('custom_categories')
+        .select('*', { count: 'exact', head: true })
+    if ((count ?? 0) > 0) return
+    await supabase.from('custom_categories').insert(DEFAULT_CATEGORIES)
+}
+
 export async function getCategories() {
     const supabase = await createClient()
     const { data, error } = await supabase.from('custom_categories').select('*').order('name')
