@@ -12,6 +12,8 @@ export interface Database {
                     category: string | null
                     transaction_type: string | null
                     card_id: string | null
+                    total_cuotas: number | null
+                    cuota_actual: number | null
                     user_id: string
                 }
                 Insert: {
@@ -22,6 +24,8 @@ export interface Database {
                     category?: string | null
                     transaction_type?: string | null
                     card_id?: string | null
+                    total_cuotas?: number | null
+                    cuota_actual?: number | null
                     user_id?: string
                 }
                 Update: {
@@ -32,6 +36,8 @@ export interface Database {
                     category?: string | null
                     transaction_type?: string | null
                     card_id?: string | null
+                    total_cuotas?: number | null
+                    cuota_actual?: number | null
                     user_id?: string
                 }
                 Relationships: []
