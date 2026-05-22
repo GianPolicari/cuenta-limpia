@@ -20,7 +20,7 @@ import { formatARS, formatCuota } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import {
     ArrowUpRight, ArrowDownRight, Wallet, Plus, Trash2,
-    Pencil, Loader2, Inbox, CreditCard, ArrowUp, ArrowDown, Download
+    Pencil, Loader2, Inbox, CreditCard, ArrowUp, ArrowDown, Download, Search, X
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
@@ -75,6 +75,8 @@ export default function IngresosEgresosClient({
     const [error, setError] = useState<string | null>(null)
     const [dynamicCats, setDynamicCats] = useState<CatRow[]>([])
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: 'fecha', direction: 'desc' })
+    const [searchQuery, setSearchQuery] = useState('')
+    const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
     const now = new Date()
@@ -230,6 +232,8 @@ export default function IngresosEgresosClient({
         setCards((prev) => [...prev, card].sort((a, b) => a.name.localeCompare(b.name)))
     }, [])
 
+    useEffect(() => { setCurrentPage(1) }, [searchQuery, filterType])
+
     const cardName = useCallback((cardId: string | null) => {
         if (!cardId) return null
         return cards.find(c => c.id === cardId)?.name ?? null
@@ -244,7 +248,16 @@ export default function IngresosEgresosClient({
     }
 
     const sortedTransactions = useMemo(() => {
-        return [...transactions].sort((a: TxRow, b: TxRow) => {
+        const q = searchQuery.toLowerCase().trim()
+        const filtered = transactions.filter((t: TxRow) => {
+            if (filterType !== 'all' && t.transaction_type !== filterType) return false
+            if (!q) return true
+            return (
+                (t.description?.toLowerCase().includes(q) ?? false) ||
+                (t.category?.toLowerCase().includes(q) ?? false)
+            )
+        })
+        return filtered.sort((a: TxRow, b: TxRow) => {
             if (!sortConfig) return 0
             const { key, direction } = sortConfig
             const dir = direction === 'asc' ? 1 : -1
@@ -375,6 +388,46 @@ export default function IngresosEgresosClient({
                 </KpiCard>
             </div>
 
+            {/* Search + type filter */}
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                    <Input
+                        placeholder="Buscar por descripción o categoría..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 pr-9"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            aria-label="Limpiar búsqueda"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    )}
+                </div>
+                <div className="flex gap-2">
+                    {(['all', 'income', 'expense'] as const).map((t) => (
+                        <Button
+                            key={t}
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setFilterType(t)}
+                            className={cn(
+                                t === filterType && t === 'all' && 'border-primary/40 bg-primary-subtle text-primary',
+                                t === filterType && t === 'income' && 'border-income/40 bg-income-subtle text-income',
+                                t === filterType && t === 'expense' && 'border-expense/40 bg-expense-subtle text-expense',
+                            )}
+                        >
+                            {t === 'all' ? 'Todos' : t === 'income' ? 'Ingresos' : 'Gastos'}
+                        </Button>
+                    ))}
+                </div>
+            </div>
+
             {/* Add button */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <Button variant="outline" onClick={exportToCSV} className="gap-2">
@@ -430,15 +483,25 @@ export default function IngresosEgresosClient({
                     <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
                     <p className="font-medium text-muted-foreground">Cargando operaciones...</p>
                 </Card>
-            ) : transactions.length === 0 ? (
+            ) : sortedTransactions.length === 0 ? (
                 <EmptyState
                     icon={Inbox}
-                    title="Sin operaciones todavía"
-                    description="Registrá tu primer ingreso o gasto y empezá a ver a dónde va tu plata."
+                    title={transactions.length === 0 ? 'Sin operaciones todavía' : 'Sin resultados'}
+                    description={
+                        transactions.length === 0
+                            ? 'Registrá tu primer ingreso o gasto y empezá a ver a dónde va tu plata.'
+                            : 'Probá con otra búsqueda o cambiá los filtros.'
+                    }
                     action={
-                        <Button className="gap-2 font-semibold" onClick={() => setAddOpen(true)}>
-                            <Plus className="h-4 w-4" /> Nueva operación
-                        </Button>
+                        transactions.length === 0 ? (
+                            <Button className="gap-2 font-semibold" onClick={() => setAddOpen(true)}>
+                                <Plus className="h-4 w-4" /> Nueva operación
+                            </Button>
+                        ) : (
+                            <Button variant="outline" onClick={() => { setSearchQuery(''); setFilterType('all') }}>
+                                Limpiar filtros
+                            </Button>
+                        )
                     }
                 />
             ) : (
