@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useTransition } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { DollarSign, TrendingDown, CreditCard, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -11,54 +11,56 @@ import CategoryChart from '@/components/dashboard/CategoryChart'
 import MonthlyChart from '@/components/dashboard/MonthlyChart'
 import { formatMoney } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { getTransactionsByYear } from '@/app/dashboard/actions'
+
+type TxRow = {
+    id: string
+    amount: number
+    category: string | null
+    transaction_type: string | null
+    transaction_date: string
+}
 
 interface DashboardClientProps {
     dolar: { venta: number; compra: number; variacion: number }
-    dolarMep: number
-    transactions: {
-        id: string
-        amount: number
-        category: string | null
-        transaction_type: string | null
-        transaction_date: string
-    }[]
+    initialYear: number
+    transactions: TxRow[]
 }
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
 export default function DashboardClient({
     dolar,
-    dolarMep,
-    transactions,
+    initialYear,
+    transactions: initialTransactions,
 }: DashboardClientProps) {
     const [showUSD, setShowUSD] = useState(false)
-    const [liveMep, setLiveMep] = useState<number>(dolarMep)
+    const [liveMep, setLiveMep] = useState(dolar.venta > 0 ? dolar.venta : 0)
+    const [transactions, setTransactions] = useState<TxRow[]>(initialTransactions)
+    const [isPending, startTransition] = useTransition()
     const dolarPositive = dolar.variacion >= 0
 
     const now = new Date()
     const [selectedMonth, setSelectedMonth] = useState(String(now.getMonth() + 1))
-    const [selectedYear, setSelectedYear] = useState(String(now.getFullYear()))
-    const years = Array.from({ length: 7 }, (_, i) => String(now.getFullYear() - 2 + i)) // 2024 to 2030 roughly
+    const [selectedYear, setSelectedYear] = useState(String(initialYear))
+    const years = Array.from({ length: 5 }, (_, i) => String(now.getFullYear() - 2 + i))
 
-    // Force client-fetch if server fetch failed (e.g., returned 0 or cached erroneously)
     useEffect(() => {
         if (liveMep <= 0) {
-            const fetchMep = async () => {
-                try {
-                    const res = await fetch('https://dolarapi.com/v1/dolares/bolsa')
-                    if (!res.ok) throw new Error('Bad response')
-                    const text = await res.text()
-                    if (!text) throw new Error('Empty response')
-                    const data = JSON.parse(text)
-                    setLiveMep(data.venta)
-                } catch (error) {
-                    console.error('MEP Fetch fallback:', error)
-                    setLiveMep(1400) // Fallback to safe numeric value so math NEVER breaks
-                }
-            }
-            fetchMep()
+            fetch('https://dolarapi.com/v1/dolares/bolsa')
+                .then(r => r.json())
+                .then(d => setLiveMep(d.venta ?? 1400))
+                .catch(() => setLiveMep(1400))
         }
     }, [liveMep])
+
+    function handleYearChange(year: string) {
+        setSelectedYear(year)
+        startTransition(async () => {
+            const data = await getTransactionsByYear(Number(year))
+            setTransactions(data)
+        })
+    }
 
     const isUsdMep = showUSD
     const mepPrice = liveMep > 0 ? liveMep : 1 // Safe fallback avoiding division by zero
@@ -139,7 +141,7 @@ export default function DashboardClient({
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Select value={selectedYear} onValueChange={setSelectedYear}>
+                        <Select value={selectedYear} onValueChange={handleYearChange} disabled={isPending}>
                             <SelectTrigger className="w-24 border-border bg-card text-sm text-foreground">
                                 <SelectValue />
                             </SelectTrigger>
@@ -222,7 +224,7 @@ export default function DashboardClient({
                     />
                 </KpiCard>
 
-                <KpiCard title="Transacciones" icon={CreditCard} tone="brand" hint="registradas en total">
+                <KpiCard title="Transacciones" icon={CreditCard} tone="brand" hint={`registradas en ${selectedYear}`}>
                     {transactions.length}
                 </KpiCard>
             </div>
