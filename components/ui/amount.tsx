@@ -26,7 +26,7 @@ export function Amount({
   const Icon = kind === "income" ? ArrowUpRight : kind === "expense" ? ArrowDownRight : null
 
   return (
-    <span className={cn("inline-flex items-center gap-1 tabular-nums", color, className)}>
+    <span className={cn("inline-flex items-center gap-1 tabular-nums lining-nums", color, className)}>
       {showIcon && Icon && <Icon className="h-4 w-4" aria-hidden="true" />}
       {showSign && sign}
       {formatted}
