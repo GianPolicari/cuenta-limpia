@@ -29,6 +29,27 @@ export async function createCard(formData: FormData) {
     return { error: null, card: data }
 }
 
+export async function updateCard(id: string, formData: FormData) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
+    const name = (formData.get('name') as string)?.trim()
+    const card_type = (formData.get('card_type') as string)?.trim()
+    const color = ((formData.get('color') as string) || '').trim() || null
+
+    if (!name || !card_type) return { error: 'Completá el nombre y el tipo.' }
+
+    const { error } = await supabase.from('cards')
+        .update({ name, card_type, color })
+        .eq('id', id)
+
+    if (error) return { error: error.message }
+
+    revalidatePath('/dashboard/tarjetas')
+    return { error: null }
+}
+
 export async function deleteCard(id: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

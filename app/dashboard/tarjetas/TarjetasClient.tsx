@@ -18,9 +18,9 @@ import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { formatCuota } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { CreditCard, Plus, Trash2, Loader2 } from 'lucide-react'
+import { CreditCard, Plus, Trash2, Pencil, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { createCard, deleteCard } from './actions'
+import { createCard, updateCard, deleteCard } from './actions'
 
 // ==================== TYPES ====================
 
@@ -55,6 +55,7 @@ function isCredit(cardType: string) {
 export default function TarjetasClient({ initialCards, cuotas }: Props) {
     const [cards, setCards] = useState<CardRow[]>(initialCards)
     const [addOpen, setAddOpen] = useState(false)
+    const [editTarget, setEditTarget] = useState<CardRow | null>(null)
     const [deleteTarget, setDeleteTarget] = useState<CardRow | null>(null)
     const [formError, setFormError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
@@ -90,6 +91,33 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                 prev.map((c) => c.id === tempId ? result.card! : c)
             )
             toast.success('✅ Tarjeta agregada')
+        })
+    }
+
+    function handleEdit(formData: FormData) {
+        if (!editTarget) return
+        const name = (formData.get('name') as string)?.trim()
+        const card_type = (formData.get('card_type') as string)?.trim()
+        const color = ((formData.get('color') as string) || '').trim() || null
+
+        const previousCards = cards
+        setCards((prev) =>
+            prev.map((c) => c.id === editTarget.id ? { ...c, name: name || c.name, card_type: card_type || c.card_type, color } : c)
+                .sort((a, b) => a.name.localeCompare(b.name))
+        )
+        setEditTarget(null)
+        setFormError(null)
+
+        startTransition(async () => {
+            const result = await updateCard(editTarget.id, formData)
+            if (result.error) {
+                setCards(previousCards)
+                setFormError(result.error)
+                setEditTarget(editTarget)
+                toast.error('⚠ No pudimos guardar los cambios. Probá de nuevo.')
+                return
+            }
+            toast.success('✅ Tarjeta actualizada')
         })
     }
 
@@ -168,16 +196,28 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                                             </Badge>
                                         </div>
                                     </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-9 w-9 shrink-0 text-muted-foreground hover:text-expense"
-                                        aria-label={`Eliminar tarjeta ${card.name}`}
-                                        disabled={isPending}
-                                        onClick={() => setDeleteTarget(card)}
-                                    >
-                                        <Trash2 className="h-4 w-4" aria-hidden="true" />
-                                    </Button>
+                                    <div className="flex shrink-0 gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-9 w-9 text-muted-foreground hover:text-info"
+                                            aria-label={`Editar tarjeta ${card.name}`}
+                                            disabled={isPending}
+                                            onClick={() => { setFormError(null); setEditTarget(card) }}
+                                        >
+                                            <Pencil className="h-4 w-4" aria-hidden="true" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-9 w-9 text-muted-foreground hover:text-expense"
+                                            aria-label={`Eliminar tarjeta ${card.name}`}
+                                            disabled={isPending}
+                                            onClick={() => setDeleteTarget(card)}
+                                        >
+                                            <Trash2 className="h-4 w-4" aria-hidden="true" />
+                                        </Button>
+                                    </div>
                                 </CardHeader>
                                 <CardContent>
                                     {cardCuotas.length === 0 ? (
@@ -230,6 +270,24 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                 </DialogContent>
             </Dialog>
 
+            {/* Edit card dialog */}
+            <Dialog open={!!editTarget} onOpenChange={(o) => { if (!o) { setEditTarget(null); setFormError(null) } }}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Editar tarjeta</DialogTitle>
+                        <DialogDescription>Modificá los datos de la tarjeta.</DialogDescription>
+                    </DialogHeader>
+                    {formError && (
+                        <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">
+                            {formError}
+                        </div>
+                    )}
+                    {editTarget && (
+                        <CardForm onSubmit={handleEdit} isPending={isPending} onCancel={() => { setEditTarget(null); setFormError(null) }} defaults={editTarget} />
+                    )}
+                </DialogContent>
+            </Dialog>
+
             {/* Delete confirmation */}
             <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
                 <DialogContent className="sm:max-w-md">
@@ -258,12 +316,13 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
 
 // ==================== CARD FORM ====================
 
-function CardForm({ onSubmit, isPending, onCancel }: {
+function CardForm({ onSubmit, isPending, onCancel, defaults }: {
     onSubmit: (fd: FormData) => void
     isPending: boolean
     onCancel: () => void
+    defaults?: CardRow
 }) {
-    const [cardType, setCardType] = useState('Crédito')
+    const [cardType, setCardType] = useState(defaults?.card_type ?? 'Crédito')
 
     return (
         <form
@@ -275,7 +334,7 @@ function CardForm({ onSubmit, isPending, onCancel }: {
         >
             <div className="space-y-2">
                 <Label htmlFor="card-name">Nombre</Label>
-                <Input id="card-name" name="name" placeholder="Ej: Visa Galicia" required />
+                <Input id="card-name" name="name" placeholder="Ej: Visa Galicia" required defaultValue={defaults?.name ?? ''} />
             </div>
             <div className="space-y-2">
                 <Label htmlFor="card-type">Tipo</Label>
@@ -291,7 +350,7 @@ function CardForm({ onSubmit, isPending, onCancel }: {
             </div>
             <div className="space-y-2">
                 <Label htmlFor="card-color">Color (opcional)</Label>
-                <Input id="card-color" name="color" type="color" defaultValue="#5B47E0" className="h-10 w-16 p-1" />
+                <Input id="card-color" name="color" type="color" defaultValue={defaults?.color ?? '#5B47E0'} className="h-10 w-16 p-1" />
             </div>
             <DialogFooter className="pt-2">
                 <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
