@@ -12,8 +12,14 @@ import {
     Dialog, DialogContent, DialogDescription, DialogFooter,
     DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog'
+import { Amount } from '@/components/ui/amount'
+import { Badge } from '@/components/ui/badge'
+import { KpiCard } from '@/components/ui/kpi-card'
+import { EmptyState } from '@/components/ui/empty-state'
+import { formatARS } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import {
-    ArrowUpRight, ArrowDownRight, ArrowLeftRight, Plus, Trash2,
+    ArrowUpRight, ArrowDownRight, Wallet, Plus, Trash2,
     Pencil, Loader2, Inbox, CreditCard, ArrowUp, ArrowDown, Download
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -31,10 +37,6 @@ type CatRow = { id: string; name: string }
 type CardRow = { id: string; name: string; card_type: string; color: string | null }
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-
-function formatARS(v: number) {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(v)
-}
 
 function formatDate(d: string) {
     return new Date(d + 'T00:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -64,6 +66,7 @@ export default function IngresosEgresosClient({
     const [year, setYear] = useState(String(initialYear))
     const [addOpen, setAddOpen] = useState(false)
     const [editTx, setEditTx] = useState<TxRow | null>(null)
+    const [deleteTx, setDeleteTx] = useState<TxRow | null>(null)
     const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
@@ -122,7 +125,7 @@ export default function IngresosEgresosClient({
             if (result.error) {
                 setTransactions(previousTransactions)
                 setError(result.error)
-                toast.error("Error al añadir", { description: "Revirtiendo cambios... " + result.error })
+                toast.error("⚠ No pudimos guardar la operación. Probá de nuevo.")
                 setAddOpen(true)
                 return
             }
@@ -155,12 +158,12 @@ export default function IngresosEgresosClient({
             if (result.error) {
                 setTransactions(previousTransactions)
                 setError(result.error)
-                toast.error("Error al actualizar", { description: "Revirtiendo cambios... " + result.error })
+                toast.error("⚠ No pudimos guardar la operación. Probá de nuevo.")
                 setEditTx(editTx)
                 return
             }
             setError(null)
-            toast.success("✅ Operación actualizada")
+            toast.success("✅ Operación guardada")
             const res = await getTransactions(Number(month), Number(year))
             if (res.data) setTransactions(res.data)
         })
@@ -169,16 +172,17 @@ export default function IngresosEgresosClient({
     function handleDelete(id: string) {
         const previousTransactions = [...transactions]
         setTransactions((prev: TxRow[]) => prev.filter((t: TxRow) => t.id !== id))
+        setDeleteTx(null)
 
         startTransition(async () => {
             try {
                 await deleteTransaction(id)
-                toast.success("🗑️ Eliminado correctamente")
+                toast.success("✅ Operación eliminada")
                 const res = await getTransactions(Number(month), Number(year))
                 if (res.data) setTransactions(res.data)
             } catch {
                 setTransactions(previousTransactions)
-                toast.error("Error al eliminar", { description: "Revirtiendo cambios..." })
+                toast.error("⚠ No pudimos eliminar la operación. Probá de nuevo.")
             }
         })
     }
@@ -264,7 +268,7 @@ export default function IngresosEgresosClient({
         link.click()
         document.body.removeChild(link)
 
-        toast.success("Exportado a CSV exitosamente")
+        toast.success("✅ Exportado a CSV")
     }
 
     const cardChartData = useMemo(() => {
@@ -272,7 +276,7 @@ export default function IngresosEgresosClient({
         const cardGrouped = cardExpensesTable.reduce((acc: Record<string, { amount: number, color: string }>, t: TxRow) => {
             const c = cards.find(card => card.id === t.card_id)
             const cName = c?.name || 'Eliminada'
-            const cColor = c?.color || '#94a3b8'
+            const cColor = c?.color || 'var(--chart-1)'
             if (!acc[cName]) acc[cName] = { amount: 0, color: cColor }
             acc[cName].amount += t.amount
             return acc
@@ -288,28 +292,28 @@ export default function IngresosEgresosClient({
             {/* Header */}
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white lg:text-3xl">
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
                         Ingresos & Egresos
                     </h1>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                        Registro mensual de operaciones
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Lo que entró y salió este mes
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Select value={month} onValueChange={setMonth}>
-                        <SelectTrigger className="w-36 border-slate-300 bg-white text-sm dark:border-slate-700 dark:bg-slate-800/50 dark:text-white">
+                        <SelectTrigger className="w-36 text-sm">
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-                            {MONTHS.map((m, i) => <SelectItem key={i} value={String(i)} className="dark:focus:bg-slate-700">{m}</SelectItem>)}
+                        <SelectContent>
+                            {MONTHS.map((m, i) => <SelectItem key={i} value={String(i)}>{m}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <Select value={year} onValueChange={setYear}>
-                        <SelectTrigger className="w-24 border-slate-300 bg-white text-sm dark:border-slate-700 dark:bg-slate-800/50 dark:text-white">
+                        <SelectTrigger className="w-24 text-sm">
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-                            {years.map(y => <SelectItem key={y} value={y} className="dark:focus:bg-slate-700">{y}</SelectItem>)}
+                        <SelectContent>
+                            {years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -317,43 +321,34 @@ export default function IngresosEgresosClient({
 
             {/* KPI Cards */}
             <div className="mb-6 grid gap-4 sm:grid-cols-3">
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
-                    <CardContent className="flex items-center gap-3 py-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10"><ArrowUpRight className="h-5 w-5 text-emerald-500" /></div>
-                        <div><p className="text-xs text-slate-500 dark:text-slate-400">Ingresos Totales</p><p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{formatARS(totalIncome)}</p></div>
-                    </CardContent>
-                </Card>
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
-                    <CardContent className="flex items-center gap-3 py-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/10"><ArrowDownRight className="h-5 w-5 text-red-500" /></div>
-                        <div><p className="text-xs text-slate-500 dark:text-slate-400">Gastos Totales</p><p className="text-lg font-bold text-red-600 dark:text-red-400">{formatARS(totalExpense)}</p></div>
-                    </CardContent>
-                </Card>
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
-                    <CardContent className="flex items-center gap-3 py-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10"><ArrowLeftRight className="h-5 w-5 text-blue-500" /></div>
-                        <div><p className="text-xs text-slate-500 dark:text-slate-400">Balance</p><p className={`text-lg font-bold ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>{formatARS(balance)}</p></div>
-                    </CardContent>
-                </Card>
+                <KpiCard title="Ingresos del mes" icon={ArrowUpRight} tone="income">
+                    <Amount value={totalIncome} kind="income" />
+                </KpiCard>
+                <KpiCard title="Gastos del mes" icon={ArrowDownRight} tone="expense">
+                    <Amount value={totalExpense} kind="expense" />
+                </KpiCard>
+                <KpiCard title="Balance" icon={Wallet} tone={balance >= 0 ? 'income' : 'expense'}>
+                    <Amount value={balance} kind={balance >= 0 ? 'income' : 'expense'} showIcon={false} />
+                </KpiCard>
             </div>
 
             {/* Add button */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
-                <Button variant="outline" onClick={exportToCSV} className="gap-2 border-slate-300 text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                <Button variant="outline" onClick={exportToCSV} className="gap-2">
                     <Download className="h-4 w-4" /> Exportar CSV
                 </Button>
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
-                        <Button className="gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 font-semibold text-white shadow-lg shadow-emerald-500/25">
-                            <Plus className="h-4 w-4" /> Nueva Operación
+                        <Button className="gap-2 font-semibold">
+                            <Plus className="h-4 w-4" /> Nueva operación
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 sm:max-w-md">
+                    <DialogContent className="sm:max-w-md">
                         <DialogHeader>
-                            <DialogTitle className="text-slate-900 dark:text-white">Nueva Operación</DialogTitle>
-                            <DialogDescription className="text-slate-500 dark:text-slate-400">Registrá un ingreso o egreso.</DialogDescription>
+                            <DialogTitle>Nueva operación</DialogTitle>
+                            <DialogDescription>Registrá un ingreso o gasto.</DialogDescription>
                         </DialogHeader>
-                        {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-center text-sm text-red-600 dark:text-red-400">{error}</div>}
+                        {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
                         <TxForm onSubmit={handleAdd} isPending={isPending} onCancel={() => setAddOpen(false)} cards={cards} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} />
                     </DialogContent>
                 </Dialog>
@@ -361,50 +356,71 @@ export default function IngresosEgresosClient({
 
             {/* Edit Dialog */}
             <Dialog open={!!editTx} onOpenChange={o => !o && setEditTx(null)}>
-                <DialogContent className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 sm:max-w-md">
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-slate-900 dark:text-white">Editar Operación</DialogTitle>
+                        <DialogTitle>Editar operación</DialogTitle>
                     </DialogHeader>
-                    {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-center text-sm text-red-600 dark:text-red-400">{error}</div>}
+                    {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
                     {editTx && <TxForm onSubmit={handleEdit} isPending={isPending} onCancel={() => setEditTx(null)} cards={cards} defaults={editTx} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} />}
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete confirmation */}
+            <Dialog open={!!deleteTx} onOpenChange={o => !o && setDeleteTx(null)}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>¿Eliminar este gasto?</DialogTitle>
+                        <DialogDescription>No se puede deshacer.</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="pt-2">
+                        <Button type="button" variant="outline" onClick={() => setDeleteTx(null)}>Cancelar</Button>
+                        <Button type="button" variant="destructive" disabled={isPending} onClick={() => deleteTx && handleDelete(deleteTx.id)}>
+                            <Trash2 className="h-4 w-4" /> Eliminar
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Table */}
             {isLoadingTransactions ? (
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60 p-20 flex flex-col items-center justify-center min-h-[400px]">
-                    <Loader2 className="h-10 w-10 animate-spin text-emerald-500 mb-4" />
-                    <p className="text-slate-500 dark:text-slate-400 font-medium">Cargando operaciones...</p>
+                <Card className="flex min-h-[400px] flex-col items-center justify-center p-20">
+                    <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
+                    <p className="font-medium text-muted-foreground">Cargando operaciones...</p>
                 </Card>
             ) : transactions.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white/60 py-20 dark:border-slate-800 dark:bg-slate-900/60">
-                    <Inbox className="mb-4 h-12 w-12 text-slate-400 dark:text-slate-600" />
-                    <h3 className="text-lg font-semibold text-slate-500 dark:text-slate-400">Sin operaciones</h3>
-                    <p className="mt-1 text-sm text-slate-400 dark:text-slate-500">No hay registros para {MONTHS[Number(month)]} {year}.</p>
-                </div>
+                <EmptyState
+                    icon={Inbox}
+                    title="Sin operaciones todavía"
+                    description="Registrá tu primer ingreso o gasto y empezá a ver a dónde va tu plata."
+                    action={
+                        <Button className="gap-2 font-semibold" onClick={() => setAddOpen(true)}>
+                            <Plus className="h-4 w-4" /> Nueva operación
+                        </Button>
+                    }
+                />
             ) : (
-                <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60">
+                <Card>
                     <CardContent className="p-0">
                         <Table>
                             <TableHeader>
-                                <TableRow className="border-slate-200 dark:border-slate-800">
-                                    <TableHead className="text-slate-500 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onClick={() => handleSort('fecha')}>
+                                <TableRow>
+                                    <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('fecha')}>
                                         Fecha {renderSortArrow('fecha')}
                                     </TableHead>
-                                    <TableHead className="text-slate-500 dark:text-slate-400">Descripción</TableHead>
-                                    <TableHead className="text-slate-500 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onClick={() => handleSort('categoria')}>
+                                    <TableHead className="text-muted-foreground">Descripción</TableHead>
+                                    <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('categoria')}>
                                         Categoría {renderSortArrow('categoria')}
                                     </TableHead>
-                                    <TableHead className="text-slate-500 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onClick={() => handleSort('tarjeta')}>
+                                    <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('tarjeta')}>
                                         Tarjeta {renderSortArrow('tarjeta')}
                                     </TableHead>
-                                    <TableHead className="text-slate-500 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onClick={() => handleSort('tipo')}>
+                                    <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('tipo')}>
                                         Tipo {renderSortArrow('tipo')}
                                     </TableHead>
-                                    <TableHead className="text-right text-slate-500 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onClick={() => handleSort('monto')}>
+                                    <TableHead className="cursor-pointer text-right text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('monto')}>
                                         Monto {renderSortArrow('monto')}
                                     </TableHead>
-                                    <TableHead className="w-20 text-slate-500 dark:text-slate-400"></TableHead>
+                                    <TableHead className="w-20 text-muted-foreground"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -412,40 +428,46 @@ export default function IngresosEgresosClient({
                                     const isIncome = tx.transaction_type === 'income'
                                     const linkedCard = cardName(tx.card_id)
                                     return (
-                                        <TableRow key={tx.id} className="border-slate-100 hover:bg-slate-50 dark:border-slate-800/50 dark:hover:bg-slate-800/30">
-                                            <TableCell className="text-slate-600 dark:text-slate-300">{formatDate(tx.transaction_date)}</TableCell>
-                                            <TableCell className="font-medium text-slate-900 dark:text-white">{tx.description ?? '—'}</TableCell>
+                                        <TableRow key={tx.id} className="hover:bg-muted/50">
+                                            <TableCell className="text-muted-foreground">{formatDate(tx.transaction_date)}</TableCell>
+                                            <TableCell className="font-medium text-foreground">{tx.description ?? '—'}</TableCell>
                                             <TableCell>
                                                 {tx.category ? (
-                                                    <span className="inline-flex rounded-md bg-slate-500/10 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">{tx.category}</span>
+                                                    <Badge variant="neutral">{tx.category}</Badge>
                                                 ) : '—'}
                                             </TableCell>
                                             <TableCell>
                                                 {linkedCard ? (
-                                                    <span className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                                                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                         <CreditCard className="h-3 w-3" /> {linkedCard}
                                                     </span>
                                                 ) : tx.card_id ? (
-                                                    <span className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                                                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                         <CreditCard className="h-3 w-3" /> Eliminada
                                                     </span>
-                                                ) : <span className="text-slate-400">—</span>}
+                                                ) : <span className="text-muted-foreground">—</span>}
                                             </TableCell>
                                             <TableCell>
-                                                {isIncome
-                                                    ? <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400"><ArrowUpRight className="h-3 w-3" />Ingreso</span>
-                                                    : <span className="flex items-center gap-1 text-red-600 dark:text-red-400"><ArrowDownRight className="h-3 w-3" />Gasto</span>
-                                                }
+                                                <Badge variant={isIncome ? 'income' : 'expense'}>
+                                                    {isIncome
+                                                        ? <><ArrowUpRight className="h-3 w-3" /> Ingreso</>
+                                                        : <><ArrowDownRight className="h-3 w-3" /> Gasto</>}
+                                                </Badge>
                                             </TableCell>
-                                            <TableCell className={`text-right font-semibold ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                {isIncome ? '+' : '-'}{formatARS(tx.amount)}
+                                            <TableCell className="text-right">
+                                                <Amount
+                                                    value={tx.amount}
+                                                    kind={isIncome ? 'income' : 'expense'}
+                                                    showIcon={false}
+                                                    className="justify-end text-sm font-semibold"
+                                                />
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex gap-1">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-500" onClick={() => { fetchCategoriesForType(tx.transaction_type ?? 'expense'); setEditTx(tx) }}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-info" aria-label="Editar operación" onClick={() => { fetchCategoriesForType(tx.transaction_type ?? 'expense'); setEditTx(tx) }}>
                                                         <Pencil className="h-3.5 w-3.5" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500" disabled={isPending} onClick={() => handleDelete(tx.id)}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-expense" aria-label="Eliminar operación" disabled={isPending} onClick={() => setDeleteTx(tx)}>
                                                         <Trash2 className="h-3.5 w-3.5" />
                                                     </Button>
                                                 </div>
@@ -461,7 +483,7 @@ export default function IngresosEgresosClient({
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-                <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
+                <div className="mt-4 flex flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
                     <p>
                         Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, sortedTransactions.length)} de {sortedTransactions.length} operaciones
                     </p>
@@ -471,7 +493,6 @@ export default function IngresosEgresosClient({
                             size="sm"
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                            className="bg-white dark:bg-slate-800 dark:border-slate-700"
                         >
                             Anterior
                         </Button>
@@ -480,7 +501,6 @@ export default function IngresosEgresosClient({
                             size="sm"
                             disabled={currentPage === totalPages}
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                            className="bg-white dark:bg-slate-800 dark:border-slate-700"
                         >
                             Siguiente
                         </Button>
@@ -491,35 +511,35 @@ export default function IngresosEgresosClient({
             {/* Expenses By Card Chart */}
             {cardChartData.length > 0 && (
                 <div className="mt-8">
-                    <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">Gastos Totales por Tarjetas</h2>
-                    <Card className="border-slate-200 bg-white/60 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60 p-6">
+                    <h2 className="mb-4 text-xl font-bold text-foreground">Gastos por tarjeta</h2>
+                    <Card className="p-6">
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={cardChartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.2} />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.3} />
                                     <XAxis
                                         dataKey="name"
                                         axisLine={false}
                                         tickLine={false}
-                                        tick={{ fill: '#64748b', fontSize: 12 }}
+                                        tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
                                         dy={10}
                                     />
                                     <YAxis
                                         axisLine={false}
                                         tickLine={false}
-                                        tick={{ fill: '#64748b', fontSize: 12 }}
+                                        tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
                                         tickFormatter={(value) => `$${value.toLocaleString('es-AR')}`}
                                     />
                                     <Tooltip
                                         cursor={{ fill: 'transparent' }}
-                                        contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
-                                        itemStyle={{ color: '#ec4899', fontWeight: 'bold' }}
-                                        formatter={(value: number = 0) => [formatARS(value), 'Total Gasto']}
-                                        labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
+                                        contentStyle={{ backgroundColor: 'var(--popover)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--popover-foreground)' }}
+                                        itemStyle={{ color: 'var(--expense)', fontWeight: 'bold' }}
+                                        formatter={(value: number = 0) => [formatARS(value), 'Total gastado']}
+                                        labelStyle={{ color: 'var(--muted-foreground)', marginBottom: '4px' }}
                                     />
-                                    <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
+                                    <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={40}>
                                         {cardChartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color || '#ec4899'} />
+                                            <Cell key={`cell-${index}`} fill={entry.color || 'var(--chart-1)'} />
                                         ))}
                                     </Bar>
                                 </BarChart>
@@ -558,84 +578,84 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
             onSubmit(fd)
         }} className="space-y-4">
             <div className="space-y-2">
-                <Label className="text-slate-700 dark:text-slate-300">Descripción</Label>
-                <Input name="description" placeholder="Ej: Compra en Carrefour" required defaultValue={defaults?.description ?? ''} className="border-slate-300 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white" />
+                <Label>Descripción</Label>
+                <Input name="description" placeholder="Ej: Compra en Carrefour" required defaultValue={defaults?.description ?? ''} />
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300">Monto</Label>
-                    <Input name="amount" type="number" step="0.01" min="0" placeholder="0.00" required defaultValue={defaults?.amount ?? ''} className="border-slate-300 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white" />
+                    <Label>Monto</Label>
+                    <Input name="amount" type="number" step="0.01" min="0" placeholder="0.00" required defaultValue={defaults?.amount ?? ''} />
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300">Fecha</Label>
-                    <Input name="date" type="date" required defaultValue={defaults?.transaction_date ?? new Date().toISOString().split('T')[0]} className="border-slate-300 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:[color-scheme:dark]" />
+                    <Label>Fecha</Label>
+                    <Input name="date" type="date" required defaultValue={defaults?.transaction_date ?? new Date().toISOString().split('T')[0]} className="dark:[color-scheme:dark]" />
                 </div>
             </div>
             <div className="space-y-2">
-                <Label className="text-slate-700 dark:text-slate-300">Tipo</Label>
+                <Label>Tipo</Label>
                 <div className="flex gap-2">
-                    <Button type="button" variant={txType === 'expense' ? 'default' : 'outline'} onClick={() => setTxType('expense')}
-                        className={txType === 'expense' ? 'flex-1 bg-red-500/20 text-red-600 hover:bg-red-500/30 dark:text-red-400' : 'flex-1 border-slate-300 text-slate-500 dark:border-slate-700 dark:text-slate-400'}>
+                    <Button type="button" variant="outline" onClick={() => setTxType('expense')}
+                        className={cn('flex-1', txType === 'expense' && 'border-expense/40 bg-expense-subtle text-expense hover:bg-expense-subtle')}>
                         Gasto
                     </Button>
-                    <Button type="button" variant={txType === 'income' ? 'default' : 'outline'} onClick={() => setTxType('income')}
-                        className={txType === 'income' ? 'flex-1 bg-emerald-500/20 text-emerald-600 hover:bg-emerald-500/30 dark:text-emerald-400' : 'flex-1 border-slate-300 text-slate-500 dark:border-slate-700 dark:text-slate-400'}>
+                    <Button type="button" variant="outline" onClick={() => setTxType('income')}
+                        className={cn('flex-1', txType === 'income' && 'border-income/40 bg-income-subtle text-income hover:bg-income-subtle')}>
                         Ingreso
                     </Button>
                 </div>
             </div>
             <div className="space-y-2">
-                <Label className="text-slate-700 dark:text-slate-300">Categoría</Label>
+                <Label>Categoría</Label>
                 <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"><SelectValue placeholder="Seleccionar categoría" /></SelectTrigger>
-                    <SelectContent className="border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                    <SelectTrigger><SelectValue placeholder="Seleccionar categoría" /></SelectTrigger>
+                    <SelectContent>
                         {dynamicCats.length > 0
-                            ? dynamicCats.map(c => <SelectItem key={c.id} value={c.name} className="dark:focus:bg-slate-700">{c.name}</SelectItem>)
-                            : <SelectItem value="_empty" disabled className="text-slate-400">Sin categorías — creá una en Configuración</SelectItem>
+                            ? dynamicCats.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)
+                            : <SelectItem value="_empty" disabled className="text-muted-foreground">Sin categorías — creá una en Configuración</SelectItem>
                         }
                     </SelectContent>
                 </Select>
             </div>
             <div className="space-y-2">
-                <Label className="text-slate-700 dark:text-slate-300">Tarjeta (opcional)</Label>
+                <Label>Tarjeta (opcional)</Label>
                 <Select value={cardId} onValueChange={setCardId}>
-                    <SelectTrigger className="border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"><SelectValue placeholder="Sin tarjeta" /></SelectTrigger>
-                    <SelectContent className="border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-                        <SelectItem value="none" className="dark:focus:bg-slate-700">Sin tarjeta</SelectItem>
-                        {cards.map(c => <SelectItem key={c.id} value={c.id} className="dark:focus:bg-slate-700">{c.name} ({c.card_type})</SelectItem>)}
+                    <SelectTrigger><SelectValue placeholder="Sin tarjeta" /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="none">Sin tarjeta</SelectItem>
+                        {cards.map(c => <SelectItem key={c.id} value={c.id}>{c.name} ({c.card_type})</SelectItem>)}
                     </SelectContent>
                 </Select>
             </div>
             {txType === 'expense' && !defaults && (
-                <div className="space-y-4 rounded-lg border border-slate-200 dark:border-slate-800 p-4 bg-slate-50 dark:bg-slate-800/20">
+                <div className="space-y-4 rounded-lg border border-border bg-secondary p-4">
                     <div className="flex items-center space-x-2">
                         <input
                             type="checkbox"
                             id="isInstallment"
                             checked={isInstallment}
                             onChange={(e) => setIsInstallment(e.target.checked)}
-                            className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                            className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
                         />
-                        <Label htmlFor="isInstallment" className="text-slate-700 dark:text-slate-300 cursor-pointer">¿Es un pago en cuotas?</Label>
+                        <Label htmlFor="isInstallment" className="cursor-pointer">¿Es un pago en cuotas?</Label>
                     </div>
                     {isInstallment && (
-                        <div className="space-y-2 mt-3 block">
-                            <Label className="text-slate-700 dark:text-slate-300">Cantidad de cuotas</Label>
+                        <div className="mt-3 block space-y-2">
+                            <Label>Cantidad de cuotas</Label>
                             <Input
                                 type="number"
                                 min="2"
                                 max="24"
                                 value={installmentsCount}
                                 onChange={(e) => setInstallmentsCount(Number(e.target.value))}
-                                className="border-slate-300 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-white w-full"
+                                className="w-full"
                             />
                         </div>
                     )}
                 </div>
             )}
             <DialogFooter className="pt-2">
-                <Button type="button" variant="outline" onClick={onCancel} className="border-slate-300 text-slate-500 dark:border-slate-700 dark:text-slate-400">Cancelar</Button>
-                <Button type="submit" disabled={isPending} className="bg-gradient-to-r from-emerald-500 to-emerald-600 font-semibold text-white">
+                <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+                <Button type="submit" disabled={isPending} className="font-semibold">
                     {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando...</> : 'Guardar'}
                 </Button>
             </DialogFooter>
