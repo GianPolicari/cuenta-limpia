@@ -299,7 +299,7 @@ export default function IngresosEgresosClient({
             return
         }
 
-        const headers = ["Fecha", "Descripción", "Categoría", "Tarjeta", "Tipo", "Monto"]
+        const headers = ["Fecha", "Descripción", "Categoría", "Tarjeta", "Tipo", "Monto", "Cuota"]
         const csvRows = [headers.join(",")]
 
         sortedTransactions.forEach((tx: TxRow) => {
@@ -310,7 +310,8 @@ export default function IngresosEgresosClient({
             const tarjeta = cardName(tx.card_id) || (tx.card_id ? "Eliminada" : "—")
             const tipo = tx.transaction_type === 'income' ? 'Ingreso' : 'Gasto'
             const monto = tx.amount
-            csvRows.push(`${fecha},${desc},${cat},${tarjeta},${tipo},${monto}`)
+            const cuota = formatCuota(tx.cuota_actual, tx.total_cuotas) || "—"
+            csvRows.push(`${fecha},${desc},${cat},${tarjeta},${tipo},${monto},${cuota}`)
         })
 
         const csvString = csvRows.join("\n")
