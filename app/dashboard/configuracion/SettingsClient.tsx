@@ -299,11 +299,11 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex gap-1">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-info" aria-label={`Editar ${c.name}`} onClick={() => setEditCard(c)}>
-                                                    <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                                                <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-info" aria-label={`Editar ${c.name}`} onClick={() => setEditCard(c)}>
+                                                    <Pencil className="h-4 w-4" aria-hidden="true" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-expense" aria-label={`Eliminar ${c.name}`} disabled={isPending} onClick={() => setDeleteTarget(c)}>
-                                                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                                                <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-expense" aria-label={`Eliminar ${c.name}`} disabled={isPending} onClick={() => setDeleteTarget(c)}>
+                                                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -331,14 +331,14 @@ function CardForm({ onSubmit, isPending, onCancel, defaults }: {
             onSubmit(fd)
         }} className="space-y-4">
             <div className="space-y-2">
-                <Label>Nombre</Label>
-                <Input name="name" placeholder="Ej: Visa Galicia" required defaultValue={defaults?.name ?? ''} />
+                <Label htmlFor="card-name">Nombre</Label>
+                <Input id="card-name" name="name" placeholder="Ej: Visa Galicia" required defaultValue={defaults?.name ?? ''} />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                    <Label>Tipo</Label>
+                    <Label htmlFor="card-type">Tipo</Label>
                     <Select value={cardType} onValueChange={setCardType}>
-                        <SelectTrigger><SelectValue placeholder="Seleccioná" /></SelectTrigger>
+                        <SelectTrigger id="card-type"><SelectValue placeholder="Seleccioná" /></SelectTrigger>
                         <SelectContent>
                             {CARD_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                         </SelectContent>
@@ -547,11 +547,11 @@ function CategoryGroup({ title, items, variant, onEdit, onDelete, isPending, bud
                         <div className="flex items-center justify-between">
                             <Badge variant={variant}>{c.name}</Badge>
                             <div className="flex gap-1">
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-info" aria-label={`Editar ${c.name}`} onClick={() => onEdit(c)}>
-                                    <Pencil className="h-3 w-3" aria-hidden="true" />
+                                <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-info" aria-label={`Editar ${c.name}`} onClick={() => onEdit(c)}>
+                                    <Pencil className="h-4 w-4" aria-hidden="true" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-expense" aria-label={`Eliminar ${c.name}`} disabled={isPending} onClick={() => onDelete(c)}>
-                                    <Trash2 className="h-3 w-3" aria-hidden="true" />
+                                <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-expense" aria-label={`Eliminar ${c.name}`} disabled={isPending} onClick={() => onDelete(c)}>
+                                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                                 </Button>
                             </div>
                         </div>
@@ -627,12 +627,12 @@ function BudgetInput({ categoryName, currentBudget, onSave, onClear, isPending }
                         type="button"
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7 text-income hover:bg-income-subtle"
+                        className="h-11 w-11 text-income hover:bg-income-subtle"
                         onClick={handleSave}
                         aria-label="Guardar presupuesto"
                         disabled={isPending}
                     >
-                        <Check className="h-3 w-3" aria-hidden="true" />
+                        <Check className="h-4 w-4" aria-hidden="true" />
                     </Button>
                 )}
                 {currentBudget !== null && !dirty && (
@@ -640,12 +640,12 @@ function BudgetInput({ categoryName, currentBudget, onSave, onClear, isPending }
                         type="button"
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7 text-muted-foreground hover:text-expense"
+                        className="h-11 w-11 text-muted-foreground hover:text-expense"
                         onClick={() => { onClear(categoryName); setValue(''); setDirty(false) }}
                         aria-label={`Eliminar presupuesto de ${categoryName}`}
                         disabled={isPending}
                     >
-                        <Trash2 className="h-3 w-3" aria-hidden="true" />
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </Button>
                 )}
             </div>
@@ -660,13 +660,13 @@ function CategoryForm({ onSubmit, isPending, onCancel, defaults }: {
     return (
         <form action={(fd) => { fd.set('type', catType); onSubmit(fd) }} className="space-y-4">
             <div className="space-y-2">
-                <Label>Nombre</Label>
-                <Input name="name" placeholder="Ej: Gimnasio" required defaultValue={defaults?.name ?? ''} />
+                <Label htmlFor="cat-name">Nombre</Label>
+                <Input id="cat-name" name="name" placeholder="Ej: Gimnasio" required defaultValue={defaults?.name ?? ''} />
             </div>
             <div className="space-y-2">
-                <Label>Tipo</Label>
+                <Label htmlFor="cat-type">Tipo</Label>
                 <Select value={catType} onValueChange={setCatType}>
-                    <SelectTrigger><SelectValue placeholder="Gasto o ingreso" /></SelectTrigger>
+                    <SelectTrigger id="cat-type"><SelectValue placeholder="Gasto o ingreso" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="expense">Gasto</SelectItem>
                         <SelectItem value="income">Ingreso</SelectItem>
@@ -935,21 +935,21 @@ function RecurrentesTab({
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 text-muted-foreground hover:text-info"
+                                                    className="h-11 w-11 text-muted-foreground hover:text-info"
                                                     aria-label={`Editar ${r.description}`}
                                                     onClick={() => setEditRec(r)}
                                                 >
-                                                    <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                                                    <Pencil className="h-4 w-4" aria-hidden="true" />
                                                 </Button>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 text-muted-foreground hover:text-expense"
+                                                    className="h-11 w-11 text-muted-foreground hover:text-expense"
                                                     aria-label={`Eliminar ${r.description}`}
                                                     disabled={isPending}
                                                     onClick={() => setDeleteTarget(r)}
                                                 >
-                                                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                                                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -1039,6 +1039,7 @@ function RecurringForm({
                         type="button"
                         variant="outline"
                         onClick={() => setTxType('expense')}
+                        aria-pressed={txType === 'expense'}
                         className={cn(
                             'flex-1',
                             txType === 'expense' && 'border-expense/40 bg-expense-subtle text-expense hover:bg-expense-subtle'
@@ -1050,6 +1051,7 @@ function RecurringForm({
                         type="button"
                         variant="outline"
                         onClick={() => setTxType('income')}
+                        aria-pressed={txType === 'income'}
                         className={cn(
                             'flex-1',
                             txType === 'income' && 'border-income/40 bg-income-subtle text-income hover:bg-income-subtle'
@@ -1072,9 +1074,9 @@ function RecurringForm({
 
             {txType === 'expense' && (
                 <div className="space-y-2">
-                    <Label>Tarjeta (opcional)</Label>
+                    <Label htmlFor="rec-card">Tarjeta (opcional)</Label>
                     <Select value={cardId} onValueChange={setCardId}>
-                        <SelectTrigger>
+                        <SelectTrigger id="rec-card">
                             <SelectValue placeholder="Sin tarjeta" />
                         </SelectTrigger>
                         <SelectContent>

@@ -48,9 +48,8 @@ function calcDaysLeft(deadline: string | null): number | null {
     return Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
 
-function formatDeadline(deadline: string): string {
-    const [year, month, day] = deadline.split('-')
-    return `${day}/${month}/${year}`
+function formatDeadline(dateStr: string) {
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
 // ==================== MAIN COMPONENT ====================
@@ -103,7 +102,7 @@ export default function MetasClient({ initialGoals }: Props) {
                 return
             }
             await refetchGoals()
-            toast.success('Meta de ahorro creada')
+            toast.success('✅ Meta de ahorro creada')
         })
     }
 
@@ -136,7 +135,7 @@ export default function MetasClient({ initialGoals }: Props) {
                 toast.error('No pudimos guardar los cambios. Probá de nuevo.')
                 return
             }
-            toast.success('Meta actualizada')
+            toast.success('✅ Meta actualizada')
         })
     }
 
@@ -152,7 +151,7 @@ export default function MetasClient({ initialGoals }: Props) {
                 toast.error('No pudimos eliminar la meta. Probá de nuevo.')
                 return
             }
-            toast.success('Meta eliminada')
+            toast.success('✅ Meta eliminada')
         })
     }
 
@@ -172,7 +171,7 @@ export default function MetasClient({ initialGoals }: Props) {
                 toast.error('No pudimos registrar la contribucion. Probá de nuevo.')
                 return
             }
-            toast.success('Contribucion registrada')
+            toast.success('✅ Contribución registrada')
         })
     }
 
@@ -235,7 +234,7 @@ export default function MetasClient({ initialGoals }: Props) {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 text-muted-foreground hover:text-info"
+                                            className="h-11 w-11 text-muted-foreground hover:text-info"
                                             aria-label={`Editar meta ${goal.name}`}
                                             disabled={isPending}
                                             onClick={() => { setFormError(null); setEditTarget(goal) }}
@@ -245,7 +244,7 @@ export default function MetasClient({ initialGoals }: Props) {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 text-muted-foreground hover:text-expense"
+                                            className="h-11 w-11 text-muted-foreground hover:text-expense"
                                             aria-label={`Eliminar meta ${goal.name}`}
                                             disabled={isPending}
                                             onClick={() => setDeleteTarget(goal)}
@@ -272,7 +271,7 @@ export default function MetasClient({ initialGoals }: Props) {
                                                     ? 'bg-income'
                                                     : pct >= 75
                                                     ? 'bg-pending'
-                                                    : 'bg-primary'
+                                                    : 'bg-info'
                                             )}
                                             style={{ width: `${pct}%` }}
                                         />
@@ -566,10 +565,11 @@ function ContributeForm({
                     onChange={(e) => setAmountStr(e.target.value)}
                     required
                     autoFocus
+                    aria-describedby={error ? 'contribute-error' : undefined}
                 />
             </div>
             {error && (
-                <p className="text-sm text-expense">{error}</p>
+                <p id="contribute-error" className="text-sm text-expense">{error}</p>
             )}
             <DialogFooter className="pt-2">
                 <Button type="button" variant="outline" onClick={onCancel}>

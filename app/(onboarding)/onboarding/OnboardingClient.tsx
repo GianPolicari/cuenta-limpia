@@ -35,7 +35,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
     // ── Paso 1 state ──
     const [cardName, setCardName] = useState('')
     const [cardType, setCardType] = useState('')
-    const [cardColor, setCardColor] = useState('#7C6BFF')
+    const [cardColor, setCardColor] = useState('')
 
     // ── Paso 3 state ──
     const [txType, setTxType] = useState<'income' | 'expense'>('expense')
@@ -116,8 +116,8 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
             <Card className="w-full">
                 <CardHeader className="space-y-3 text-center">
                     {/* Brand mark */}
-                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#7C6BFF] to-[#5B47E0] shadow-brand">
-                        <DollarSign className="h-5 w-5 text-white" aria-hidden />
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[#5B47E0] shadow-brand">
+                        <DollarSign className="h-5 w-5 text-primary-foreground" aria-hidden />
                     </div>
                     <p className="text-xs font-semibold tracking-widest text-primary uppercase">
                         CuentaLimpia
@@ -210,14 +210,18 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                                 </Button>
                                 <Button
                                     variant="default"
-                                    className="flex-1 font-semibold shadow-brand"
+                                    className="flex-1 gap-2 font-semibold shadow-brand"
                                     onClick={handleCreateCard}
                                     disabled={isPending}
                                 >
                                     {isPending ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                                    ) : null}
-                                    Crear tarjeta y continuar
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                                            <span>Creando...</span>
+                                        </>
+                                    ) : (
+                                        'Crear tarjeta y continuar'
+                                    )}
                                 </Button>
                             </div>
                         </div>
@@ -307,6 +311,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                                     value={txAmount}
                                     onChange={e => setTxAmount(e.target.value)}
                                     required
+                                    className="tabular-nums"
                                 />
                             </div>
 
@@ -339,14 +344,18 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
 
                             <Button
                                 variant="default"
-                                className="w-full font-semibold shadow-brand"
+                                className="w-full gap-2 font-semibold shadow-brand"
                                 onClick={handleSaveTransaction}
                                 disabled={isPending}
                             >
                                 {isPending ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                                ) : null}
-                                Guardar y entrar al dashboard
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                                        <span>Guardando...</span>
+                                    </>
+                                ) : (
+                                    'Guardar y entrar al dashboard'
+                                )}
                             </Button>
                         </div>
                     )}

@@ -122,7 +122,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                 return
             }
             const count = result.inserted
-            toast.success(`${count} operación${count !== 1 ? 'es' : ''} importada${count !== 1 ? 's' : ''}`)
+            toast.success(`✅ ${count} operación${count !== 1 ? 'es' : ''} importada${count !== 1 ? 's' : ''}`)
             onImported(count)
             onOpenChange(false)
         })
@@ -173,7 +173,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                                 Arrastrá o seleccioná un archivo CSV
                             </p>
                             <p className="mt-1 text-xs text-muted-foreground">
-                                Columnas esperadas: fecha, descripción, monto, tipo (ingreso/egreso)
+                                Columnas esperadas: fecha, descripción, monto, tipo (ingreso/gasto)
                             </p>
                             <Button
                                 type="button"
@@ -216,7 +216,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                         <div className="space-y-4">
                             {/* Select: Fecha */}
                             <div className="space-y-1.5">
-                                <Label htmlFor="map-fecha">Columna de Fecha</Label>
+                                <Label htmlFor="map-fecha">Columna de fecha</Label>
                                 <Select
                                     value={String(mapping.fecha)}
                                     onValueChange={(v) => setMapping(prev => ({ ...prev, fecha: Number(v) }))}
@@ -234,7 +234,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
 
                             {/* Select: Descripción */}
                             <div className="space-y-1.5">
-                                <Label htmlFor="map-desc">Columna de Descripción</Label>
+                                <Label htmlFor="map-desc">Columna de descripción</Label>
                                 <Select
                                     value={String(mapping.descripcion)}
                                     onValueChange={(v) => setMapping(prev => ({ ...prev, descripcion: Number(v) }))}
@@ -252,7 +252,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
 
                             {/* Select: Monto */}
                             <div className="space-y-1.5">
-                                <Label htmlFor="map-monto">Columna de Monto</Label>
+                                <Label htmlFor="map-monto">Columna de monto</Label>
                                 <Select
                                     value={String(mapping.monto)}
                                     onValueChange={(v) => setMapping(prev => ({ ...prev, monto: Number(v) }))}
@@ -270,7 +270,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
 
                             {/* Select: Tipo (opcional) */}
                             <div className="space-y-1.5">
-                                <Label htmlFor="map-tipo">Columna de Tipo (opcional)</Label>
+                                <Label htmlFor="map-tipo">Columna de tipo (opcional)</Label>
                                 <Select
                                     value={mapping.tipo === null ? '__infer__' : String(mapping.tipo)}
                                     onValueChange={(v) => setMapping(prev => ({

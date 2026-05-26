@@ -453,7 +453,7 @@ export default function IngresosEgresosClient({
                     {searchQuery && (
                         <button
                             onClick={() => setSearchQuery('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground"
                             aria-label="Limpiar búsqueda"
                         >
                             <X className="h-4 w-4" />
@@ -486,7 +486,7 @@ export default function IngresosEgresosClient({
                     <Upload className="h-4 w-4" aria-hidden="true" /> Importar CSV
                 </Button>
                 <Button variant="outline" onClick={exportToCSV} className="gap-2">
-                    <Download className="h-4 w-4" /> Exportar CSV
+                    <Download className="h-4 w-4" aria-hidden="true" /> Exportar CSV
                 </Button>
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
@@ -852,13 +852,13 @@ function RecurringBanner({
         <div
             className="mb-6 rounded-xl border border-pending/40 bg-pending-subtle p-4"
             role="region"
-            aria-label="Transacciones recurrentes pendientes"
+            aria-label="Operaciones recurrentes pendientes"
         >
             <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-2">
                     <RefreshCw className="h-4 w-4 shrink-0 text-pending" aria-hidden="true" />
                     <span className="text-sm font-semibold text-foreground">
-                        {pending.length} transacción{pending.length !== 1 ? 'es' : ''} recurrente{pending.length !== 1 ? 's' : ''} pendiente{pending.length !== 1 ? 's' : ''} para {MONTHS_BANNER[month]} {year}
+                        {pending.length} operación{pending.length !== 1 ? 'es' : ''} recurrente{pending.length !== 1 ? 's' : ''} pendiente{pending.length !== 1 ? 's' : ''} para {MONTHS_BANNER[month]} {year}
                     </span>
                 </div>
                 <Button
@@ -905,7 +905,10 @@ function RecurringBanner({
                             className="shrink-0 gap-1.5 border-pending/30 text-pending hover:bg-pending-subtle"
                         >
                             {loadingId === r.id ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                <>
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                                    <span>Aplicando...</span>
+                                </>
                             ) : (
                                 <>Aplicar</>
                             )}
@@ -939,7 +942,7 @@ function BudgetSection({ budgets, transactions }: { budgets: BudgetRow[]; transa
 
     return (
         <div className="mb-6">
-            <h2 className="mb-3 text-base font-semibold text-foreground">Presupuesto del mes</h2>
+            <h2 className="mb-3 text-lg font-semibold text-foreground">Presupuesto del mes</h2>
             <div className="grid gap-3 sm:grid-cols-2">
                 {budgetItems.map((b) => {
                     const clampedPct = Math.min(b.pct, 100)
@@ -948,7 +951,7 @@ function BudgetSection({ budgets, transactions }: { budgets: BudgetRow[]; transa
                             ? 'bg-expense'
                             : b.pct >= 75
                                 ? 'bg-pending'
-                                : 'bg-income'
+                                : 'bg-info'
 
                     return (
                         <Card key={b.id}>
@@ -956,7 +959,7 @@ function BudgetSection({ budgets, transactions }: { budgets: BudgetRow[]; transa
                                 <div className="mb-2 flex items-center justify-between gap-2">
                                     <span className="truncate text-sm font-medium text-foreground">{b.category_name}</span>
                                     <span className="shrink-0 text-xs text-muted-foreground">
-                                        {Math.round(b.pct)}% del presupuesto
+                                        <span className="tabular-nums">{Math.round(b.pct)}%</span> del presupuesto
                                     </span>
                                 </div>
                                 <div className="mb-1.5 h-2 w-full overflow-hidden rounded-full bg-secondary">
