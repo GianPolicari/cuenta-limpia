@@ -1,0 +1,31 @@
+{
+  "name": "CuentaLimpia",
+  "short_name": "CuentaLimpia",
+  "description": "Gestión personal de tus finanzas. Controlá gastos, tarjetas y metas en un solo lugar.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#F8F8FB",
+  "theme_color": "#5B47E0",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["finance", "productivity"]
+}
