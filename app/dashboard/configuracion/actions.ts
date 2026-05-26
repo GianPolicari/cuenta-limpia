@@ -148,3 +148,150 @@ export async function deleteBudget(categoryName: string) {
     return { error: null }
 }
 
+// ==================== RECURRING TRANSACTIONS ====================
+
+export async function getRecurringTransactions() {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('recurring_transactions')
+        .select('*, cards(name)')
+        .order('description')
+    if (error) return { data: null, error: error.message }
+    return { data, error: null }
+}
+
+export async function addRecurring(formData: FormData) {
+    const supabase = await createClient()
+    const description = formData.get('description') as string
+    const amount = Number(formData.get('amount'))
+    const transaction_type = formData.get('transaction_type') as string
+    const category = (formData.get('category') as string) || null
+    const card_id = (formData.get('card_id') as string) || null
+    const day_of_month = Number(formData.get('day_of_month'))
+    const is_active = formData.get('is_active') === 'true'
+
+    if (!description || !amount || !transaction_type || !day_of_month) {
+        return { error: 'Completá todos los campos obligatorios.' }
+    }
+
+    const { error } = await supabase.from('recurring_transactions').insert({
+        description,
+        amount,
+        transaction_type,
+        category,
+        card_id: card_id && card_id !== 'none' ? card_id : null,
+        day_of_month,
+        is_active,
+    })
+    if (error) return { error: error.message }
+    revalidatePath('/dashboard/configuracion')
+    revalidatePath('/dashboard/ingresos-egresos')
+    return { error: null }
+}
+
+export async function updateRecurring(id: string, formData: FormData) {
+    const supabase = await createClient()
+    const description = formData.get('description') as string
+    const amount = Number(formData.get('amount'))
+    const transaction_type = formData.get('transaction_type') as string
+    const category = (formData.get('category') as string) || null
+    const card_id = (formData.get('card_id') as string) || null
+    const day_of_month = Number(formData.get('day_of_month'))
+    const is_active = formData.get('is_active') === 'true'
+
+    const { error } = await supabase
+        .from('recurring_transactions')
+        .update({
+            description,
+            amount,
+            transaction_type,
+            category,
+            card_id: card_id && card_id !== 'none' ? card_id : null,
+            day_of_month,
+            is_active,
+        })
+        .eq('id', id)
+    if (error) return { error: error.message }
+    revalidatePath('/dashboard/configuracion')
+    revalidatePath('/dashboard/ingresos-egresos')
+    return { error: null }
+}
+
+export async function deleteRecurring(id: string) {
+    const supabase = await createClient()
+    const { error } = await supabase.from('recurring_transactions').delete().eq('id', id)
+    if (error) return { error: error.message }
+    revalidatePath('/dashboard/configuracion')
+    revalidatePath('/dashboard/ingresos-egresos')
+    return { error: null }
+}
+
+export async function getRecurringApplied(month: number, year: number) {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('recurring_applied')
+        .select('*')
+        .eq('applied_month', month)
+        .eq('applied_year', year)
+    if (error) return { data: null, error: error.message }
+    return { data, error: null }
+}
+
+export async function applyRecurring(recurringId: string, month: number, year: number) {
+    const supabase = await createClient()
+
+    // Obtener la recurrente
+    const { data: rec, error: recError } = await supabase
+        .from('recurring_transactions')
+        .select('*')
+        .eq('id', recurringId)
+        .single()
+    if (recError || !rec) return { error: recError?.message ?? 'Recurrente no encontrada.' }
+
+    // Calcular la fecha: si el día no existe en ese mes, usar el último día del mes
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const day = Math.min(rec.day_of_month, daysInMonth)
+    const mm = String(month + 1).padStart(2, '0')
+    const dd = String(day).padStart(2, '0')
+    const transaction_date = `${year}-${mm}-${dd}`
+
+    // Insertar la transacción
+    const { data: tx, error: txError } = await supabase
+        .from('transactions')
+        .insert({
+            description: rec.description,
+            amount: rec.amount,
+            transaction_type: rec.transaction_type,
+            category: rec.category,
+            card_id: rec.card_id,
+            transaction_date,
+        })
+        .select('id')
+        .single()
+    if (txError) return { error: txError.message }
+
+    // Registrar como aplicada
+    const { error: appliedError } = await supabase.from('recurring_applied').insert({
+        recurring_id: recurringId,
+        applied_month: month,
+        applied_year: year,
+        transaction_id: tx.id,
+    })
+    if (appliedError) return { error: appliedError.message }
+
+    revalidatePath('/dashboard/ingresos-egresos')
+    revalidatePath('/dashboard')
+    return { error: null, transaction_id: tx.id }
+}
+
+export async function applyAllPendingRecurring(
+    pendingIds: string[],
+    month: number,
+    year: number
+) {
+    const results = await Promise.all(pendingIds.map((id) => applyRecurring(id, month, year)))
+    const failed = results.filter((r) => r.error)
+    if (failed.length > 0) return { error: `${failed.length} recurrente(s) no pudieron aplicarse.` }
+    return { error: null }
+}
+

@@ -1,6 +1,6 @@
 import IngresosEgresosClient from './IngresosEgresosClient'
 import { getTransactions, getCategoriesByType, getCards } from './actions'
-import { seedDefaultCategories, getBudgets } from '@/app/dashboard/configuracion/actions'
+import { seedDefaultCategories, getBudgets, getRecurringTransactions, getRecurringApplied } from '@/app/dashboard/configuracion/actions'
 
 export default async function IngresosEgresosPage() {
     const now = new Date()
@@ -9,12 +9,14 @@ export default async function IngresosEgresosPage() {
 
     await seedDefaultCategories()
 
-    const [txRes, expenseCats, incomeCats, cards, budgetsRes] = await Promise.all([
+    const [txRes, expenseCats, incomeCats, cards, budgetsRes, recurringRes, appliedRes] = await Promise.all([
         getTransactions(month, year),
         getCategoriesByType('expense'),
         getCategoriesByType('income'),
         getCards(),
         getBudgets(),
+        getRecurringTransactions(),
+        getRecurringApplied(month, year),
     ])
 
     return (
@@ -26,6 +28,8 @@ export default async function IngresosEgresosPage() {
             incomeCategories={incomeCats}
             initialCards={cards}
             initialBudgets={budgetsRes.data ?? []}
+            initialRecurring={(recurringRes.data ?? []) as unknown as Parameters<typeof IngresosEgresosClient>[0]['initialRecurring']}
+            initialRecurringApplied={appliedRes.data ?? []}
         />
     )
 }

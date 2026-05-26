@@ -115,6 +115,74 @@ export interface Database {
                 Relationships: []
             }
 
+            recurring_transactions: {
+                Row: {
+                    id: string
+                    user_id: string
+                    description: string
+                    amount: number
+                    category: string | null
+                    transaction_type: string
+                    card_id: string | null
+                    day_of_month: number
+                    is_active: boolean
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id?: string
+                    description: string
+                    amount: number
+                    category?: string | null
+                    transaction_type: string
+                    card_id?: string | null
+                    day_of_month: number
+                    is_active?: boolean
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    description?: string
+                    amount?: number
+                    category?: string | null
+                    transaction_type?: string
+                    card_id?: string | null
+                    day_of_month?: number
+                    is_active?: boolean
+                    created_at?: string
+                }
+                Relationships: []
+            }
+
+            recurring_applied: {
+                Row: {
+                    id: string
+                    user_id: string
+                    recurring_id: string
+                    applied_month: number
+                    applied_year: number
+                    transaction_id: string | null
+                }
+                Insert: {
+                    id?: string
+                    user_id?: string
+                    recurring_id: string
+                    applied_month: number
+                    applied_year: number
+                    transaction_id?: string | null
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    recurring_id?: string
+                    applied_month?: number
+                    applied_year?: number
+                    transaction_id?: string | null
+                }
+                Relationships: []
+            }
+
         }
         Views: {
             [_ in never]: never

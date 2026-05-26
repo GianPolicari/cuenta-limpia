@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { signOut } from '@/app/login/actions'
-import { getCards, getCategories, getBudgets, seedDefaultCategories } from './actions'
+import { getCards, getCategories, getBudgets, seedDefaultCategories, getRecurringTransactions } from './actions'
 import SettingsClient from './SettingsClient'
 
 export default async function ConfiguracionPage() {
@@ -18,10 +18,11 @@ export default async function ConfiguracionPage() {
 
     await seedDefaultCategories()
 
-    const [cardsRes, categoriesRes, budgetsRes] = await Promise.all([
+    const [cardsRes, categoriesRes, budgetsRes, recurringRes] = await Promise.all([
         getCards(),
         getCategories(),
         getBudgets(),
+        getRecurringTransactions(),
     ])
 
     return (
@@ -32,6 +33,7 @@ export default async function ConfiguracionPage() {
             initialCards={cardsRes.data ?? []}
             initialCategories={categoriesRes.data ?? []}
             initialBudgets={budgetsRes.data ?? []}
+            initialRecurring={(recurringRes.data ?? []) as unknown as Parameters<typeof SettingsClient>[0]['initialRecurring']}
         />
     )
 }

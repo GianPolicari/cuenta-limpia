@@ -31,7 +31,15 @@
       "mcp__plugin_supabase_supabase__apply_migration",
       "mcp__plugin_supabase_supabase__execute_sql",
       "Bash(npx supabase@latest --version)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(npx supabase *)",
+      "Bash(npx supabase@2.101.0 projects list)",
+      "Bash(npx supabase@2.101.0 db execute --project-ref gvtkufuatosxlblloxtg --sql ' *)",
+      "Bash(npx supabase@2.101.0 db query --help)",
+      "Bash(npx supabase@2.101.0 link --project-ref gvtkufuatosxlblloxtg)",
+      "Bash(npx supabase@2.101.0 db query --linked -f migration_recurring.sql)",
+      "Bash(npx supabase@2.101.0 migration new recurring_transactions)",
+      "Bash(npx shadcn@latest add switch --yes)"
     ]
   }
 }

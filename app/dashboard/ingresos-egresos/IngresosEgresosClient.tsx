@@ -20,12 +20,13 @@ import { formatARS, formatCuota } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import {
     ArrowUpRight, ArrowDownRight, Wallet, Plus, Trash2,
-    Pencil, Loader2, Inbox, CreditCard, ArrowUp, ArrowDown, Download, Search, X
+    Pencil, Loader2, Inbox, CreditCard, ArrowUp, ArrowDown, Download, Search, X, RefreshCw,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
 import { getTransactions, addTransaction, updateTransaction, deleteTransaction, getCategoriesByType } from './actions'
 import { createCard } from '@/app/dashboard/tarjetas/actions'
+import { applyRecurring, applyAllPendingRecurring } from '@/app/dashboard/configuracion/actions'
 
 // ==================== TYPES ====================
 
@@ -38,6 +39,24 @@ type TxRow = {
 type CatRow = { id: string; name: string }
 type CardRow = { id: string; name: string; card_type: string; color: string | null }
 type BudgetRow = { id: string; category_name: string; monthly_amount: number }
+type RecurringRow = {
+    id: string
+    description: string
+    amount: number
+    category: string | null
+    transaction_type: string
+    card_id: string | null
+    day_of_month: number
+    is_active: boolean
+    cards: { name: string } | null
+}
+type RecurringAppliedRow = {
+    id: string
+    recurring_id: string
+    applied_month: number
+    applied_year: number
+    transaction_id: string | null
+}
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
@@ -55,6 +74,8 @@ interface Props {
     incomeCategories: CatRow[]
     initialCards: CardRow[]
     initialBudgets: BudgetRow[]
+    initialRecurring: RecurringRow[]
+    initialRecurringApplied: RecurringAppliedRow[]
 }
 
 export default function IngresosEgresosClient({
@@ -65,9 +86,13 @@ export default function IngresosEgresosClient({
     incomeCategories,
     initialCards,
     initialBudgets,
+    initialRecurring,
+    initialRecurringApplied,
 }: Props) {
     const [transactions, setTransactions] = useState(initialTransactions)
     const [cards, setCards] = useState<CardRow[]>(initialCards)
+    const [recurring] = useState<RecurringRow[]>(initialRecurring)
+    const [recurringApplied, setRecurringApplied] = useState<RecurringAppliedRow[]>(initialRecurringApplied)
     const [month, setMonth] = useState(String(initialMonth))
     const [year, setYear] = useState(String(initialYear))
     const [addOpen, setAddOpen] = useState(false)
@@ -235,6 +260,8 @@ export default function IngresosEgresosClient({
         setCards((prev) => [...prev, card].sort((a, b) => a.name.localeCompare(b.name)))
     }, [])
 
+    // Reset page when filters change — intentional side effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { setCurrentPage(1) }, [searchQuery, filterType])
 
     const cardName = useCallback((cardId: string | null) => {
@@ -290,7 +317,7 @@ export default function IngresosEgresosClient({
             }
             return 0
         })
-    }, [transactions, sortConfig, cardName])
+    }, [transactions, sortConfig, cardName, searchQuery, filterType])
 
     const renderSortArrow = (key: string) => {
         if (sortConfig?.key !== key) return null
@@ -392,6 +419,21 @@ export default function IngresosEgresosClient({
                     <Amount value={balance} kind={balance >= 0 ? 'income' : 'expense'} showIcon={false} />
                 </KpiCard>
             </div>
+
+            {/* Banner recurrentes pendientes */}
+            <RecurringBanner
+                recurring={recurring}
+                applied={recurringApplied}
+                month={Number(month)}
+                year={Number(year)}
+                onApplied={(appliedRow, txRow) => {
+                    setRecurringApplied(prev => [...prev, appliedRow])
+                    setTransactions(prev => [txRow, ...prev])
+                }}
+                onRevert={(recurringId) => {
+                    setRecurringApplied(prev => prev.filter(a => a.recurring_id !== recurringId))
+                }}
+            />
 
             {/* Budget progress section */}
             <BudgetSection budgets={initialBudgets} transactions={transactions} />
@@ -675,6 +717,184 @@ export default function IngresosEgresosClient({
                     )}
                 </div>
             )}
+        </div>
+    )
+}
+
+// ==================== RECURRING BANNER ====================
+
+const MONTHS_BANNER = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
+function RecurringBanner({
+    recurring,
+    applied,
+    month,
+    year,
+    onApplied,
+    onRevert,
+}: {
+    recurring: RecurringRow[]
+    applied: RecurringAppliedRow[]
+    month: number
+    year: number
+    onApplied: (appliedRow: RecurringAppliedRow, txRow: TxRow) => void
+    onRevert: (recurringId: string) => void
+}) {
+    const [isPending, startTransition] = useTransition()
+    const [loadingId, setLoadingId] = useState<string | null>(null)
+    const [loadingAll, setLoadingAll] = useState(false)
+
+    const pending = recurring.filter(
+        r => r.is_active && !applied.some(a => a.recurring_id === r.id)
+    )
+
+    if (pending.length === 0) return null
+
+    function handleApplyOne(r: RecurringRow) {
+        const tempTxId = `temp-tx-${r.id}`
+        const daysInMonth = new Date(year, month + 1, 0).getDate()
+        const day = Math.min(r.day_of_month, daysInMonth)
+        const mm = String(month + 1).padStart(2, '0')
+        const dd = String(day).padStart(2, '0')
+        const optimisticTx: TxRow = {
+            id: tempTxId,
+            description: r.description,
+            amount: r.amount,
+            category: r.category,
+            transaction_type: r.transaction_type,
+            transaction_date: `${year}-${mm}-${dd}`,
+            card_id: r.card_id,
+            cuota_actual: null,
+            total_cuotas: null,
+        }
+        const optimisticApplied: RecurringAppliedRow = {
+            id: `temp-applied-${r.id}`,
+            recurring_id: r.id,
+            applied_month: month,
+            applied_year: year,
+            transaction_id: tempTxId,
+        }
+        onApplied(optimisticApplied, optimisticTx)
+        setLoadingId(r.id)
+
+        startTransition(async () => {
+            const result = await applyRecurring(r.id, month, year)
+            setLoadingId(null)
+            if (result.error) {
+                onRevert(r.id)
+                toast.error('No pudimos aplicar la recurrente. Probá de nuevo.', { description: result.error })
+            } else {
+                toast.success(`Aplicada: ${r.description}`)
+            }
+        })
+    }
+
+    function handleApplyAll() {
+        const daysInMonth = new Date(year, month + 1, 0).getDate()
+        const mm = String(month + 1).padStart(2, '0')
+        pending.forEach(r => {
+            const day = Math.min(r.day_of_month, daysInMonth)
+            const dd = String(day).padStart(2, '0')
+            const tempTxId = `temp-tx-${r.id}`
+            const tx: TxRow = {
+                id: tempTxId,
+                description: r.description,
+                amount: r.amount,
+                category: r.category,
+                transaction_type: r.transaction_type,
+                transaction_date: `${year}-${mm}-${dd}`,
+                card_id: r.card_id,
+                cuota_actual: null,
+                total_cuotas: null,
+            }
+            const ap: RecurringAppliedRow = {
+                id: `temp-applied-${r.id}`,
+                recurring_id: r.id,
+                applied_month: month,
+                applied_year: year,
+                transaction_id: tempTxId,
+            }
+            onApplied(ap, tx)
+        })
+        setLoadingAll(true)
+
+        startTransition(async () => {
+            const result = await applyAllPendingRecurring(pending.map(r => r.id), month, year)
+            setLoadingAll(false)
+            if (result.error) {
+                pending.forEach(r => onRevert(r.id))
+                toast.error('Algunas recurrentes no pudieron aplicarse.', { description: result.error })
+            } else {
+                toast.success(`${pending.length} recurrente${pending.length !== 1 ? 's' : ''} aplicada${pending.length !== 1 ? 's' : ''}`)
+            }
+        })
+    }
+
+    return (
+        <div
+            className="mb-6 rounded-xl border border-pending/40 bg-pending-subtle p-4"
+            role="region"
+            aria-label="Transacciones recurrentes pendientes"
+        >
+            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2">
+                    <RefreshCw className="h-4 w-4 shrink-0 text-pending" aria-hidden="true" />
+                    <span className="text-sm font-semibold text-foreground">
+                        {pending.length} transacción{pending.length !== 1 ? 'es' : ''} recurrente{pending.length !== 1 ? 's' : ''} pendiente{pending.length !== 1 ? 's' : ''} para {MONTHS_BANNER[month]} {year}
+                    </span>
+                </div>
+                <Button
+                    size="sm"
+                    disabled={isPending || loadingAll}
+                    onClick={handleApplyAll}
+                    className="shrink-0 gap-2"
+                >
+                    {loadingAll ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Aplicando...</> : 'Aplicar todas'}
+                </Button>
+            </div>
+            <ul className="space-y-2">
+                {pending.map((r) => (
+                    <li
+                        key={r.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-pending/20 bg-background/60 px-3 py-2"
+                    >
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <div className="min-w-0 flex-1">
+                                <span className="truncate text-sm font-medium text-foreground">{r.description}</span>
+                                <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+                                    <Amount
+                                        value={r.amount}
+                                        kind={r.transaction_type === 'income' ? 'income' : 'expense'}
+                                        showIcon={false}
+                                        className="text-xs font-semibold"
+                                    />
+                                    <Badge variant={r.transaction_type === 'income' ? 'income' : 'expense'} className="text-xs">
+                                        {r.transaction_type === 'income' ? 'Ingreso' : 'Gasto'}
+                                    </Badge>
+                                    <Badge variant="pending" className="text-xs">Día {r.day_of_month}</Badge>
+                                    {r.cards?.name && (
+                                        <Badge variant="neutral" className="text-xs">{r.cards.name}</Badge>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={isPending || loadingId === r.id}
+                            onClick={() => handleApplyOne(r)}
+                            aria-label={`Aplicar ${r.description}`}
+                            className="shrink-0 gap-1.5 border-pending/30 text-pending hover:bg-pending-subtle"
+                        >
+                            {loadingId === r.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                                <>Aplicar</>
+                            )}
+                        </Button>
+                    </li>
+                ))}
+            </ul>
         </div>
     )
 }
