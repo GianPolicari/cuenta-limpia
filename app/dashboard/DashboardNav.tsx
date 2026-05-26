@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ArrowLeftRight, CreditCard, Settings } from 'lucide-react'
+import { LayoutDashboard, ArrowLeftRight, CreditCard, Settings, Target } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type NavItem = {
@@ -16,6 +16,7 @@ type NavItem = {
 export const navItems: NavItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/ingresos-egresos', label: 'Ingresos & Egresos', icon: ArrowLeftRight },
+    { href: '/dashboard/metas', label: 'Metas', icon: Target },
     { href: '/dashboard/tarjetas', label: 'Tarjetas', icon: CreditCard },
     { href: '/dashboard/configuracion', label: 'Configuración', icon: Settings, mobileHidden: true },
 ]

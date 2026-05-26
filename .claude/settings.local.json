@@ -43,7 +43,8 @@
       "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\USUARIO\\\\Documents\\\\zz.G. Personal\\\\000- Proyectos\\\\02- CuentaLimpia\\\\docs\\\\superpowers\\\\plans\")",
       "Bash(Out-Null)",
       "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\USUARIO\\\\Documents\\\\zz.G. Personal\\\\000- Proyectos\\\\02- CuentaLimpia\\\\app\\\\\\(onboarding\\)\\\\onboarding\")",
-      "Bash(Write-Output \"OK\")"
+      "Bash(Write-Output \"OK\")",
+      "Bash(npx supabase@latest migration new create_savings_goals)"
     ]
   }
 }
