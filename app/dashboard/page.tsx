@@ -1,5 +1,7 @@
+import { redirect } from 'next/navigation'
 import DashboardClient from '@/components/dashboard/DashboardClient'
 import { getTransactionsByYear } from './actions'
+import { checkNeedsOnboarding } from '@/app/(onboarding)/onboarding/actions'
 
 async function fetchDolar() {
     try {
@@ -17,6 +19,9 @@ async function fetchDolar() {
 }
 
 export default async function DashboardPage() {
+    const needsOnboarding = await checkNeedsOnboarding()
+    if (needsOnboarding) redirect('/onboarding')
+
     const year = new Date().getFullYear()
     const [dolar, transactions] = await Promise.all([
         fetchDolar(),

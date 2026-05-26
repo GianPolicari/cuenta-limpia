@@ -40,10 +40,12 @@ export async function middleware(request: NextRequest) {
         return supabaseResponse
     }
 
-    if (
-        !user &&
-        request.nextUrl.pathname.startsWith('/dashboard')
-    ) {
+    const protectedRoutes = ['/dashboard', '/onboarding']
+    const isProtected = protectedRoutes.some(r =>
+        request.nextUrl.pathname === r || request.nextUrl.pathname.startsWith(r + '/')
+    )
+
+    if (!user && isProtected) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
