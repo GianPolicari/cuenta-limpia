@@ -1,15 +1,23 @@
 'use client'
 
+import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, ArrowLeftRight, CreditCard, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export const navItems = [
+type NavItem = {
+    href: string
+    label: string
+    icon: React.ElementType
+    mobileHidden?: boolean
+}
+
+export const navItems: NavItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/ingresos-egresos', label: 'Ingresos & Egresos', icon: ArrowLeftRight },
     { href: '/dashboard/tarjetas', label: 'Tarjetas', icon: CreditCard },
-    { href: '/dashboard/configuracion', label: 'Configuración', icon: Settings },
+    { href: '/dashboard/configuracion', label: 'Configuración', icon: Settings, mobileHidden: true },
 ]
 
 export function DashboardNav({ variant = 'sidebar' }: { variant?: 'sidebar' | 'bottom' }) {
@@ -18,9 +26,10 @@ export function DashboardNav({ variant = 'sidebar' }: { variant?: 'sidebar' | 'b
         href === '/dashboard' ? pathname === href : pathname.startsWith(href)
 
     if (variant === 'bottom') {
+        const mobileItems = navItems.filter(item => !item.mobileHidden)
         return (
             <nav className="fixed inset-x-0 bottom-0 z-50 flex border-t border-border bg-card lg:hidden">
-                {navItems.map((item) => (
+                {mobileItems.map((item) => (
                     <Link
                         key={item.href}
                         href={item.href}

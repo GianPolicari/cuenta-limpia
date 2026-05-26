@@ -222,7 +222,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                             <Plus className="h-4 w-4" /> Agregar tarjeta
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                         <DialogHeader>
                             <DialogTitle>Nueva tarjeta</DialogTitle>
                             <DialogDescription>Agregá una tarjeta de crédito o débito.</DialogDescription>
@@ -235,7 +235,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
 
             {/* Edit Dialog */}
             <Dialog open={!!editCard} onOpenChange={(o) => !o && setEditCard(null)}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Editar tarjeta</DialogTitle>
                         <DialogDescription>Modificá los datos de la tarjeta.</DialogDescription>
@@ -247,7 +247,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
 
             {/* Delete confirmation */}
             <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-                <DialogContent className="sm:max-w-sm">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-sm">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta tarjeta?</DialogTitle>
                         <DialogDescription>No se puede deshacer.</DialogDescription>
@@ -271,7 +271,8 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
             ) : (
                 <Card>
                     <CardContent className="p-0">
-                        <Table>
+                        <div className="overflow-x-auto">
+                        <Table className="min-w-[500px]">
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="text-muted-foreground">Nombre</TableHead>
@@ -310,6 +311,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                                 ))}
                             </TableBody>
                         </Table>
+                        </div>
                     </CardContent>
                 </Card>
             )}
@@ -332,7 +334,7 @@ function CardForm({ onSubmit, isPending, onCancel, defaults }: {
                 <Label>Nombre</Label>
                 <Input name="name" placeholder="Ej: Visa Galicia" required defaultValue={defaults?.name ?? ''} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                     <Label>Tipo</Label>
                     <Select value={cardType} onValueChange={setCardType}>
@@ -464,7 +466,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                             <Plus className="h-4 w-4" /> Agregar categoría
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                         <DialogHeader>
                             <DialogTitle>Nueva categoría</DialogTitle>
                             <DialogDescription>Creá una categoría para organizar tus operaciones.</DialogDescription>
@@ -477,7 +479,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
 
             {/* Edit dialog */}
             <Dialog open={!!editCat} onOpenChange={(o) => !o && setEditCat(null)}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Editar categoría</DialogTitle>
                     </DialogHeader>
@@ -487,7 +489,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
 
             {/* Delete confirmation */}
             <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-                <DialogContent className="sm:max-w-sm">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-sm">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta categoría?</DialogTitle>
                         <DialogDescription>No se puede deshacer.</DialogDescription>
@@ -789,7 +791,7 @@ function RecurrentesTab({
                             <Plus className="h-4 w-4" /> Nueva recurrente
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                         <DialogHeader>
                             <DialogTitle>Nueva recurrente</DialogTitle>
                             <DialogDescription>
@@ -813,7 +815,7 @@ function RecurrentesTab({
 
             {/* Edit Dialog */}
             <Dialog open={!!editRec} onOpenChange={(o) => !o && setEditRec(null)}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Editar recurrente</DialogTitle>
                         <DialogDescription>Modificá los datos de la transacción recurrente.</DialogDescription>
@@ -837,7 +839,7 @@ function RecurrentesTab({
 
             {/* Delete confirmation */}
             <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-                <DialogContent className="sm:max-w-sm">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-sm">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta recurrente?</DialogTitle>
                         <DialogDescription>No se puede deshacer.</DialogDescription>
@@ -873,7 +875,8 @@ function RecurrentesTab({
             ) : (
                 <Card>
                     <CardContent className="p-0">
-                        <Table>
+                        <div className="overflow-x-auto">
+                        <Table className="min-w-[640px]">
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="text-muted-foreground">Descripción</TableHead>
@@ -954,6 +957,7 @@ function RecurrentesTab({
                                 ))}
                             </TableBody>
                         </Table>
+                        </div>
                     </CardContent>
                 </Card>
             )}
@@ -999,7 +1003,7 @@ function RecurringForm({
                 />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                     <Label htmlFor="rec-amount">Monto</Label>
                     <Input

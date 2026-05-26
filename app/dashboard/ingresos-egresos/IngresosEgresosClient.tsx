@@ -376,7 +376,7 @@ export default function IngresosEgresosClient({
     const paginatedTransactions = sortedTransactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
     return (
-        <div className="min-h-screen p-6 lg:p-8">
+        <div className="min-h-screen p-4 sm:p-6 lg:p-8">
             {/* Header */}
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -489,7 +489,7 @@ export default function IngresosEgresosClient({
                             <Plus className="h-4 w-4" /> Nueva operación
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                         <DialogHeader>
                             <DialogTitle>Nueva operación</DialogTitle>
                             <DialogDescription>Registrá un ingreso o gasto.</DialogDescription>
@@ -502,7 +502,7 @@ export default function IngresosEgresosClient({
 
             {/* Edit Dialog */}
             <Dialog open={!!editTx} onOpenChange={o => !o && setEditTx(null)}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Editar operación</DialogTitle>
                     </DialogHeader>
@@ -513,7 +513,7 @@ export default function IngresosEgresosClient({
 
             {/* Delete confirmation */}
             <Dialog open={!!deleteTx} onOpenChange={o => !o && setDeleteTx(null)}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta operación?</DialogTitle>
                         <DialogDescription>No se puede deshacer.</DialogDescription>
@@ -557,7 +557,8 @@ export default function IngresosEgresosClient({
             ) : (
                 <Card>
                     <CardContent className="p-0">
-                        <Table>
+                        <div className="overflow-x-auto">
+                        <Table className="min-w-[700px]">
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('fecha')}>
@@ -638,9 +639,10 @@ export default function IngresosEgresosClient({
                                 })}
                             </TableBody>
                         </Table>
+                        </div>
                     </CardContent>
                 </Card>
-            )}
+)}
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
@@ -680,8 +682,8 @@ export default function IngresosEgresosClient({
                             description="Cuando registrés un gasto asociado a una tarjeta, acá vas a ver el desglose."
                         />
                     ) : (
-                        <Card className="p-6">
-                            <div className="h-[300px] w-full">
+                        <Card className="p-4 sm:p-6">
+                            <div className="h-[260px] sm:h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={cardChartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.3} />
@@ -1023,7 +1025,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                     <Label>Descripción</Label>
                     <Input name="description" placeholder="Ej: Compra en Carrefour" required defaultValue={defaults?.description ?? ''} />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                         <Label>Monto</Label>
                         <Input name="amount" type="number" step="0.01" min="0" placeholder="0.00" required defaultValue={defaults?.amount ?? ''} />
@@ -1125,7 +1127,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
 
             {/* Mini dialog nueva tarjeta */}
             <Dialog open={newCardOpen} onOpenChange={setNewCardOpen}>
-                <DialogContent className="sm:max-w-sm">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-sm">
                     <DialogHeader>
                         <DialogTitle>Nueva tarjeta</DialogTitle>
                         <DialogDescription>Sumá una tarjeta para asociarla a esta operación.</DialogDescription>

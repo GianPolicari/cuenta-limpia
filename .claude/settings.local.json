@@ -39,7 +39,9 @@
       "Bash(npx supabase@2.101.0 link --project-ref gvtkufuatosxlblloxtg)",
       "Bash(npx supabase@2.101.0 db query --linked -f migration_recurring.sql)",
       "Bash(npx supabase@2.101.0 migration new recurring_transactions)",
-      "Bash(npx shadcn@latest add switch --yes)"
+      "Bash(npx shadcn@latest add switch --yes)",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\USUARIO\\\\Documents\\\\zz.G. Personal\\\\000- Proyectos\\\\02- CuentaLimpia\\\\docs\\\\superpowers\\\\plans\")",
+      "Bash(Out-Null)"
     ]
   }
 }

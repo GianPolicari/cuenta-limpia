@@ -51,14 +51,15 @@ function CustomTooltip({ active, payload, showUSD }: { active?: boolean; payload
 export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
     if (!data || data.length === 0) {
         return (
-            <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            <div className="flex h-[260px] sm:h-[320px] items-center justify-center text-muted-foreground">
                 Sin datos de categorías este mes
             </div>
         )
     }
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
+        <div className="h-[260px] sm:h-[320px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
             <PieChart>
                 <Pie
                     data={data}
@@ -89,5 +90,6 @@ export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
                 />
             </PieChart>
         </ResponsiveContainer>
+        </div>
     )
 }

@@ -44,14 +44,15 @@ function CustomTooltip({ active, payload, label, showUSD }: { active?: boolean; 
 export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
     if (!data || data.length === 0) {
         return (
-            <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            <div className="flex h-[260px] sm:h-[320px] items-center justify-center text-muted-foreground">
                 Sin datos mensuales disponibles
             </div>
         )
     }
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
+        <div className="h-[260px] sm:h-[320px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} barGap={4}>
                 <CartesianGrid
                     strokeDasharray="3 3"
@@ -87,5 +88,6 @@ export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
                 />
             </BarChart>
         </ResponsiveContainer>
+        </div>
     )
 }

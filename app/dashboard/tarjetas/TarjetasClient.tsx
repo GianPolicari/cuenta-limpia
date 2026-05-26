@@ -256,7 +256,7 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
 
             {/* Add card dialog */}
             <Dialog open={addOpen} onOpenChange={(o) => { setAddOpen(o); if (!o) setFormError(null) }}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Agregar tarjeta</DialogTitle>
                         <DialogDescription>Sumá una tarjeta de crédito o débito.</DialogDescription>
@@ -272,7 +272,7 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
 
             {/* Edit card dialog */}
             <Dialog open={!!editTarget} onOpenChange={(o) => { if (!o) { setEditTarget(null); setFormError(null) } }}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Editar tarjeta</DialogTitle>
                         <DialogDescription>Modificá los datos de la tarjeta.</DialogDescription>
@@ -290,7 +290,7 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
 
             {/* Delete confirmation */}
             <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta tarjeta?</DialogTitle>
                         <DialogDescription>No se puede deshacer.</DialogDescription>
