@@ -20,11 +20,12 @@ import { formatARS, formatCuota } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import {
     ArrowUpRight, ArrowDownRight, Wallet, Plus, Trash2,
-    Pencil, Loader2, Inbox, CreditCard, ArrowUp, ArrowDown, Download, Search, X, RefreshCw,
+    Pencil, Loader2, Inbox, CreditCard, ArrowUp, ArrowDown, Download, Search, X, RefreshCw, Upload,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
 import { getTransactions, addTransaction, updateTransaction, deleteTransaction, getCategoriesByType } from './actions'
+import { CsvImportDialog } from './CsvImportDialog'
 import { createCard } from '@/app/dashboard/tarjetas/actions'
 import { applyRecurring, applyAllPendingRecurring } from '@/app/dashboard/configuracion/actions'
 
@@ -96,6 +97,7 @@ export default function IngresosEgresosClient({
     const [month, setMonth] = useState(String(initialMonth))
     const [year, setYear] = useState(String(initialYear))
     const [addOpen, setAddOpen] = useState(false)
+    const [csvOpen, setCsvOpen] = useState(false)
     const [editTx, setEditTx] = useState<TxRow | null>(null)
     const [deleteTx, setDeleteTx] = useState<TxRow | null>(null)
     const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
@@ -480,6 +482,9 @@ export default function IngresosEgresosClient({
 
             {/* Add button */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <Button variant="outline" onClick={() => setCsvOpen(true)} className="gap-2">
+                    <Upload className="h-4 w-4" aria-hidden="true" /> Importar CSV
+                </Button>
                 <Button variant="outline" onClick={exportToCSV} className="gap-2">
                     <Download className="h-4 w-4" /> Exportar CSV
                 </Button>
@@ -670,6 +675,17 @@ export default function IngresosEgresosClient({
                     </div>
                 </div>
             )}
+
+            {/* CSV Import Dialog */}
+            <CsvImportDialog
+                open={csvOpen}
+                onOpenChange={setCsvOpen}
+                categories={[...expenseCategories, ...incomeCategories]}
+                onImported={async () => {
+                    const res = await getTransactions(Number(month), Number(year))
+                    if (res.data) setTransactions(res.data)
+                }}
+            />
 
             {/* Expenses By Card Chart */}
             {cards.length > 0 && (

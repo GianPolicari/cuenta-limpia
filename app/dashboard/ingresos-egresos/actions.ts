@@ -135,3 +135,31 @@ export async function getCards() {
     if (error) return []
     return data ?? []
 }
+
+// ==================== CSV IMPORT ====================
+
+export async function batchInsertTransactions(
+    rows: Array<{
+        transaction_date: string
+        description: string
+        amount: number
+        transaction_type: string
+        category: string | null
+    }>
+) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado', inserted: 0 }
+
+    const CHUNK = 500
+    let inserted = 0
+    for (let i = 0; i < rows.length; i += CHUNK) {
+        const chunk = rows.slice(i, i + CHUNK)
+        const { error } = await supabase.from('transactions').insert(chunk)
+        if (error) return { error: error.message, inserted }
+        inserted += chunk.length
+    }
+    revalidatePath('/dashboard/ingresos-egresos')
+    revalidatePath('/dashboard')
+    return { error: null, inserted }
+}
