@@ -29,7 +29,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
     const [rawText, setRawText] = useState('')
     const [mapping, setMapping] = useState<ColMapping>(DEFAULT_MAPPING)
     const [parseResult, setParseResult] = useState<ParseResult | null>(null)
-    const [selectedCategory, setSelectedCategory] = useState('')
+    const [selectedCategory, setSelectedCategory] = useState('__none__')
     const [isPending, startTransition] = useTransition()
     const [isDragging, setIsDragging] = useState(false)
     const fileRef = useRef<HTMLInputElement>(null)
@@ -42,7 +42,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
             setRawText('')
             setMapping(DEFAULT_MAPPING)
             setParseResult(null)
-            setSelectedCategory('')
+            setSelectedCategory('__none__')
         }
     }, [open])
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -112,7 +112,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
             description: r.descripcion,
             amount: r.monto,
             transaction_type: r.tipo,
-            category: selectedCategory || null,
+            category: selectedCategory && selectedCategory !== '__none__' ? selectedCategory : null,
         }))
 
         startTransition(async () => {
@@ -370,7 +370,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                                     <SelectValue placeholder="Sin categoría" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">Sin categoría</SelectItem>
+                                    <SelectItem value="__none__">Sin categoría</SelectItem>
                                     {categories.map(c => (
                                         <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
                                     ))}

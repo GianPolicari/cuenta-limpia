@@ -153,13 +153,17 @@ export default function IngresosEgresosClient({
         let optimisticRows: TxRow[]
 
         if (isInstallment && txType === 'expense' && installmentsCount > 1) {
-            const installmentAmount = amount / installmentsCount
+            const base = Math.round((amount / installmentsCount) * 100) / 100
             const [y, mo, d] = dateStr.split('-').map(Number)
             optimisticRows = Array.from({ length: installmentsCount }, (_, i) => {
                 const dateObj = new Date(y, mo - 1 + i, d)
                 const yr = dateObj.getFullYear()
                 const mn = String(dateObj.getMonth() + 1).padStart(2, '0')
                 const dy = String(dateObj.getDate()).padStart(2, '0')
+                const isLast = i === installmentsCount - 1
+                const installmentAmount = isLast
+                    ? Math.round((amount - base * (installmentsCount - 1)) * 100) / 100
+                    : base
                 return {
                     id: `temp-${Date.now()}-${i}`,
                     description,
@@ -434,6 +438,7 @@ export default function IngresosEgresosClient({
                 }}
                 onRevert={(recurringId) => {
                     setRecurringApplied(prev => prev.filter(a => a.recurring_id !== recurringId))
+                    setTransactions(prev => prev.filter(t => t.id !== `temp-tx-${recurringId}`))
                 }}
             />
 
@@ -1130,7 +1135,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                                     min="2"
                                     max="24"
                                     value={installmentsCount}
-                                    onChange={(e) => setInstallmentsCount(Number(e.target.value))}
+                                    onChange={(e) => setInstallmentsCount(Math.min(24, Math.max(2, Number(e.target.value) || 2)))}
                                 />
                             </div>
                         )}

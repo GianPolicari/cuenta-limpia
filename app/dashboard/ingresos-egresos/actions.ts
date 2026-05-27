@@ -7,8 +7,10 @@ import { createClient } from '@/utils/supabase/server'
 
 export async function getTransactions(month: number, year: number) {
     const supabase = await createClient()
-    const startDate = new Date(year, month, 1).toISOString().split('T')[0]
-    const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0]
+    const mm = String(month + 1).padStart(2, '0')
+    const lastDay = new Date(year, month + 1, 0).getDate()
+    const startDate = `${year}-${mm}-01`
+    const endDate = `${year}-${mm}-${String(lastDay).padStart(2, '0')}`
 
     const { data, error } = await supabase
         .from('transactions')
@@ -36,12 +38,14 @@ export async function addTransaction(formData: FormData) {
     const isInstallment = formData.get('isInstallment') === 'true'
     const installmentsCount = parseInt(formData.get('installmentsCount') as string) || 1
 
-    if (!description || !amount || !transaction_type || !transaction_date) {
+    if (!description || !transaction_type || !transaction_date) {
         return { error: 'Todos los campos son obligatorios' }
     }
+    if (isNaN(amount) || amount <= 0) return { error: 'El monto debe ser mayor a 0.' }
 
     if (isInstallment && transaction_type === 'expense' && installmentsCount > 1) {
-        const installmentAmount = amount / installmentsCount;
+        // Redondear cada cuota a 2 decimales y asignar el residuo a la última
+        const base = Math.round((amount / installmentsCount) * 100) / 100;
         const rowsToInsert = [];
         const [year, monthDigit, day] = transaction_date.split('-').map(Number);
 
@@ -52,6 +56,11 @@ export async function addTransaction(formData: FormData) {
             const d = String(dateObj.getDate()).padStart(2, '0');
             const formattedDate = `${y}-${m}-${d}`;
 
+            const isLast = i === installmentsCount - 1;
+            const installmentAmount = isLast
+                ? Math.round((amount - base * (installmentsCount - 1)) * 100) / 100
+                : base;
+
             rowsToInsert.push({
                 amount: installmentAmount,
                 transaction_date: formattedDate,
@@ -61,6 +70,7 @@ export async function addTransaction(formData: FormData) {
                 card_id,
                 cuota_actual: i + 1,
                 total_cuotas: installmentsCount,
+                user_id: user.id,
             });
         }
 
@@ -70,6 +80,7 @@ export async function addTransaction(formData: FormData) {
         const { error } = await supabase.from('transactions').insert({
             amount, transaction_date, description,
             category: category || null, transaction_type, card_id,
+            user_id: user.id,
         });
         if (error) return { error: 'Error al guardar: ' + error.message }
     }
@@ -89,6 +100,11 @@ export async function updateTransaction(id: string, formData: FormData) {
     const transaction_type = formData.get('transaction_type') as string
     const transaction_date = formData.get('date') as string
     const card_id = (formData.get('card_id') as string) || null
+
+    if (!description || !transaction_type || !transaction_date) {
+        return { error: 'Todos los campos son obligatorios' }
+    }
+    if (isNaN(amount) || amount <= 0) return { error: 'El monto debe ser mayor a 0.' }
 
     const { error } = await supabase.from('transactions').update({
         amount, transaction_date, description,
@@ -154,7 +170,7 @@ export async function batchInsertTransactions(
     const CHUNK = 500
     let inserted = 0
     for (let i = 0; i < rows.length; i += CHUNK) {
-        const chunk = rows.slice(i, i + CHUNK)
+        const chunk = rows.slice(i, i + CHUNK).map((row) => ({ ...row, user_id: user.id }))
         const { error } = await supabase.from('transactions').insert(chunk)
         if (error) return { error: error.message, inserted }
         inserted += chunk.length

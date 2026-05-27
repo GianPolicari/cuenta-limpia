@@ -219,7 +219,18 @@ export interface Database {
             [_ in never]: never
         }
         Functions: {
-            [_ in never]: never
+            contribute_to_goal: {
+                Args: { contribution: number; goal_id: string }
+                Returns: {
+                    id: string
+                    name: string
+                    target_amount: number
+                    current_amount: number
+                    deadline: string | null
+                    created_at: string | null
+                    user_id: string
+                }
+            }
         }
         Enums: {
             [_ in never]: never

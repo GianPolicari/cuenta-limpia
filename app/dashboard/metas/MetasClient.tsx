@@ -215,7 +215,9 @@ export default function MetasClient({ initialGoals }: Props) {
             ) : (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {goals.map((goal) => {
-                        const pct = Math.min(100, Math.round((goal.current_amount / goal.target_amount) * 100))
+                        const pct = goal.target_amount > 0
+                            ? Math.min(100, Math.round((goal.current_amount / goal.target_amount) * 100))
+                            : 0
                         const completed = pct >= 100
                         const daysLeft = calcDaysLeft(goal.deadline)
 

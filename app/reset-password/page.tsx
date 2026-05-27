@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -13,11 +13,30 @@ import { toast } from 'sonner'
 export default function ResetPasswordPage() {
     const [newPassword, setNewPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [status, setStatus] = useState<'checking' | 'ready' | 'invalid'>('checking')
     const router = useRouter()
     const supabase = createClient()
 
+    // Solo permitir el cambio si hay una sesión de recovery válida (link del email)
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'PASSWORD_RECOVERY' || session) {
+                setStatus('ready')
+            }
+        })
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setStatus((prev) => (session ? 'ready' : prev === 'ready' ? 'ready' : 'invalid'))
+        })
+        return () => subscription.unsubscribe()
+    }, [supabase])
+
     const handleUpdatePassword = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if (status !== 'ready') {
+            toast.error('El enlace de recuperación es inválido o expiró.')
+            return
+        }
 
         if (!newPassword || newPassword.length < 6) {
             toast.error('La contraseña debe tener al menos 6 caracteres.')
@@ -66,32 +85,47 @@ export default function ResetPasswordPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-6">
-                    <form onSubmit={handleUpdatePassword} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="newPassword">Nueva Contraseña</Label>
-                            <Input
-                                id="newPassword"
-                                name="newPassword"
-                                type="password"
-                                placeholder="••••••••"
-                                required
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                minLength={6}
-                                disabled={isLoading}
-                            />
-                        </div>
-
-                        <div className="flex flex-col gap-3 pt-2">
+                    {status === 'invalid' ? (
+                        <div className="space-y-4 text-center">
+                            <p className="text-sm text-muted-foreground">
+                                El enlace de recuperación es inválido o expiró. Pedí uno nuevo desde la pantalla de recuperación.
+                            </p>
                             <Button
-                                type="submit"
-                                disabled={isLoading}
+                                type="button"
                                 className="w-full font-semibold shadow-brand"
+                                onClick={() => router.push('/olvide-password')}
                             >
-                                {isLoading ? 'Actualizando...' : 'Actualizar contraseña'}
+                                Pedir un nuevo enlace
                             </Button>
                         </div>
-                    </form>
+                    ) : (
+                        <form onSubmit={handleUpdatePassword} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="newPassword">Nueva Contraseña</Label>
+                                <Input
+                                    id="newPassword"
+                                    name="newPassword"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    required
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    minLength={6}
+                                    disabled={isLoading || status === 'checking'}
+                                />
+                            </div>
+
+                            <div className="flex flex-col gap-3 pt-2">
+                                <Button
+                                    type="submit"
+                                    disabled={isLoading || status === 'checking'}
+                                    className="w-full font-semibold shadow-brand"
+                                >
+                                    {isLoading ? 'Actualizando...' : status === 'checking' ? 'Verificando enlace...' : 'Actualizar contraseña'}
+                                </Button>
+                            </div>
+                        </form>
+                    )}
                 </CardContent>
             </Card>
         </div>

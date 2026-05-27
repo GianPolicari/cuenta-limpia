@@ -197,7 +197,7 @@ export default function DashboardClient({
                                 </span>
                                 <Badge variant={dolarPositive ? 'income' : 'expense'}>
                                     {dolarPositive ? <ArrowUpRight /> : <ArrowDownRight />}
-                                    {Math.abs(dolar.variacion)}%
+                                    {Math.abs(dolar.variacion).toFixed(2)}%
                                 </Badge>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -382,6 +382,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
     const incomeCats = initialCategories.filter((c) => c.type === 'income')
 
     function handleUpsertBudget(categoryName: string, amount: number) {
+        const prevBudgets = budgets
         // Optimistic update
         setBudgets((prev) => {
             const exists = prev.find((b) => b.category_name === categoryName)
@@ -391,7 +392,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
         startTransition(async () => {
             const result = await upsertBudget(categoryName, amount)
             if (result.error) {
-                setBudgets(initialBudgets)
+                setBudgets(prevBudgets)
                 toast.error("No pudimos guardar el presupuesto. Probá de nuevo.", { description: result.error })
             } else {
                 toast.success("Presupuesto guardado")
@@ -401,12 +402,13 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
     }
 
     function handleDeleteBudget(categoryName: string) {
+        const prevBudgets = budgets
         // Optimistic update
         setBudgets((prev) => prev.filter((b) => b.category_name !== categoryName))
         startTransition(async () => {
             const result = await deleteBudget(categoryName)
             if (result.error) {
-                setBudgets(initialBudgets)
+                setBudgets(prevBudgets)
                 toast.error("No pudimos eliminar el presupuesto. Probá de nuevo.", { description: result.error })
             } else {
                 router.refresh()
@@ -582,10 +584,10 @@ function BudgetInput({ categoryName, currentBudget, onSave, onClear, isPending }
     const [dirty, setDirty] = useState(false)
 
     // Sync if parent updates (e.g. after refresh)
-    useState(() => {
+    useEffect(() => {
         setValue(currentBudget !== null ? String(currentBudget) : '')
         setDirty(false)
-    })
+    }, [currentBudget])
 
     function handleSave() {
         const num = parseFloat(value.replace(',', '.'))
@@ -701,6 +703,7 @@ function RecurrentesTab({
     const router = useRouter()
 
     function handleAdd(formData: FormData) {
+        const prevRecurring = recurring
         const tempId = `temp-${Date.now()}`
         const cardId = formData.get('card_id') as string
         const cardName = initialCards.find(c => c.id === cardId)?.name ?? null
@@ -721,7 +724,7 @@ function RecurrentesTab({
         startTransition(async () => {
             const result = await addRecurring(formData)
             if (result.error) {
-                setRecurring(initialRecurring)
+                setRecurring(prevRecurring)
                 setError(result.error)
                 toast.error('No pudimos agregar la recurrente. Probá de nuevo.', { description: result.error })
                 setAddOpen(true)
@@ -735,6 +738,7 @@ function RecurrentesTab({
 
     function handleEdit(formData: FormData) {
         if (!editRec) return
+        const prevRecurring = recurring
         const cardId = formData.get('card_id') as string
         const cardName = initialCards.find(c => c.id === cardId)?.name ?? null
         const updated: RecurringRow = {
@@ -754,7 +758,7 @@ function RecurrentesTab({
         startTransition(async () => {
             const result = await updateRecurring(editRec.id, formData)
             if (result.error) {
-                setRecurring(initialRecurring)
+                setRecurring(prevRecurring)
                 setError(result.error)
                 toast.error('No pudimos guardar los cambios. Probá de nuevo.', { description: result.error })
                 setEditRec(editRec)
@@ -767,12 +771,13 @@ function RecurrentesTab({
     }
 
     function handleDelete(id: string) {
+        const prevRecurring = recurring
         setRecurring(prev => prev.filter(r => r.id !== id))
         setDeleteTarget(null)
         startTransition(async () => {
             const result = await deleteRecurring(id)
             if (result?.error) {
-                setRecurring(initialRecurring)
+                setRecurring(prevRecurring)
                 toast.error('No pudimos eliminar la recurrente. Probá de nuevo.', { description: result.error })
                 return
             }

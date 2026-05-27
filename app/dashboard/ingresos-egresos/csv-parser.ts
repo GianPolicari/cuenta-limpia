@@ -50,7 +50,15 @@ function parseLine(line: string): string[] {
   return result
 }
 
-// Normaliza fecha: acepta DD/MM/YYYY, YYYY-MM-DD → devuelve YYYY-MM-DD o null
+// Construye YYYY-MM-DD solo si la fecha existe de verdad (rechaza 31/02, 30/02, etc.)
+function buildDate(y: number, m: number, d: number): string | null {
+  if (m < 1 || m > 12 || d < 1 || d > 31) return null
+  const dt = new Date(y, m - 1, d)
+  if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null
+  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
+// Normaliza fecha: acepta DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD → devuelve YYYY-MM-DD o null
 function parseDate(raw: string): string | null {
   const s = raw.trim()
 
@@ -58,39 +66,46 @@ function parseDate(raw: string): string | null {
   const isoMatch = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
   if (isoMatch) {
     const [, y, m, d] = isoMatch
-    const month = parseInt(m)
-    const day = parseInt(d)
-    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
-    }
-    return null
+    return buildDate(parseInt(y), parseInt(m), parseInt(d))
   }
 
   // DD/MM/YYYY o D/M/YYYY
   const dmmyMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
   if (dmmyMatch) {
     const [, d, m, y] = dmmyMatch
-    const month = parseInt(m)
-    const day = parseInt(d)
-    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
-    }
-    return null
+    return buildDate(parseInt(y), parseInt(m), parseInt(d))
   }
 
   // DD-MM-YYYY
   const dmmyDashMatch = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/)
   if (dmmyDashMatch) {
     const [, d, m, y] = dmmyDashMatch
-    const month = parseInt(m)
-    const day = parseInt(d)
-    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
-    }
-    return null
+    return buildDate(parseInt(y), parseInt(m), parseInt(d))
   }
 
   return null
+}
+
+// Parsea un monto tolerando separadores de miles y decimales en formato AR ("1.234,56") o US ("1,234.56")
+function parseAmount(raw: string): number {
+  let s = raw.trim().replace(/[^\d,.-]/g, '') // dejar solo dígitos, coma, punto y signo
+  if (!s) return NaN
+
+  const lastComma = s.lastIndexOf(',')
+  const lastDot = s.lastIndexOf('.')
+
+  if (lastComma !== -1 && lastDot !== -1) {
+    // El separador decimal es el que aparece último; el otro es separador de miles
+    const decimalSep = lastComma > lastDot ? ',' : '.'
+    const thousandSep = decimalSep === ',' ? '.' : ','
+    s = s.split(thousandSep).join('').replace(decimalSep, '.')
+  } else if (lastComma !== -1) {
+    // Solo coma: tratarla como separador decimal (formato AR)
+    s = s.replace(',', '.')
+  }
+  // Solo punto (o ninguno): ya está en formato parseable
+
+  return parseFloat(s)
 }
 
 // Normaliza tipo: ingreso/income/credito → 'income', egreso/gasto/expense/debito → 'expense', null si no reconoce
@@ -145,7 +160,7 @@ export function parseCsv(text: string, mapping: ColMapping): ParseResult {
     }
 
     // parseFloat monto
-    const montoRaw = parseFloat(rawMonto.replace(',', '.'))
+    const montoRaw = parseAmount(rawMonto)
     if (isNaN(montoRaw) || montoRaw === 0) {
       errorRows.push({ raw: cols, reason: 'Monto inválido' })
       continue

@@ -178,8 +178,8 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                                         <SelectValue placeholder="Seleccioná un tipo" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="credit">Crédito</SelectItem>
-                                        <SelectItem value="debit">Débito</SelectItem>
+                                        <SelectItem value="Crédito">Crédito</SelectItem>
+                                        <SelectItem value="Débito">Débito</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

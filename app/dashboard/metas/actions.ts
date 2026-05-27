@@ -85,22 +85,13 @@ export async function contributeToGoal(id: string, amount: number) {
 
     if (isNaN(amount) || amount <= 0) return { error: 'El monto debe ser mayor a 0.' }
 
-    const { data: goal, error: fetchError } = await supabase
-        .from('savings_goals')
-        .select('current_amount')
-        .eq('id', id)
+    // Update atómico vía RPC para evitar race conditions en aportes concurrentes
+    const { data, error } = await supabase
+        .rpc('contribute_to_goal', { goal_id: id, contribution: amount })
         .single()
 
-    if (fetchError || !goal) return { error: fetchError?.message ?? 'Meta no encontrada.' }
-
-    const newAmount = goal.current_amount + amount
-
-    const { error } = await supabase
-        .from('savings_goals')
-        .update({ current_amount: newAmount })
-        .eq('id', id)
-
     if (error) return { error: error.message }
+    if (!data) return { error: 'Meta no encontrada.' }
 
     revalidatePath('/dashboard/metas')
     return { error: null }

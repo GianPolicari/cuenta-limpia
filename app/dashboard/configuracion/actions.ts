@@ -14,13 +14,16 @@ export async function getCards() {
 
 export async function addCard(formData: FormData) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const name = formData.get('name') as string
     const card_type = formData.get('card_type') as string
     const color = formData.get('color') as string | null
 
     if (!name || !card_type) return { error: 'Nombre y tipo son obligatorios.' }
 
-    const { error } = await supabase.from('cards').insert({ name, card_type, color })
+    const { error } = await supabase.from('cards').insert({ name, card_type, color, user_id: user.id })
     if (error) return { error: error.message }
     revalidatePath('/dashboard/configuracion')
     return { error: null }
@@ -28,6 +31,9 @@ export async function addCard(formData: FormData) {
 
 export async function updateCard(id: string, formData: FormData) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const name = formData.get('name') as string
     const card_type = formData.get('card_type') as string
     const color = formData.get('color') as string | null
@@ -40,6 +46,9 @@ export async function updateCard(id: string, formData: FormData) {
 
 export async function deleteCard(id: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const { error } = await supabase.from('cards').delete().eq('id', id)
     if (error) return { error: error.message }
     revalidatePath('/dashboard/configuracion')
@@ -64,11 +73,15 @@ const DEFAULT_CATEGORIES = [
 
 export async function seedDefaultCategories() {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
     const { count } = await supabase
         .from('custom_categories')
         .select('*', { count: 'exact', head: true })
     if ((count ?? 0) > 0) return
-    await supabase.from('custom_categories').insert(DEFAULT_CATEGORIES)
+    await supabase
+        .from('custom_categories')
+        .insert(DEFAULT_CATEGORIES.map((c) => ({ ...c, user_id: user.id })))
 }
 
 export async function getCategories() {
@@ -80,12 +93,15 @@ export async function getCategories() {
 
 export async function addCategory(formData: FormData) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const name = formData.get('name') as string
     const type = formData.get('type') as string
 
     if (!name || !type) return { error: 'Nombre y tipo son obligatorios.' }
 
-    const { error } = await supabase.from('custom_categories').insert({ name, type })
+    const { error } = await supabase.from('custom_categories').insert({ name, type, user_id: user.id })
     if (error) return { error: error.message }
     revalidatePath('/dashboard/configuracion')
     return { error: null }
@@ -93,6 +109,9 @@ export async function addCategory(formData: FormData) {
 
 export async function updateCategory(id: string, formData: FormData) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const name = formData.get('name') as string
     const type = formData.get('type') as string
 
@@ -104,6 +123,9 @@ export async function updateCategory(id: string, formData: FormData) {
 
 export async function deleteCategory(id: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const { error } = await supabase.from('custom_categories').delete().eq('id', id)
     if (error) return { error: error.message }
     revalidatePath('/dashboard/configuracion')
@@ -124,10 +146,14 @@ export async function getBudgets() {
 
 export async function upsertBudget(categoryName: string, amount: number) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+    if (isNaN(amount) || amount < 0) return { error: 'El monto debe ser un número válido.' }
+
     const { error } = await supabase
         .from('budgets')
         .upsert(
-            { category_name: categoryName, monthly_amount: amount },
+            { category_name: categoryName, monthly_amount: amount, user_id: user.id },
             { onConflict: 'user_id,category_name' }
         )
     if (error) return { error: error.message }
@@ -138,6 +164,9 @@ export async function upsertBudget(categoryName: string, amount: number) {
 
 export async function deleteBudget(categoryName: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const { error } = await supabase
         .from('budgets')
         .delete()
@@ -162,6 +191,9 @@ export async function getRecurringTransactions() {
 
 export async function addRecurring(formData: FormData) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const description = formData.get('description') as string
     const amount = Number(formData.get('amount'))
     const transaction_type = formData.get('transaction_type') as string
@@ -170,8 +202,12 @@ export async function addRecurring(formData: FormData) {
     const day_of_month = Number(formData.get('day_of_month'))
     const is_active = formData.get('is_active') === 'true'
 
-    if (!description || !amount || !transaction_type || !day_of_month) {
+    if (!description || !transaction_type) {
         return { error: 'Completá todos los campos obligatorios.' }
+    }
+    if (isNaN(amount) || amount <= 0) return { error: 'El monto debe ser mayor a 0.' }
+    if (isNaN(day_of_month) || day_of_month < 1 || day_of_month > 31) {
+        return { error: 'El día del mes debe estar entre 1 y 31.' }
     }
 
     const { error } = await supabase.from('recurring_transactions').insert({
@@ -182,6 +218,7 @@ export async function addRecurring(formData: FormData) {
         card_id: card_id && card_id !== 'none' ? card_id : null,
         day_of_month,
         is_active,
+        user_id: user.id,
     })
     if (error) return { error: error.message }
     revalidatePath('/dashboard/configuracion')
@@ -191,6 +228,9 @@ export async function addRecurring(formData: FormData) {
 
 export async function updateRecurring(id: string, formData: FormData) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const description = formData.get('description') as string
     const amount = Number(formData.get('amount'))
     const transaction_type = formData.get('transaction_type') as string
@@ -198,6 +238,11 @@ export async function updateRecurring(id: string, formData: FormData) {
     const card_id = (formData.get('card_id') as string) || null
     const day_of_month = Number(formData.get('day_of_month'))
     const is_active = formData.get('is_active') === 'true'
+
+    if (isNaN(amount) || amount <= 0) return { error: 'El monto debe ser mayor a 0.' }
+    if (isNaN(day_of_month) || day_of_month < 1 || day_of_month > 31) {
+        return { error: 'El día del mes debe estar entre 1 y 31.' }
+    }
 
     const { error } = await supabase
         .from('recurring_transactions')
@@ -219,6 +264,9 @@ export async function updateRecurring(id: string, formData: FormData) {
 
 export async function deleteRecurring(id: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
     const { error } = await supabase.from('recurring_transactions').delete().eq('id', id)
     if (error) return { error: error.message }
     revalidatePath('/dashboard/configuracion')
@@ -239,6 +287,8 @@ export async function getRecurringApplied(month: number, year: number) {
 
 export async function applyRecurring(recurringId: string, month: number, year: number) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
 
     // Obtener la recurrente
     const { data: rec, error: recError } = await supabase
@@ -265,6 +315,7 @@ export async function applyRecurring(recurringId: string, month: number, year: n
             category: rec.category,
             card_id: rec.card_id,
             transaction_date,
+            user_id: user.id,
         })
         .select('id')
         .single()
@@ -276,6 +327,7 @@ export async function applyRecurring(recurringId: string, month: number, year: n
         applied_month: month,
         applied_year: year,
         transaction_id: tx.id,
+        user_id: user.id,
     })
     if (appliedError) return { error: appliedError.message }
 

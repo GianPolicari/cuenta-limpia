@@ -18,6 +18,6 @@ export function formatMoney(value: number, currency: "ARS" | "USD"): string {
 }
 
 export function formatCuota(actual: number | null, total: number | null): string | null {
-  if (!actual || !total) return null
+  if (actual == null || total == null) return null
   return `Cuota ${actual} de ${total}`
 }

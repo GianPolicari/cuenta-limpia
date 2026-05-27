@@ -33,19 +33,11 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    const publicRoutes = ['/login', '/register', '/olvide-password', '/reset-password']
+    // Secure by default: solo estas rutas son públicas, el resto requiere sesión
+    const publicRoutes = ['/', '/login', '/register', '/olvide-password', '/reset-password']
+    const isPublic = publicRoutes.includes(request.nextUrl.pathname)
 
-    // Explicitly allow public routes (including password reset flow)
-    if (publicRoutes.includes(request.nextUrl.pathname)) {
-        return supabaseResponse
-    }
-
-    const protectedRoutes = ['/dashboard', '/onboarding']
-    const isProtected = protectedRoutes.some(r =>
-        request.nextUrl.pathname === r || request.nextUrl.pathname.startsWith(r + '/')
-    )
-
-    if (!user && isProtected) {
+    if (!user && !isPublic) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
