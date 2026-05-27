@@ -64,22 +64,22 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
-            {/* Ambient violet glow */}
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4">
+            {/* Ambient emerald glow */}
             <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
-                <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+                <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
+                <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-emerald-500/5 blur-3xl" />
             </div>
 
-            <Card className="cl-animate-scale relative w-full max-w-md backdrop-blur-xl">
+            <Card className="cl-animate-scale relative w-full max-w-md backdrop-blur-xl bg-slate-900/80 border-slate-800 text-white">
                 <CardHeader className="space-y-3 text-center">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7C6BFF] to-[#5B47E0] shadow-brand">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-brand">
                         <ShieldCheck className="h-7 w-7 text-white" aria-hidden />
                     </div>
-                    <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+                    <CardTitle className="text-2xl font-bold tracking-tight text-white">
                         Nueva Contraseña
                     </CardTitle>
-                    <CardDescription className="text-muted-foreground">
+                    <CardDescription className="text-slate-400">
                         Ingresá una nueva contraseña segura para tu cuenta.
                     </CardDescription>
                 </CardHeader>
@@ -87,7 +87,7 @@ export default function ResetPasswordPage() {
                 <CardContent className="space-y-6">
                     {status === 'invalid' ? (
                         <div className="space-y-4 text-center">
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-slate-400">
                                 El enlace de recuperación es inválido o expiró. Pedí uno nuevo desde la pantalla de recuperación.
                             </p>
                             <Button
