@@ -11,6 +11,7 @@ import {
     ResponsiveContainer,
 } from 'recharts'
 import { formatMoney } from '@/lib/format'
+import { INCOME_STRONG_HEX, EXPENSE_STRONG_HEX, BORDER_LIGHT_HEX } from '@/lib/theme'
 
 interface MonthlyData {
     month: string
@@ -43,15 +44,15 @@ function CustomTooltip({ active, payload, label, showUSD }: { active?: boolean; 
 }
 
 export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
-    const [colors, setColors] = useState({ income: '#10B981', expense: '#EF4444', border: '#E6E6EC' })
+    const [colors, setColors] = useState({ income: INCOME_STRONG_HEX, expense: EXPENSE_STRONG_HEX, border: BORDER_LIGHT_HEX })
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
     useEffect(() => {
         const style = getComputedStyle(document.documentElement)
         setColors({
-            income: style.getPropertyValue('--income-strong').trim() || '#10B981',
-            expense: style.getPropertyValue('--expense-strong').trim() || '#EF4444',
-            border: style.getPropertyValue('--border').trim() || '#E6E6EC',
+            income: style.getPropertyValue('--income-strong').trim() || INCOME_STRONG_HEX,
+            expense: style.getPropertyValue('--expense-strong').trim() || EXPENSE_STRONG_HEX,
+            border: style.getPropertyValue('--border').trim() || BORDER_LIGHT_HEX,
         })
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
         setPrefersReducedMotion(mq.matches)

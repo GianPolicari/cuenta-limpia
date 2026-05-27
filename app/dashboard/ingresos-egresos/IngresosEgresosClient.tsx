@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition, useEffect, useMemo, useCallback } from 'react'
-import { BRAND_PRIMARY_HEX, CHART_COLORS_HEX } from '@/lib/theme'
+import { BRAND_PRIMARY_HEX, CHART_COLORS_HEX, BORDER_LIGHT_HEX, MUTED_FG_LIGHT_HEX } from '@/lib/theme'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -109,7 +109,7 @@ export default function IngresosEgresosClient({
     const [searchQuery, setSearchQuery] = useState('')
     const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
     const [currentPage, setCurrentPage] = useState(1)
-    const [chartColors, setChartColors] = useState({ border: '#E6E6EC', mutedFg: '#4A4A55' })
+    const [chartColors, setChartColors] = useState({ border: BORDER_LIGHT_HEX, mutedFg: MUTED_FG_LIGHT_HEX })
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
     const itemsPerPage = 10
     const now = new Date()
@@ -119,8 +119,8 @@ export default function IngresosEgresosClient({
     useEffect(() => {
         const style = getComputedStyle(document.documentElement)
         setChartColors({
-            border: style.getPropertyValue('--border').trim() || '#E6E6EC',
-            mutedFg: style.getPropertyValue('--muted-foreground').trim() || '#4A4A55',
+            border: style.getPropertyValue('--border').trim() || BORDER_LIGHT_HEX,
+            mutedFg: style.getPropertyValue('--muted-foreground').trim() || MUTED_FG_LIGHT_HEX,
         })
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
         setPrefersReducedMotion(mq.matches)
@@ -416,7 +416,7 @@ export default function IngresosEgresosClient({
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            {MONTHS.map((m, i) => <SelectItem key={i} value={String(i)}>{m}</SelectItem>)}
+                            {MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <Select value={year} onValueChange={setYear}>
@@ -655,11 +655,11 @@ export default function IngresosEgresosClient({
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex gap-1">
-                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-info" aria-label="Editar operación" onClick={() => { fetchCategoriesForType(tx.transaction_type ?? 'expense'); setEditTx(tx) }}>
-                                                        <Pencil className="h-4 w-4" />
+                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-info" aria-label={`Editar operación: ${tx.description ?? formatDate(tx.transaction_date)}`} onClick={() => { fetchCategoriesForType(tx.transaction_type ?? 'expense'); setEditTx(tx) }}>
+                                                        <Pencil className="h-4 w-4" aria-hidden="true" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-expense" aria-label="Eliminar operación" disabled={isPending} onClick={() => setDeleteTx(tx)}>
-                                                        <Trash2 className="h-4 w-4" />
+                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-expense" aria-label={`Eliminar operación: ${tx.description ?? formatDate(tx.transaction_date)}`} disabled={isPending} onClick={() => setDeleteTx(tx)}>
+                                                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                                                     </Button>
                                                 </div>
                                             </TableCell>

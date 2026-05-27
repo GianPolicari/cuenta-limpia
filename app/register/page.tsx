@@ -37,7 +37,7 @@ export default async function RegisterPage({
 
                 <CardContent className="space-y-6">
                     {error && (
-                        <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">
+                        <div id="form-error" role="alert" className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">
                             {decodeURIComponent(error)}
                         </div>
                     )}
@@ -51,6 +51,7 @@ export default async function RegisterPage({
                                 type="email"
                                 placeholder="tu@email.com"
                                 required
+                                aria-describedby={error ? 'form-error' : undefined}
                             />
                         </div>
 
@@ -63,6 +64,7 @@ export default async function RegisterPage({
                                 placeholder="••••••••"
                                 required
                                 minLength={6}
+                                aria-describedby={error ? 'form-error' : undefined}
                             />
                         </div>
 

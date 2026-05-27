@@ -288,4 +288,11 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+  .cl-hover-lift:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .cl-press:active {
+    transform: none;
+  }
 }

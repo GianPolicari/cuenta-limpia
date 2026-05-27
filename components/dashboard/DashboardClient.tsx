@@ -238,7 +238,6 @@ export default function DashboardClient({
                         value={displayBalance}
                         kind={balance >= 0 ? 'income' : 'expense'}
                         currency={currency}
-                        showIcon={false}
                     />
                 </KpiCard>
 

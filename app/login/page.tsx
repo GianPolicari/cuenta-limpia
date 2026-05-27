@@ -37,7 +37,7 @@ export default async function LoginPage({
 
                 <CardContent className="space-y-6">
                     {error && (
-                        <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">
+                        <div id="form-error" role="alert" className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">
                             {decodeURIComponent(error)}
                         </div>
                     )}
@@ -51,6 +51,7 @@ export default async function LoginPage({
                                 type="email"
                                 placeholder="tu@email.com"
                                 required
+                                aria-describedby={error ? 'form-error' : undefined}
                             />
                         </div>
 
@@ -70,6 +71,7 @@ export default async function LoginPage({
                                 type="password"
                                 placeholder="••••••••"
                                 required
+                                aria-describedby={error ? 'form-error' : undefined}
                             />
                         </div>
 
