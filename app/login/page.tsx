@@ -15,22 +15,22 @@ export default async function LoginPage({
     const error = params?.error
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4">
-            {/* Ambient emerald glow */}
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
+            {/* Ambient violet glow */}
             <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
-                <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-emerald-500/5 blur-3xl" />
+                <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+                <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
             </div>
 
-            <Card className="cl-animate-scale relative w-full max-w-md backdrop-blur-xl bg-slate-900/80 border-slate-800 text-white">
+            <Card className="cl-animate-scale relative w-full max-w-md backdrop-blur-xl">
                 <CardHeader className="space-y-3 text-center">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-brand">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7C6BFF] to-[#5B47E0] shadow-brand">
                         <DollarSign className="h-7 w-7 text-white" aria-hidden />
                     </div>
-                    <CardTitle className="text-2xl font-bold tracking-tight text-white">
+                    <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
                         CuentaLimpia
                     </CardTitle>
-                    <CardDescription className="text-slate-400">
+                    <CardDescription className="text-muted-foreground">
                         Ingresá a tu cuenta para gestionar tus finanzas
                     </CardDescription>
                 </CardHeader>
@@ -59,7 +59,7 @@ export default async function LoginPage({
                                 <Label htmlFor="password">Contraseña</Label>
                                 <Link
                                     href="/olvide-password"
-                                    className="relative z-10 text-xs font-medium text-slate-400 transition-colors hover:text-primary"
+                                    className="relative z-10 text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
                                 >
                                     ¿Olvidaste tu contraseña?
                                 </Link>
@@ -84,7 +84,7 @@ export default async function LoginPage({
                         </div>
                     </form>
 
-                    <div className="text-center text-sm text-slate-400">
+                    <div className="text-center text-sm text-muted-foreground">
                         ¿No tenés cuenta?{' '}
                         <Link
                             href="/register"
@@ -94,7 +94,7 @@ export default async function LoginPage({
                         </Link>
                     </div>
 
-                    <p className="text-center text-xs text-slate-400">
+                    <p className="text-center text-xs text-muted-foreground">
                         Tu información financiera, siempre segura.
                     </p>
                 </CardContent>
