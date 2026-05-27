@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import {
     PieChart,
     Pie,
@@ -9,6 +10,7 @@ import {
     Legend,
 } from 'recharts'
 import { formatMoney } from '@/lib/format'
+import { CHART_COLORS_HEX } from '@/lib/theme'
 
 interface CategoryData {
     name: string
@@ -19,17 +21,6 @@ interface CategoryChartProps {
     data: CategoryData[]
     showUSD?: boolean
 }
-
-const COLORS = [
-    'var(--chart-1)',
-    'var(--chart-2)',
-    'var(--chart-3)',
-    'var(--chart-4)',
-    'var(--chart-5)',
-    'var(--chart-6)',
-    'var(--chart-7)',
-    'var(--chart-8)',
-]
 
 function CustomTooltip({ active, payload, showUSD }: { active?: boolean; payload?: Array<{ name: string; value: number }>; showUSD?: boolean }) {
     if (active && payload && payload.length) {
@@ -49,6 +40,16 @@ function CustomTooltip({ active, payload, showUSD }: { active?: boolean; payload
 }
 
 export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
+    const [colors, setColors] = useState(CHART_COLORS_HEX)
+
+    useEffect(() => {
+        const style = getComputedStyle(document.documentElement)
+        const resolved = CHART_COLORS_HEX.map((fallback, i) =>
+            style.getPropertyValue(`--chart-${i + 1}`).trim() || fallback
+        )
+        setColors(resolved)
+    }, [])
+
     if (!data || data.length === 0) {
         return (
             <div className="flex h-[260px] sm:h-[320px] items-center justify-center text-muted-foreground">
@@ -74,7 +75,7 @@ export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
                     {data.map((_, index) => (
                         <Cell
                             key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
+                            fill={colors[index % colors.length]}
                             className="transition-all duration-200 hover:opacity-80"
                         />
                     ))}

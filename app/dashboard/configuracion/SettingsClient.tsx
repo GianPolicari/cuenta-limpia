@@ -256,7 +256,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                     <DialogFooter className="pt-2">
                         <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>Cancelar</Button>
                         <Button type="button" variant="destructive" disabled={isPending} onClick={() => deleteTarget && handleDelete(deleteTarget.id)}>
-                            {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Eliminando...</> : 'Eliminar'}
+                            {isPending ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Eliminando...</> : 'Eliminar'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -278,7 +278,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                                 <TableRow>
                                     <TableHead className="text-muted-foreground">Nombre</TableHead>
                                     <TableHead className="text-muted-foreground">Tipo</TableHead>
-                                    <TableHead className="w-20 text-muted-foreground"></TableHead>
+                                    <TableHead className="w-20 text-muted-foreground"><span className="sr-only">Acciones</span></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="cl-stagger-fade">
@@ -485,6 +485,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Editar categoría</DialogTitle>
+                        <DialogDescription>Modificá el nombre y el tipo de la categoría.</DialogDescription>
                     </DialogHeader>
                     {editCat && <CategoryForm onSubmit={handleEdit} isPending={isPending} onCancel={() => setEditCat(null)} defaults={editCat} />}
                 </DialogContent>
@@ -500,7 +501,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                     <DialogFooter className="pt-2">
                         <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>Cancelar</Button>
                         <Button type="button" variant="destructive" disabled={isPending} onClick={() => deleteTarget && handleDelete(deleteTarget.id)}>
-                            {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Eliminando...</> : 'Eliminar'}
+                            {isPending ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Eliminando...</> : 'Eliminar'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -860,7 +861,7 @@ function RecurrentesTab({
                             disabled={isPending}
                             onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
                         >
-                            {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Eliminando...</> : 'Eliminar'}
+                            {isPending ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Eliminando...</> : 'Eliminar'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -890,7 +891,7 @@ function RecurrentesTab({
                                     <TableHead className="text-muted-foreground">Tipo</TableHead>
                                     <TableHead className="text-muted-foreground">Día</TableHead>
                                     <TableHead className="text-muted-foreground">Estado</TableHead>
-                                    <TableHead className="w-20 text-muted-foreground"></TableHead>
+                                    <TableHead className="w-20 text-muted-foreground"><span className="sr-only">Acciones</span></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="cl-stagger-fade">

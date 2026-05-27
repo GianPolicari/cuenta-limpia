@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { DollarSign, ArrowLeft } from 'lucide-react'
+import { DollarSign, ArrowLeft, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -86,7 +86,7 @@ export default function OlvidePasswordPage() {
                                 disabled={isLoading}
                                 className="cl-press w-full font-semibold shadow-brand"
                             >
-                                {isLoading ? 'Enviando enlace...' : 'Enviar enlace de recuperación'}
+                                {isLoading ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Enviando enlace...</> : 'Enviar enlace de recuperación'}
                             </Button>
                         </div>
                     </form>

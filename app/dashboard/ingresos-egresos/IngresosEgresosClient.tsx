@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition, useEffect, useMemo, useCallback } from 'react'
-import { BRAND_PRIMARY_HEX } from '@/lib/theme'
+import { BRAND_PRIMARY_HEX, CHART_COLORS_HEX } from '@/lib/theme'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -517,6 +517,7 @@ export default function IngresosEgresosClient({
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Editar operación</DialogTitle>
+                        <DialogDescription>Modificá los datos de la operación.</DialogDescription>
                     </DialogHeader>
                     {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
                     {editTx && <TxForm onSubmit={handleEdit} isPending={isPending} onCancel={() => setEditTx(null)} cards={cards} defaults={editTx} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} onCardCreated={handleCardCreated} />}
@@ -732,7 +733,7 @@ export default function IngresosEgresosClient({
                                         />
                                         <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={40}>
                                             {cardChartData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color || 'var(--chart-1)'} />
+                                                <Cell key={`cell-${index}`} fill={entry.color || CHART_COLORS_HEX[0]} />
                                             ))}
                                         </Bar>
                                     </BarChart>
@@ -1090,7 +1091,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                         <SelectContent>
                             {dynamicCats.length > 0
                                 ? dynamicCats.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)
-                                : <SelectItem value="_empty" disabled className="text-muted-foreground">Sin categorías — creá una en Configuración</SelectItem>
+                                : <SelectItem value="__no_categories__" disabled className="text-muted-foreground">Sin categorías — creá una en Configuración</SelectItem>
                             }
                         </SelectContent>
                     </Select>

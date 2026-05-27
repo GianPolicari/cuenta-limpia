@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function ResetPasswordPage() {
@@ -121,7 +121,12 @@ export default function ResetPasswordPage() {
                                     disabled={isLoading || status === 'checking'}
                                     className="cl-press w-full font-semibold shadow-brand"
                                 >
-                                    {isLoading ? 'Actualizando...' : status === 'checking' ? 'Verificando enlace...' : 'Actualizar contraseña'}
+                                    {isLoading
+                                        ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Actualizando...</>
+                                        : status === 'checking'
+                                            ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Verificando enlace...</>
+                                            : 'Actualizar contraseña'
+                                    }
                                 </Button>
                             </div>
                         </form>

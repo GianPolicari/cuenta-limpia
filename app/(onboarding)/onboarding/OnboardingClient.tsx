@@ -6,6 +6,7 @@ import { DollarSign, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
+import { BRAND_PRIMARY_HEX } from '@/lib/theme'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,7 +36,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
     // ── Paso 1 state ──
     const [cardName, setCardName] = useState('')
     const [cardType, setCardType] = useState('')
-    const [cardColor, setCardColor] = useState('')
+    const [cardColor, setCardColor] = useState(BRAND_PRIMARY_HEX)
 
     // ── Paso 3 state ──
     const [txType, setTxType] = useState<'income' | 'expense'>('expense')
