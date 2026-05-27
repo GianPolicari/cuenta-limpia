@@ -294,7 +294,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={c.card_type === 'Crédito' ? 'info' : 'income'}>
+                                            <Badge variant={c.card_type === 'Crédito' ? 'info' : 'neutral'}>
                                                 {c.card_type}
                                             </Badge>
                                         </TableCell>
@@ -346,9 +346,10 @@ function CardForm({ onSubmit, isPending, onCancel, defaults }: {
                     </Select>
                 </div>
                 <div className="space-y-2">
-                    <Label>Color</Label>
+                    <Label htmlFor="card-color-form">Color</Label>
                     <div className="flex items-center gap-2">
                         <Input
+                            id="card-color-form"
                             type="color"
                             value={color}
                             onChange={(e) => setColor(e.target.value)}
@@ -622,7 +623,7 @@ function BudgetInput({ categoryName, currentBudget, onSave, onClear, isPending }
                     onChange={(e) => { setValue(e.target.value); setDirty(true) }}
                     onBlur={handleSave}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave() } }}
-                    className="h-7 text-xs"
+                    className="h-9 text-xs"
                     aria-label={`Presupuesto mensual para ${categoryName}`}
                     disabled={isPending}
                 />

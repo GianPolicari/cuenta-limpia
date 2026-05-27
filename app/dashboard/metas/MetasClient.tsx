@@ -410,11 +410,10 @@ export default function MetasClient({ initialGoals }: Props) {
                             onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
                         >
                             {isPending ? (
-                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                                <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Eliminando...</>
                             ) : (
-                                <Trash2 className="h-4 w-4" aria-hidden="true" />
+                                <><Trash2 className="h-4 w-4" aria-hidden="true" /> Eliminar</>
                             )}
-                            Eliminar
                         </Button>
                     </DialogFooter>
                 </DialogContent>
