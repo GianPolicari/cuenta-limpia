@@ -193,7 +193,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                                         type="color"
                                         value={cardColor}
                                         onChange={e => setCardColor(e.target.value)}
-                                        className="h-9 w-14 cursor-pointer rounded-md border border-input bg-transparent p-1"
+                                        className="h-11 w-14 cursor-pointer rounded-md border border-input bg-transparent p-1"
                                         aria-label="Color identificador de la tarjeta"
                                     />
                                     <span className="text-sm text-muted-foreground">{cardColor}</span>

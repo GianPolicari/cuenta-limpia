@@ -32,7 +32,7 @@ export function KpiCard({
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", toneClasses[tone])} aria-hidden="true">
-          <Icon className="h-5 w-5" />
+          <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
       </CardHeader>
       <CardContent>

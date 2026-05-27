@@ -544,7 +544,7 @@ export default function IngresosEgresosClient({
             <Dialog open={!!deleteTx} onOpenChange={o => !o && setDeleteTx(null)}>
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>¿Eliminar esta operación?</DialogTitle>
+                        <DialogTitle>{deleteTx?.transaction_type === 'income' ? '¿Eliminar este ingreso?' : '¿Eliminar este gasto?'}</DialogTitle>
                         <DialogDescription>Esta acción no se puede deshacer.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="pt-2">
@@ -590,21 +590,31 @@ export default function IngresosEgresosClient({
                         <Table className="min-w-[700px]">
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('fecha')}>
-                                        Fecha {renderSortArrow('fecha')}
+                                    <TableHead className="p-0 text-muted-foreground">
+                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('fecha')}>
+                                            Fecha {renderSortArrow('fecha')}
+                                        </button>
                                     </TableHead>
                                     <TableHead className="text-muted-foreground">Descripción</TableHead>
-                                    <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('categoria')}>
-                                        Categoría {renderSortArrow('categoria')}
+                                    <TableHead className="p-0 text-muted-foreground">
+                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('categoria')}>
+                                            Categoría {renderSortArrow('categoria')}
+                                        </button>
                                     </TableHead>
-                                    <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('tarjeta')}>
-                                        Tarjeta {renderSortArrow('tarjeta')}
+                                    <TableHead className="p-0 text-muted-foreground">
+                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tarjeta')}>
+                                            Tarjeta {renderSortArrow('tarjeta')}
+                                        </button>
                                     </TableHead>
-                                    <TableHead className="cursor-pointer text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('tipo')}>
-                                        Tipo {renderSortArrow('tipo')}
+                                    <TableHead className="p-0 text-muted-foreground">
+                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tipo')}>
+                                            Tipo {renderSortArrow('tipo')}
+                                        </button>
                                     </TableHead>
-                                    <TableHead className="cursor-pointer text-right text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('monto')}>
-                                        Monto {renderSortArrow('monto')}
+                                    <TableHead className="p-0 text-muted-foreground">
+                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center justify-end gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('monto')}>
+                                            Monto {renderSortArrow('monto')}
+                                        </button>
                                     </TableHead>
                                     <TableHead className="w-20 text-muted-foreground"><span className="sr-only">Acciones</span></TableHead>
                                 </TableRow>
@@ -911,7 +921,10 @@ function RecurringBanner({
                                         className="text-xs font-semibold"
                                     />
                                     <Badge variant={r.transaction_type === 'income' ? 'income' : 'expense'} className="text-xs">
-                                        {r.transaction_type === 'income' ? 'Ingreso' : 'Gasto'}
+                                        {r.transaction_type === 'income'
+                                            ? <><ArrowUpRight className="h-3 w-3" aria-hidden="true" /> Ingreso</>
+                                            : <><ArrowDownRight className="h-3 w-3" aria-hidden="true" /> Gasto</>
+                                        }
                                     </Badge>
                                     <Badge variant="pending" className="text-xs">Día {r.day_of_month}</Badge>
                                     {r.cards?.name && (
@@ -1065,17 +1078,17 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                 onSubmit(fd)
             }} className="space-y-4">
                 <div className="space-y-2">
-                    <Label>Descripción</Label>
-                    <Input name="description" placeholder="Ej: Compra en Carrefour" required defaultValue={defaults?.description ?? ''} />
+                    <Label htmlFor="tx-description">Descripción</Label>
+                    <Input id="tx-description" name="description" placeholder="Ej: Compra en Carrefour" required defaultValue={defaults?.description ?? ''} />
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                        <Label>Monto</Label>
-                        <Input name="amount" type="number" step="0.01" min="0" placeholder="0.00" required defaultValue={defaults?.amount ?? ''} />
+                        <Label htmlFor="tx-amount">Monto</Label>
+                        <Input id="tx-amount" name="amount" type="number" step="0.01" min="0" placeholder="0.00" required defaultValue={defaults?.amount ?? ''} />
                     </div>
                     <div className="space-y-2">
-                        <Label>Fecha</Label>
-                        <Input name="date" type="date" required defaultValue={defaults?.transaction_date ?? new Date().toISOString().split('T')[0]} className="dark:[color-scheme:dark]" />
+                        <Label htmlFor="tx-date">Fecha</Label>
+                        <Input id="tx-date" name="date" type="date" required defaultValue={defaults?.transaction_date ?? new Date().toISOString().split('T')[0]} className="dark:[color-scheme:dark]" />
                     </div>
                 </div>
 
@@ -1088,8 +1101,8 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                 )}
 
                 <div className="space-y-2">
-                    <Label>Tipo</Label>
-                    <div className="flex gap-2">
+                    <Label id="tx-type-label">Tipo</Label>
+                    <div role="group" aria-labelledby="tx-type-label" className="flex gap-2">
                         <Button type="button" variant="outline" onClick={() => setTxType('expense')}
                             className={cn('flex-1', txType === 'expense' && 'border-expense/40 bg-expense-subtle text-expense hover:bg-expense-subtle')}>
                             Gasto
@@ -1101,9 +1114,9 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label>Categoría</Label>
+                    <Label htmlFor="tx-category">Categoría</Label>
                     <Select value={category} onValueChange={setCategory}>
-                        <SelectTrigger><SelectValue placeholder="Seleccionar categoría" /></SelectTrigger>
+                        <SelectTrigger id="tx-category"><SelectValue placeholder="Seleccionar categoría" /></SelectTrigger>
                         <SelectContent>
                             {dynamicCats.length > 0
                                 ? dynamicCats.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)
@@ -1116,7 +1129,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                 {/* Fix 2: tarjeta con opción de crear inline */}
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <Label>Tarjeta (opcional)</Label>
+                        <Label htmlFor="tx-card">Tarjeta (opcional)</Label>
                         <button
                             type="button"
                             onClick={() => setNewCardOpen(true)}
@@ -1126,7 +1139,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                         </button>
                     </div>
                     <Select value={cardId} onValueChange={setCardId}>
-                        <SelectTrigger><SelectValue placeholder="Sin tarjeta" /></SelectTrigger>
+                        <SelectTrigger id="tx-card"><SelectValue placeholder="Sin tarjeta" /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="none">Sin tarjeta</SelectItem>
                             {cards.map(c => <SelectItem key={c.id} value={c.id}>{c.name} ({c.card_type})</SelectItem>)}

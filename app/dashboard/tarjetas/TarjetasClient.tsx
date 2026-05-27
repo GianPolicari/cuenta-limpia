@@ -304,7 +304,7 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta tarjeta?</DialogTitle>
-                        <DialogDescription>No se puede deshacer.</DialogDescription>
+                        <DialogDescription>Esta acción no se puede deshacer.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="pt-2">
                         <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>

@@ -251,7 +251,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-sm">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta tarjeta?</DialogTitle>
-                        <DialogDescription>No se puede deshacer.</DialogDescription>
+                        <DialogDescription>Esta acción no se puede deshacer.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="pt-2">
                         <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>Cancelar</Button>
@@ -497,7 +497,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-sm">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta categoría?</DialogTitle>
-                        <DialogDescription>No se puede deshacer.</DialogDescription>
+                        <DialogDescription>Esta acción no se puede deshacer.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="pt-2">
                         <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>Cancelar</Button>
@@ -850,7 +850,7 @@ function RecurrentesTab({
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-sm">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta recurrente?</DialogTitle>
-                        <DialogDescription>No se puede deshacer.</DialogDescription>
+                        <DialogDescription>Esta acción no se puede deshacer.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="pt-2">
                         <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>
@@ -1041,8 +1041,8 @@ function RecurringForm({
             </div>
 
             <div className="space-y-2">
-                <Label>Tipo</Label>
-                <div className="flex gap-2">
+                <Label id="rec-type-label">Tipo</Label>
+                <div role="group" aria-labelledby="rec-type-label" className="flex gap-2">
                     <Button
                         type="button"
                         variant="outline"
