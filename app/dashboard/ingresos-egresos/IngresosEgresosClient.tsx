@@ -459,7 +459,7 @@ export default function IngresosEgresosClient({
                         <button
                             type="button"
                             onClick={() => setSearchQuery('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-3.5 text-muted-foreground hover:text-foreground"
                             aria-label="Limpiar búsqueda"
                         >
                             <X className="h-4 w-4" />
@@ -497,7 +497,7 @@ export default function IngresosEgresosClient({
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
                         <Button className="cl-press gap-2 font-semibold">
-                            <Plus className="h-4 w-4" /> Nueva operación
+                            <Plus className="h-4 w-4" aria-hidden="true" /> Nueva operación
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
@@ -612,11 +612,11 @@ export default function IngresosEgresosClient({
                                             <TableCell>
                                                 {linkedCard ? (
                                                     <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                                        <CreditCard className="h-3 w-3" /> {linkedCard}
+                                                        <CreditCard className="h-3 w-3" aria-hidden="true" /> {linkedCard}
                                                     </span>
                                                 ) : tx.card_id ? (
                                                     <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                                        <CreditCard className="h-3 w-3" /> Eliminada
+                                                        <CreditCard className="h-3 w-3" aria-hidden="true" /> Eliminada
                                                     </span>
                                                 ) : <span className="text-muted-foreground">—</span>}
                                             </TableCell>

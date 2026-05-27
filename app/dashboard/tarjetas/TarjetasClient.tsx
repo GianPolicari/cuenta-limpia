@@ -22,6 +22,13 @@ import { CreditCard, Plus, Trash2, Pencil, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createCard, updateCard, deleteCard } from './actions'
 
+function getIconContrast(hex: string): string {
+    const r = parseInt(hex.slice(1, 3), 16)
+    const g = parseInt(hex.slice(3, 5), 16)
+    const b = parseInt(hex.slice(5, 7), 16)
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5 ? '#0B0B12' : '#FFFFFF'
+}
+
 // ==================== TYPES ====================
 
 type CardRow = {
@@ -185,7 +192,8 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                                             style={card.color ? { backgroundColor: card.color } : undefined}
                                         >
                                             <CreditCard
-                                                className={cn('h-5 w-5', card.color ? 'text-primary-foreground' : 'text-primary')}
+                                                className={cn('h-5 w-5', !card.color && 'text-primary')}
+                                                style={card.color ? { color: getIconContrast(card.color) } : undefined}
                                                 aria-hidden="true"
                                             />
                                         </div>

@@ -34,6 +34,7 @@ export function DashboardNav({ variant = 'sidebar' }: { variant?: 'sidebar' | 'b
                     <Link
                         key={item.href}
                         href={item.href}
+                        aria-current={isActive(item.href) ? 'page' : undefined}
                         className={cn(
                             'flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2',
                             isActive(item.href) ? 'text-primary' : 'text-muted-foreground'
@@ -53,6 +54,7 @@ export function DashboardNav({ variant = 'sidebar' }: { variant?: 'sidebar' | 'b
                 <Link
                     key={item.href}
                     href={item.href}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
                     className={cn(
                         'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                         isActive(item.href)

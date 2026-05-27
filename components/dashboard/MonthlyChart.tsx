@@ -76,13 +76,13 @@ export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
                 <Tooltip content={<CustomTooltip showUSD={showUSD} />} cursor={{ fill: 'rgba(148, 163, 184, 0.05)' }} />
                 <Bar
                     dataKey="ingresos"
-                    fill="var(--chart-2)"
+                    fill="var(--income-strong)"
                     radius={[6, 6, 0, 0]}
                     maxBarSize={40}
                 />
                 <Bar
                     dataKey="gastos"
-                    fill="var(--chart-8)"
+                    fill="var(--expense-strong)"
                     radius={[6, 6, 0, 0]}
                     maxBarSize={40}
                 />

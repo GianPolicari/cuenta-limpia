@@ -118,7 +118,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
         startTransition(async () => {
             const result = await batchInsertTransactions(rows)
             if (result.error) {
-                toast.error(`No pudimos importar. ${result.error}`)
+                toast.error(`⚠ No pudimos importar. ${result.error}`)
                 return
             }
             const count = result.inserted
@@ -154,8 +154,9 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                             </DialogDescription>
                         </DialogHeader>
 
-                        <div
-                            className={`mt-2 cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-colors ${isDragging
+                        <button
+                            type="button"
+                            className={`mt-2 w-full cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-colors ${isDragging
                                 ? 'border-primary bg-primary-subtle'
                                 : 'border-border hover:border-primary/50 hover:bg-secondary/50'
                                 }`}
@@ -163,10 +164,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                             onDrop={handleDrop}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
-                            role="button"
-                            tabIndex={0}
                             aria-label="Área de carga de archivo CSV"
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileRef.current?.click() }}
                         >
                             <Upload className="mx-auto mb-3 h-8 w-8 text-muted-foreground" aria-hidden="true" />
                             <p className="text-sm font-medium text-foreground">
@@ -184,7 +182,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                             >
                                 Seleccionar archivo
                             </Button>
-                        </div>
+                        </button>
 
                         <input
                             ref={fileRef}

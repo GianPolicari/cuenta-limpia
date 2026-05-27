@@ -31,7 +31,7 @@ export default function OlvidePasswordPage() {
             })
 
             if (error) {
-                toast.error(error.message)
+                toast.error(`⚠ ${error.message}`)
             } else {
                 toast.success('✅ Si el correo existe, vas a recibir un enlace para recuperar tu cuenta.')
                 setEmail('')

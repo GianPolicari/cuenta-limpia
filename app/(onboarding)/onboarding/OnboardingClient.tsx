@@ -63,7 +63,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
             fd.set('color', cardColor)
             const result = await createCard(fd)
             if (result.error) {
-                toast.error(result.error)
+                toast.error(`⚠ ${result.error}`)
                 return
             }
             setStep(2)
@@ -88,7 +88,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
             fd.set('category', txCategory)
             const result = await addTransaction(fd)
             if (result.error) {
-                toast.error(result.error)
+                toast.error(`⚠ ${result.error}`)
                 return
             }
             router.push('/dashboard')

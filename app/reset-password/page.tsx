@@ -51,7 +51,7 @@ export default function ResetPasswordPage() {
             })
 
             if (error) {
-                toast.error(error.message)
+                toast.error(`⚠ ${error.message}`)
             } else {
                 toast.success('✅ Contraseña actualizada correctamente')
                 router.push('/dashboard')

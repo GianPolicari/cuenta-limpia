@@ -94,12 +94,12 @@ export default function SettingsClient({
                         </div>
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                                <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                                <Mail className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
                                 <p className="truncate text-sm font-medium text-foreground">{email || '—'}</p>
                             </div>
                             {createdAt && (
                                 <div className="mt-0.5 flex items-center gap-2">
-                                    <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                                    <Calendar className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
                                     <p className="text-xs text-muted-foreground">Miembro desde {createdAt}</p>
                                 </div>
                             )}
@@ -119,7 +119,7 @@ export default function SettingsClient({
                         </div>
                         <form action={signOut}>
                             <Button type="submit" variant="outline" size="sm" className="gap-2 border-expense/30 text-expense hover:bg-expense-subtle">
-                                <LogOut className="h-3.5 w-3.5" />
+                                <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
                                 Salir
                             </Button>
                         </form>
