@@ -44,16 +44,23 @@ export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
     useEffect(() => {
-        const style = getComputedStyle(document.documentElement)
-        const resolved = CHART_COLORS_HEX.map((fallback, i) =>
-            style.getPropertyValue(`--chart-${i + 1}`).trim() || fallback
-        )
-        setColors(resolved)
+        const resolveColors = () => {
+            const style = getComputedStyle(document.documentElement)
+            setColors(CHART_COLORS_HEX.map((fallback, i) =>
+                style.getPropertyValue(`--chart-${i + 1}`).trim() || fallback
+            ))
+        }
+        resolveColors()
+        const observer = new MutationObserver(resolveColors)
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
         setPrefersReducedMotion(mq.matches)
         const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
         mq.addEventListener('change', handler)
-        return () => mq.removeEventListener('change', handler)
+        return () => {
+            observer.disconnect()
+            mq.removeEventListener('change', handler)
+        }
     }, [])
 
     if (!data || data.length === 0) {

@@ -181,7 +181,7 @@ export default function MetasClient({ initialGoals }: Props) {
             <div className="cl-animate-enter mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
-                        Metas de Ahorro
+                        Metas de ahorro
                     </h1>
                     <p className="mt-1 text-sm text-muted-foreground">
                         Seguí el progreso de tus objetivos financieros

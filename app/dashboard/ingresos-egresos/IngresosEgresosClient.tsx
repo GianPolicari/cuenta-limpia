@@ -117,16 +117,24 @@ export default function IngresosEgresosClient({
 
     // Resolve chart CSS tokens (SVG attributes can't use CSS variables)
     useEffect(() => {
-        const style = getComputedStyle(document.documentElement)
-        setChartColors({
-            border: style.getPropertyValue('--border').trim() || BORDER_LIGHT_HEX,
-            mutedFg: style.getPropertyValue('--muted-foreground').trim() || MUTED_FG_LIGHT_HEX,
-        })
+        const resolveColors = () => {
+            const style = getComputedStyle(document.documentElement)
+            setChartColors({
+                border: style.getPropertyValue('--border').trim() || BORDER_LIGHT_HEX,
+                mutedFg: style.getPropertyValue('--muted-foreground').trim() || MUTED_FG_LIGHT_HEX,
+            })
+        }
+        resolveColors()
+        const observer = new MutationObserver(resolveColors)
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
         setPrefersReducedMotion(mq.matches)
         const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
         mq.addEventListener('change', handler)
-        return () => mq.removeEventListener('change', handler)
+        return () => {
+            observer.disconnect()
+            mq.removeEventListener('change', handler)
+        }
     }, [])
 
     // Refetch transactions when month/year changes
@@ -490,6 +498,7 @@ export default function IngresosEgresosClient({
                             type="button"
                             size="sm"
                             variant="outline"
+                            aria-pressed={t === filterType}
                             onClick={() => setFilterType(t)}
                             className={cn(
                                 t === filterType && t === 'all' && 'border-primary/40 bg-primary-subtle text-primary',
@@ -550,7 +559,7 @@ export default function IngresosEgresosClient({
                     <DialogFooter className="pt-2">
                         <Button type="button" variant="outline" onClick={() => setDeleteTx(null)}>Cancelar</Button>
                         <Button type="button" variant="destructive" disabled={isPending} onClick={() => deleteTx && handleDelete(deleteTx.id)}>
-                            <Trash2 className="h-4 w-4" /> Eliminar
+                            <Trash2 className="h-4 w-4" aria-hidden="true" /> Eliminar
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -591,23 +600,23 @@ export default function IngresosEgresosClient({
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('fecha')}>
+                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('fecha')}>
                                             Fecha {renderSortArrow('fecha')}
                                         </button>
                                     </TableHead>
                                     <TableHead className="text-muted-foreground">Descripción</TableHead>
                                     <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('categoria')}>
+                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('categoria')}>
                                             Categoría {renderSortArrow('categoria')}
                                         </button>
                                     </TableHead>
                                     <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tarjeta')}>
+                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tarjeta')}>
                                             Tarjeta {renderSortArrow('tarjeta')}
                                         </button>
                                     </TableHead>
                                     <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tipo')}>
+                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tipo')}>
                                             Tipo {renderSortArrow('tipo')}
                                         </button>
                                     </TableHead>

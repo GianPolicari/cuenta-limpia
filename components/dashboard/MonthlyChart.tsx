@@ -48,17 +48,25 @@ export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
     useEffect(() => {
-        const style = getComputedStyle(document.documentElement)
-        setColors({
-            income: style.getPropertyValue('--income-strong').trim() || INCOME_STRONG_HEX,
-            expense: style.getPropertyValue('--expense-strong').trim() || EXPENSE_STRONG_HEX,
-            border: style.getPropertyValue('--border').trim() || BORDER_LIGHT_HEX,
-        })
+        const resolveColors = () => {
+            const style = getComputedStyle(document.documentElement)
+            setColors({
+                income: style.getPropertyValue('--income-strong').trim() || INCOME_STRONG_HEX,
+                expense: style.getPropertyValue('--expense-strong').trim() || EXPENSE_STRONG_HEX,
+                border: style.getPropertyValue('--border').trim() || BORDER_LIGHT_HEX,
+            })
+        }
+        resolveColors()
+        const observer = new MutationObserver(resolveColors)
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
         setPrefersReducedMotion(mq.matches)
         const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
         mq.addEventListener('change', handler)
-        return () => mq.removeEventListener('change', handler)
+        return () => {
+            observer.disconnect()
+            mq.removeEventListener('change', handler)
+        }
     }, [])
 
     if (!data || data.length === 0) {

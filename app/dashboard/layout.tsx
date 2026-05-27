@@ -33,7 +33,7 @@ export default function DashboardLayout({
                             className="w-full justify-start gap-3 text-muted-foreground hover:bg-expense-subtle hover:text-expense"
                         >
                             <LogOut className="h-5 w-5" aria-hidden="true" />
-                            Cerrar Sesión
+                            Cerrar sesión
                         </Button>
                     </form>
                 </div>

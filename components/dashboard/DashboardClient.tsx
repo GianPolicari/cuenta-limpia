@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { DollarSign, TrendingDown, CreditCard, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { DollarSign, TrendingDown, ArrowLeftRight, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { Amount } from '@/components/ui/amount'
@@ -171,8 +171,10 @@ export default function DashboardClient({
                     <button
                         type="button"
                         onClick={() => setShowUSD(!showUSD)}
+                        aria-pressed={showUSD}
+                        aria-label={showUSD ? 'Desactivar vista en USD MEP' : 'Activar vista en USD MEP'}
                         className={cn(
-                            'group flex items-center gap-2.5 rounded-xl border px-4 py-2.5 transition-all duration-300',
+                            'group flex min-h-[44px] items-center gap-2.5 rounded-xl border px-4 py-2.5 transition-all duration-300',
                             showUSD
                                 ? 'border-income/40 bg-income-subtle'
                                 : 'border-border bg-card'
@@ -215,6 +217,7 @@ export default function DashboardClient({
                                 </span>
                                 <Badge variant={dolarPositive ? 'income' : 'expense'}>
                                     {dolarPositive ? <ArrowUpRight aria-hidden="true" /> : <ArrowDownRight aria-hidden="true" />}
+                                    <span className="sr-only">{dolarPositive ? 'Subió' : 'Bajó'}</span>
                                     {Math.abs(dolar.variacion).toFixed(2)}%
                                 </Badge>
                             </div>
@@ -225,15 +228,15 @@ export default function DashboardClient({
 
             {/* KPI Cards */}
             <div className="cl-stagger mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <KpiCard title="Ingresos del Mes" icon={ArrowUpRight} tone="income" hint="ingresos registrados">
+                <KpiCard title="Ingresos del mes" icon={ArrowUpRight} tone="income" hint="ingresos registrados">
                     {formatMoney(displayIngresos, currency)}
                 </KpiCard>
 
-                <KpiCard title="Gastos del Mes" icon={TrendingDown} tone="expense" hint={`${monthExpensesCount} operaciones este mes`}>
+                <KpiCard title="Gastos del mes" icon={TrendingDown} tone="expense" hint={`${monthExpensesCount} operaciones este mes`}>
                     {formatMoney(displayGastos, currency)}
                 </KpiCard>
 
-                <KpiCard title="Balance del Mes" icon={DollarSign} tone="info" hint="Ingresos vs Gastos">
+                <KpiCard title="Balance del mes" icon={DollarSign} tone="info" hint="Ingresos vs Gastos">
                     <Amount
                         value={displayBalance}
                         kind={balance >= 0 ? 'income' : 'expense'}
@@ -241,7 +244,7 @@ export default function DashboardClient({
                     />
                 </KpiCard>
 
-                <KpiCard title="Operaciones" icon={CreditCard} tone="info" hint={`registradas en ${selectedYear}`}>
+                <KpiCard title="Operaciones" icon={ArrowLeftRight} tone="info" hint={`registradas en ${selectedYear}`}>
                     {transactions.length}
                 </KpiCard>
             </div>
@@ -250,7 +253,7 @@ export default function DashboardClient({
             <div className="grid gap-6 lg:grid-cols-2">
                 <Card className="cl-animate-enter cl-hover-lift">
                     <CardHeader>
-                        <CardTitle className="text-foreground">Gastos por Categoría</CardTitle>
+                        <CardTitle className="text-foreground">Gastos por categoría</CardTitle>
                         <CardDescription>
                             Distribución del mes actual {showUSD && '(USD MEP)'}
                         </CardDescription>
@@ -259,7 +262,7 @@ export default function DashboardClient({
                 </Card>
                 <Card className="cl-animate-enter cl-hover-lift">
                     <CardHeader>
-                        <CardTitle className="text-foreground">Ingresos vs Gastos</CardTitle>
+                        <CardTitle className="text-foreground">Ingresos vs gastos</CardTitle>
                         <CardDescription>
                             Evolución mensual {showUSD && '(USD MEP)'}
                         </CardDescription>

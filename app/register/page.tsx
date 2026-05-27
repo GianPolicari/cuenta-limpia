@@ -85,7 +85,7 @@ export default async function RegisterPage({
                             href="/login"
                             className="font-medium text-primary transition-colors hover:text-primary/80"
                         >
-                            Iniciar Sesión
+                            Iniciar sesión
                         </Link>
                     </div>
 
