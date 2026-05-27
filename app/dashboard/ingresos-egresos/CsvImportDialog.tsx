@@ -345,7 +345,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
 
                         {/* Stats */}
                         <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="income">
+                            <Badge variant="info">
                                 {parseResult.validRows.length} válida{parseResult.validRows.length !== 1 ? 's' : ''}
                             </Badge>
                             {parseResult.errorRows.length > 0 && (

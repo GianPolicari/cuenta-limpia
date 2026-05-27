@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
     return (
         <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
             {/* Ambient violet glow */}
-            <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div aria-hidden="true"className="pointer-events-none absolute inset-0 overflow-hidden">
                 <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
                 <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
             </div>
@@ -74,7 +74,7 @@ export default function ResetPasswordPage() {
             <Card className="cl-animate-scale relative w-full max-w-md backdrop-blur-xl">
                 <CardHeader className="space-y-3 text-center">
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-hover shadow-brand">
-                        <ShieldCheck className="h-7 w-7 text-primary-foreground" aria-hidden />
+                        <ShieldCheck className="h-7 w-7 text-primary-foreground" aria-hidden="true"/>
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
                         Nueva Contraseña

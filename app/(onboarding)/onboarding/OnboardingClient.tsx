@@ -118,7 +118,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                 <CardHeader className="space-y-3 text-center">
                     {/* Brand mark */}
                     <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-hover shadow-brand">
-                        <DollarSign className="h-5 w-5 text-primary-foreground" aria-hidden />
+                        <DollarSign className="h-5 w-5 text-primary-foreground" aria-hidden="true"/>
                     </div>
                     <p className="text-xs font-semibold tracking-widest text-primary uppercase">
                         CuentaLimpia

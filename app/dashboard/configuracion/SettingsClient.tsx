@@ -623,7 +623,7 @@ function BudgetInput({ categoryName, currentBudget, onSave, onClear, isPending }
                     onChange={(e) => { setValue(e.target.value); setDirty(true) }}
                     onBlur={handleSave}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave() } }}
-                    className="h-9 text-xs"
+                    className="h-11 text-xs"
                     aria-label={`Presupuesto mensual para ${categoryName}`}
                     disabled={isPending}
                 />
@@ -934,7 +934,7 @@ function RecurrentesTab({
                                             <Badge variant="pending">Día {r.day_of_month}</Badge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={r.is_active ? 'income' : 'neutral'}>
+                                            <Badge variant={r.is_active ? 'info' : 'neutral'}>
                                                 {r.is_active ? 'Activa' : 'Inactiva'}
                                             </Badge>
                                         </TableCell>

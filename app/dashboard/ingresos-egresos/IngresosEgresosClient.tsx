@@ -109,7 +109,7 @@ export default function IngresosEgresosClient({
     const [searchQuery, setSearchQuery] = useState('')
     const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
     const [currentPage, setCurrentPage] = useState(1)
-    const [chartColors, setChartColors] = useState({ border: '#E6E6EC', mutedFg: '#4A4A55', popover: '#FFFFFF', popoverFg: '#0B0B12', expense: '#DC2626' })
+    const [chartColors, setChartColors] = useState({ border: '#E6E6EC', mutedFg: '#4A4A55' })
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
     const itemsPerPage = 10
     const now = new Date()
@@ -121,9 +121,6 @@ export default function IngresosEgresosClient({
         setChartColors({
             border: style.getPropertyValue('--border').trim() || '#E6E6EC',
             mutedFg: style.getPropertyValue('--muted-foreground').trim() || '#4A4A55',
-            popover: style.getPropertyValue('--popover').trim() || '#FFFFFF',
-            popoverFg: style.getPropertyValue('--popover-foreground').trim() || '#0B0B12',
-            expense: style.getPropertyValue('--expense').trim() || '#DC2626',
         })
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
         setPrefersReducedMotion(mq.matches)
@@ -347,7 +344,7 @@ export default function IngresosEgresosClient({
 
     const renderSortArrow = (key: string) => {
         if (sortConfig?.key !== key) return null
-        return sortConfig.direction === 'asc' ? <ArrowUp className="inline ml-1 h-3 w-3" /> : <ArrowDown className="inline ml-1 h-3 w-3" />
+        return sortConfig.direction === 'asc' ? <ArrowUp className="inline ml-1 h-3 w-3" aria-hidden="true" /> : <ArrowDown className="inline ml-1 h-3 w-3" aria-hidden="true" />
     }
 
     function exportToCSV() {
@@ -745,8 +742,8 @@ export default function IngresosEgresosClient({
                                         />
                                         <Tooltip
                                             cursor={{ fill: 'transparent' }}
-                                            contentStyle={{ backgroundColor: chartColors.popover, border: `1px solid ${chartColors.border}`, borderRadius: '10px', color: chartColors.popoverFg }}
-                                            itemStyle={{ color: chartColors.expense, fontWeight: 'bold' }}
+                                            contentStyle={{ backgroundColor: 'var(--popover)', border: `1px solid ${chartColors.border}`, borderRadius: '10px', color: 'var(--popover-foreground)' }}
+                                            itemStyle={{ color: 'var(--expense)', fontWeight: 'bold' }}
                                             formatter={(value: number = 0) => [formatARS(value), 'Total gastado']}
                                             labelStyle={{ color: chartColors.mutedFg, marginBottom: '4px' }}
                                         />

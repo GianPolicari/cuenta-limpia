@@ -18,7 +18,7 @@ export default async function OnboardingPage() {
     return (
         <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-12">
             {/* Ambient violet glow */}
-            <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div aria-hidden="true"className="pointer-events-none absolute inset-0 overflow-hidden">
                 <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
                 <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
             </div>
