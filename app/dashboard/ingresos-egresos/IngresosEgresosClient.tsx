@@ -109,7 +109,7 @@ export default function IngresosEgresosClient({
     const [searchQuery, setSearchQuery] = useState('')
     const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
     const [currentPage, setCurrentPage] = useState(1)
-    const [chartColors, setChartColors] = useState({ border: '#E6E6EC', mutedFg: '#4A4A55' })
+    const [chartColors, setChartColors] = useState({ border: '#E6E6EC', mutedFg: '#4A4A55', popover: '#FFFFFF', popoverFg: '#0B0B12', expense: '#DC2626' })
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
     const itemsPerPage = 10
     const now = new Date()
@@ -121,6 +121,9 @@ export default function IngresosEgresosClient({
         setChartColors({
             border: style.getPropertyValue('--border').trim() || '#E6E6EC',
             mutedFg: style.getPropertyValue('--muted-foreground').trim() || '#4A4A55',
+            popover: style.getPropertyValue('--popover').trim() || '#FFFFFF',
+            popoverFg: style.getPropertyValue('--popover-foreground').trim() || '#0B0B12',
+            expense: style.getPropertyValue('--expense').trim() || '#DC2626',
         })
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
         setPrefersReducedMotion(mq.matches)
@@ -387,7 +390,7 @@ export default function IngresosEgresosClient({
         const cardGrouped = cardExpensesTable.reduce((acc: Record<string, { amount: number, color: string }>, t: TxRow) => {
             const c = cards.find(card => card.id === t.card_id)
             const cName = c?.name || 'Eliminada'
-            const cColor = c?.color || 'var(--chart-1)'
+            const cColor = c?.color || CHART_COLORS_HEX[0]
             if (!acc[cName]) acc[cName] = { amount: 0, color: cColor }
             acc[cName].amount += t.amount
             return acc
@@ -559,7 +562,7 @@ export default function IngresosEgresosClient({
             {/* Table */}
             {isLoadingTransactions ? (
                 <Card className="flex min-h-[400px] flex-col items-center justify-center p-20">
-                    <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
+                    <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" aria-hidden="true" />
                     <p className="font-medium text-muted-foreground">Cargando operaciones...</p>
                 </Card>
             ) : sortedTransactions.length === 0 ? (
@@ -742,10 +745,10 @@ export default function IngresosEgresosClient({
                                         />
                                         <Tooltip
                                             cursor={{ fill: 'transparent' }}
-                                            contentStyle={{ backgroundColor: 'var(--popover)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--popover-foreground)' }}
-                                            itemStyle={{ color: 'var(--expense)', fontWeight: 'bold' }}
+                                            contentStyle={{ backgroundColor: chartColors.popover, border: `1px solid ${chartColors.border}`, borderRadius: '10px', color: chartColors.popoverFg }}
+                                            itemStyle={{ color: chartColors.expense, fontWeight: 'bold' }}
                                             formatter={(value: number = 0) => [formatARS(value), 'Total gastado']}
-                                            labelStyle={{ color: 'var(--muted-foreground)', marginBottom: '4px' }}
+                                            labelStyle={{ color: chartColors.mutedFg, marginBottom: '4px' }}
                                         />
                                         <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={40} isAnimationActive={!prefersReducedMotion}>
                                             {cardChartData.map((entry, index) => (
@@ -891,7 +894,7 @@ function RecurringBanner({
                     onClick={handleApplyAll}
                     className="shrink-0 gap-2"
                 >
-                    {loadingAll ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Aplicando...</> : 'Aplicar todas'}
+                    {loadingAll ? <><Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Aplicando...</> : 'Aplicar todas'}
                 </Button>
             </div>
             <ul className="space-y-2">
@@ -1142,7 +1145,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                                 id="isInstallment"
                                 checked={isInstallment}
                                 onChange={(e) => setIsInstallment(e.target.checked)}
-                                className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
+                                className="h-4 w-4 rounded border-border text-primary focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             />
                             <Label htmlFor="isInstallment" className="cursor-pointer">¿Es un pago en cuotas?</Label>
                         </div>
@@ -1163,7 +1166,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                 <DialogFooter className="pt-2">
                     <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
                     <Button type="submit" disabled={isPending} className="font-semibold">
-                        {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando...</> : 'Guardar'}
+                        {isPending ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Guardando...</> : 'Guardar'}
                     </Button>
                 </DialogFooter>
             </form>
@@ -1197,7 +1200,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                         <DialogFooter className="pt-2">
                             <Button type="button" variant="outline" onClick={() => setNewCardOpen(false)}>Cancelar</Button>
                             <Button type="submit" disabled={isCreatingCard} className="font-semibold">
-                                {isCreatingCard ? <><Loader2 className="h-4 w-4 animate-spin" /> Creando...</> : 'Crear tarjeta'}
+                                {isCreatingCard ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Creando...</> : 'Crear tarjeta'}
                             </Button>
                         </DialogFooter>
                     </form>

@@ -5,6 +5,7 @@
 export const BRAND_PRIMARY_HEX = '#5B47E0'   // --primary (light mode)
 export const CONTRAST_ON_DARK = '#FFFFFF'     // foreground sobre fondos oscuros
 export const CONTRAST_ON_LIGHT = '#0B0B12'   // foreground sobre fondos claros
+export const MUTED_FG_LIGHT_HEX = '#4A4A55'  // --muted-foreground (light mode)
 
 // Chart color fallbacks (light mode) — sincronizar con globals.css
 export const CHART_COLORS_HEX = [

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
-import { BRAND_PRIMARY_HEX } from '@/lib/theme'
+import { BRAND_PRIMARY_HEX, MUTED_FG_LIGHT_HEX } from '@/lib/theme'
 import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -220,7 +220,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
                         <Button className="cl-press gap-2">
-                            <Plus className="h-4 w-4" /> Agregar tarjeta
+                            <Plus className="h-4 w-4" aria-hidden="true" /> Agregar tarjeta
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
@@ -288,7 +288,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                                             <div className="flex items-center gap-2">
                                                 <div
                                                     className="h-3 w-3 rounded-full border border-border shadow-sm"
-                                                    style={{ backgroundColor: c.color || 'var(--muted-foreground)' }}
+                                                    style={{ backgroundColor: c.color || MUTED_FG_LIGHT_HEX }}
                                                 />
                                                 {c.name}
                                             </div>
@@ -466,7 +466,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
                         <Button className="cl-press gap-2">
-                            <Plus className="h-4 w-4" /> Agregar categoría
+                            <Plus className="h-4 w-4" aria-hidden="true" /> Agregar categoría
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
@@ -514,7 +514,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                     description="Agregá categorías para organizar tus gastos e ingresos."
                     action={
                         <Button className="gap-2" onClick={() => setAddOpen(true)}>
-                            <Plus className="h-4 w-4" /> Agregar categoría
+                            <Plus className="h-4 w-4" aria-hidden="true" /> Agregar categoría
                         </Button>
                     }
                 />
@@ -795,7 +795,7 @@ function RecurrentesTab({
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
                         <Button className="cl-press gap-2">
-                            <Plus className="h-4 w-4" /> Nueva recurrente
+                            <Plus className="h-4 w-4" aria-hidden="true" /> Nueva recurrente
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">

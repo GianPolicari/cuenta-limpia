@@ -15,7 +15,7 @@ const toneClasses: Record<Tone, string> = {
 export function KpiCard({
   title,
   icon: Icon,
-  tone = "brand",
+  tone = "info",
   hint,
   children,
   className,

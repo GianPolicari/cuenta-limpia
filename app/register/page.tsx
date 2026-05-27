@@ -31,7 +31,7 @@ export default async function RegisterPage({
                         Crear Cuenta
                     </CardTitle>
                     <CardDescription className="text-muted-foreground">
-                        Registrate para empezar a gestionar tus finanzas
+                        Registrá y empezá a gestionar tus finanzas
                     </CardDescription>
                 </CardHeader>
 
