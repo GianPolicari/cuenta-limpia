@@ -41,6 +41,7 @@ function CustomTooltip({ active, payload, showUSD }: { active?: boolean; payload
 
 export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
     const [colors, setColors] = useState(CHART_COLORS_HEX)
+    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
     useEffect(() => {
         const style = getComputedStyle(document.documentElement)
@@ -48,6 +49,11 @@ export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
             style.getPropertyValue(`--chart-${i + 1}`).trim() || fallback
         )
         setColors(resolved)
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+        setPrefersReducedMotion(mq.matches)
+        const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+        mq.addEventListener('change', handler)
+        return () => mq.removeEventListener('change', handler)
     }, [])
 
     if (!data || data.length === 0) {
@@ -71,6 +77,7 @@ export default function CategoryChart({ data, showUSD }: CategoryChartProps) {
                     paddingAngle={4}
                     dataKey="value"
                     stroke="none"
+                    isAnimationActive={!prefersReducedMotion}
                 >
                     {data.map((_, index) => (
                         <Cell

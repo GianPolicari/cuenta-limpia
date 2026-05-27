@@ -361,7 +361,7 @@ function CardForm({ onSubmit, isPending, onCancel, defaults }: {
             <DialogFooter className="pt-2">
                 <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
                 <Button type="submit" disabled={isPending || !cardType}>
-                    {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando...</> : 'Guardar'}
+                    {isPending ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Guardando...</> : 'Guardar'}
                 </Button>
             </DialogFooter>
         </form>
@@ -680,7 +680,7 @@ function CategoryForm({ onSubmit, isPending, onCancel, defaults }: {
             <DialogFooter className="pt-2">
                 <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
                 <Button type="submit" disabled={isPending || !catType}>
-                    {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando...</> : 'Guardar'}
+                    {isPending ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Guardando...</> : 'Guardar'}
                 </Button>
             </DialogFooter>
         </form>
@@ -1115,7 +1115,7 @@ function RecurringForm({
                     Cancelar
                 </Button>
                 <Button type="submit" disabled={isPending}>
-                    {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando...</> : 'Guardar'}
+                    {isPending ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Guardando...</> : 'Guardar'}
                 </Button>
             </DialogFooter>
         </form>

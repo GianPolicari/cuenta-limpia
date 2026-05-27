@@ -60,6 +60,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-overlay: var(--overlay);
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -90,6 +91,7 @@
   --border: #E6E6EC;
   --input: #E6E6EC;
   --ring: #5B47E0;
+  --overlay: rgba(11, 11, 18, 0.5);
 
   --primary-hover: #4F3DCC;
   --primary-subtle: #EEEBFF;
@@ -145,6 +147,7 @@
   --border: #262633;
   --input: #262633;
   --ring: #7C6BFF;
+  --overlay: rgba(0, 0, 0, 0.65);
 
   --primary-hover: #9080FF;
   --primary-subtle: rgba(124, 107, 255, 0.14);

@@ -242,7 +242,7 @@ export default function DashboardClient({
                     />
                 </KpiCard>
 
-                <KpiCard title="Operaciones" icon={CreditCard} tone="brand" hint={`registradas en ${selectedYear}`}>
+                <KpiCard title="Operaciones" icon={CreditCard} tone="info" hint={`registradas en ${selectedYear}`}>
                     {transactions.length}
                 </KpiCard>
             </div>

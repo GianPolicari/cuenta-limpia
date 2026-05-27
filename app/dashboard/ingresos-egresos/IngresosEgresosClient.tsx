@@ -109,9 +109,25 @@ export default function IngresosEgresosClient({
     const [searchQuery, setSearchQuery] = useState('')
     const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
     const [currentPage, setCurrentPage] = useState(1)
+    const [chartColors, setChartColors] = useState({ border: '#E6E6EC', mutedFg: '#4A4A55' })
+    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
     const itemsPerPage = 10
     const now = new Date()
     const years = Array.from({ length: 5 }, (_, i) => String(now.getFullYear() - 2 + i))
+
+    // Resolve chart CSS tokens (SVG attributes can't use CSS variables)
+    useEffect(() => {
+        const style = getComputedStyle(document.documentElement)
+        setChartColors({
+            border: style.getPropertyValue('--border').trim() || '#E6E6EC',
+            mutedFg: style.getPropertyValue('--muted-foreground').trim() || '#4A4A55',
+        })
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+        setPrefersReducedMotion(mq.matches)
+        const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+        mq.addEventListener('change', handler)
+        return () => mq.removeEventListener('change', handler)
+    }, [])
 
     // Refetch transactions when month/year changes
     useEffect(() => {
@@ -710,18 +726,18 @@ export default function IngresosEgresosClient({
                             <div className="h-[260px] sm:h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={cardChartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.3} />
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartColors.border} opacity={0.3} />
                                         <XAxis
                                             dataKey="name"
                                             axisLine={false}
                                             tickLine={false}
-                                            tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                                            tick={{ fill: chartColors.mutedFg, fontSize: 12 }}
                                             dy={10}
                                         />
                                         <YAxis
                                             axisLine={false}
                                             tickLine={false}
-                                            tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                                            tick={{ fill: chartColors.mutedFg, fontSize: 12 }}
                                             tickFormatter={(value) => `$${value.toLocaleString('es-AR')}`}
                                         />
                                         <Tooltip
@@ -731,7 +747,7 @@ export default function IngresosEgresosClient({
                                             formatter={(value: number = 0) => [formatARS(value), 'Total gastado']}
                                             labelStyle={{ color: 'var(--muted-foreground)', marginBottom: '4px' }}
                                         />
-                                        <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={40}>
+                                        <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={40} isAnimationActive={!prefersReducedMotion}>
                                             {cardChartData.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={entry.color || CHART_COLORS_HEX[0]} />
                                             ))}

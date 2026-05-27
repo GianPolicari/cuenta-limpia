@@ -43,14 +43,21 @@ function CustomTooltip({ active, payload, label, showUSD }: { active?: boolean; 
 }
 
 export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
-    const [colors, setColors] = useState({ income: '#10B981', expense: '#EF4444' })
+    const [colors, setColors] = useState({ income: '#10B981', expense: '#EF4444', border: '#E6E6EC' })
+    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
     useEffect(() => {
         const style = getComputedStyle(document.documentElement)
         setColors({
             income: style.getPropertyValue('--income-strong').trim() || '#10B981',
             expense: style.getPropertyValue('--expense-strong').trim() || '#EF4444',
+            border: style.getPropertyValue('--border').trim() || '#E6E6EC',
         })
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+        setPrefersReducedMotion(mq.matches)
+        const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+        mq.addEventListener('change', handler)
+        return () => mq.removeEventListener('change', handler)
     }, [])
 
     if (!data || data.length === 0) {
@@ -67,7 +74,7 @@ export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
             <BarChart data={data} barGap={4}>
                 <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="var(--border)"
+                    stroke={colors.border}
                     vertical={false}
                 />
                 <XAxis
@@ -84,18 +91,20 @@ export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
                     tick={{ fill: 'currentColor', fontSize: 12 }}
                     tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                 />
-                <Tooltip content={<CustomTooltip showUSD={showUSD} />} cursor={{ fill: 'rgba(148, 163, 184, 0.05)' }} />
+                <Tooltip content={<CustomTooltip showUSD={showUSD} />} cursor={{ fill: 'transparent' }} />
                 <Bar
                     dataKey="ingresos"
                     fill={colors.income}
                     radius={[6, 6, 0, 0]}
                     maxBarSize={40}
+                    isAnimationActive={!prefersReducedMotion}
                 />
                 <Bar
                     dataKey="gastos"
                     fill={colors.expense}
                     radius={[6, 6, 0, 0]}
                     maxBarSize={40}
+                    isAnimationActive={!prefersReducedMotion}
                 />
             </BarChart>
         </ResponsiveContainer>
