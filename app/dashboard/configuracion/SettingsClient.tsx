@@ -288,7 +288,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                                             <div className="flex items-center gap-2">
                                                 <div
                                                     className="h-3 w-3 rounded-full border border-border shadow-sm"
-                                                    style={{ backgroundColor: c.color || MUTED_FG_LIGHT_HEX }}
+                                                    style={{ backgroundColor: c.color || 'var(--muted-foreground)' }}
                                                 />
                                                 {c.name}
                                             </div>

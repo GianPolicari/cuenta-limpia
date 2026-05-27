@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
                         <ShieldCheck className="h-7 w-7 text-primary-foreground" aria-hidden="true"/>
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-                        Nueva Contraseña
+                        Nueva contraseña
                     </CardTitle>
                     <CardDescription className="text-muted-foreground">
                         Ingresá una nueva contraseña segura para tu cuenta.
@@ -101,7 +101,7 @@ export default function ResetPasswordPage() {
                     ) : (
                         <form onSubmit={handleUpdatePassword} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="newPassword">Nueva Contraseña</Label>
+                                <Label htmlFor="newPassword">Nueva contraseña</Label>
                                 <Input
                                     id="newPassword"
                                     name="newPassword"

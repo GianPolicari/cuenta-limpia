@@ -28,10 +28,10 @@ export default async function RegisterPage({
                         <DollarSign className="h-7 w-7 text-primary-foreground" aria-hidden="true"/>
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-                        Crear Cuenta
+                        Crear cuenta
                     </CardTitle>
                     <CardDescription className="text-muted-foreground">
-                        Registrá y empezá a gestionar tus finanzas
+                        Registrá tu cuenta y empezá a gestionar tus finanzas
                     </CardDescription>
                 </CardHeader>
 
@@ -72,7 +72,7 @@ export default async function RegisterPage({
                                 type="submit"
                                 className="cl-press w-full font-semibold shadow-brand"
                             >
-                                Crear Cuenta
+                                Crear cuenta
                             </Button>
                         </div>
                     </form>

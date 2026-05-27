@@ -476,7 +476,7 @@ export default function IngresosEgresosClient({
                         <button
                             type="button"
                             onClick={() => setSearchQuery('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-3.5 text-muted-foreground hover:text-foreground"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground"
                             aria-label="Limpiar búsqueda"
                         >
                             <X className="h-4 w-4" />

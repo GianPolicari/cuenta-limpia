@@ -79,7 +79,7 @@ export default async function LoginPage({
                                 type="submit"
                                 className="cl-press w-full font-semibold shadow-brand"
                             >
-                                Iniciar Sesión
+                                Iniciar sesión
                             </Button>
                         </div>
                     </form>
@@ -90,7 +90,7 @@ export default async function LoginPage({
                             href="/register"
                             className="font-medium text-primary transition-colors hover:text-primary/80"
                         >
-                            Crear Cuenta
+                            Crear cuenta
                         </Link>
                     </div>
 

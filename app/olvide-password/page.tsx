@@ -57,7 +57,7 @@ export default function OlvidePasswordPage() {
                         <DollarSign className="h-7 w-7 text-primary-foreground" aria-hidden="true"/>
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-                        Recuperar Contraseña
+                        Recuperar contraseña
                     </CardTitle>
                     <CardDescription className="text-muted-foreground">
                         Ingresá tu email y te enviaremos un enlace para recuperar tu acceso.
