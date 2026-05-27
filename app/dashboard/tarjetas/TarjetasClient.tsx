@@ -21,12 +21,13 @@ import { cn } from '@/lib/utils'
 import { CreditCard, Plus, Trash2, Pencil, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createCard, updateCard, deleteCard } from './actions'
+import { BRAND_PRIMARY_HEX, CONTRAST_ON_DARK, CONTRAST_ON_LIGHT } from '@/lib/theme'
 
 function getIconContrast(hex: string): string {
     const r = parseInt(hex.slice(1, 3), 16)
     const g = parseInt(hex.slice(3, 5), 16)
     const b = parseInt(hex.slice(5, 7), 16)
-    return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5 ? '#0B0B12' : '#FFFFFF'
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5 ? CONTRAST_ON_LIGHT : CONTRAST_ON_DARK
 }
 
 // ==================== TYPES ====================
@@ -360,7 +361,7 @@ function CardForm({ onSubmit, isPending, onCancel, defaults }: {
             </div>
             <div className="space-y-2">
                 <Label htmlFor="card-color">Color (opcional)</Label>
-                <Input id="card-color" name="color" type="color" defaultValue={defaults?.color ?? '#5B47E0'} className="h-10 w-16 p-1" />
+                <Input id="card-color" name="color" type="color" defaultValue={defaults?.color ?? BRAND_PRIMARY_HEX} className="h-10 w-16 p-1" />
             </div>
             <DialogFooter className="pt-2">
                 <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>

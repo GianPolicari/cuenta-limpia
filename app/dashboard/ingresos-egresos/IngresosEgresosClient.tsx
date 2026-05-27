@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useEffect, useMemo, useCallback } from 'react'
+import { BRAND_PRIMARY_HEX } from '@/lib/theme'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -527,7 +528,7 @@ export default function IngresosEgresosClient({
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>¿Eliminar esta operación?</DialogTitle>
-                        <DialogDescription>No se puede deshacer.</DialogDescription>
+                        <DialogDescription>Esta acción no se puede deshacer.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="pt-2">
                         <Button type="button" variant="outline" onClick={() => setDeleteTx(null)}>Cancelar</Button>
@@ -588,7 +589,7 @@ export default function IngresosEgresosClient({
                                     <TableHead className="cursor-pointer text-right text-muted-foreground transition-colors hover:bg-muted" onClick={() => handleSort('monto')}>
                                         Monto {renderSortArrow('monto')}
                                     </TableHead>
-                                    <TableHead className="w-20 text-muted-foreground"></TableHead>
+                                    <TableHead className="w-20 text-muted-foreground"><span className="sr-only">Acciones</span></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="cl-stagger-fade">
@@ -1174,7 +1175,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="card-color">Color (opcional)</Label>
-                            <Input id="card-color" name="card-color" type="color" defaultValue="#5B47E0" className="h-10 w-16 p-1" />
+                            <Input id="card-color" name="card-color" type="color" defaultValue={BRAND_PRIMARY_HEX} className="h-10 w-16 p-1" />
                         </div>
                         <DialogFooter className="pt-2">
                             <Button type="button" variant="outline" onClick={() => setNewCardOpen(false)}>Cancelar</Button>

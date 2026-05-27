@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import {
     BarChart,
     Bar,
@@ -42,6 +43,16 @@ function CustomTooltip({ active, payload, label, showUSD }: { active?: boolean; 
 }
 
 export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
+    const [colors, setColors] = useState({ income: '#10B981', expense: '#EF4444' })
+
+    useEffect(() => {
+        const style = getComputedStyle(document.documentElement)
+        setColors({
+            income: style.getPropertyValue('--income-strong').trim() || '#10B981',
+            expense: style.getPropertyValue('--expense-strong').trim() || '#EF4444',
+        })
+    }, [])
+
     if (!data || data.length === 0) {
         return (
             <div className="flex h-[260px] sm:h-[320px] items-center justify-center text-muted-foreground">
@@ -76,13 +87,13 @@ export default function MonthlyChart({ data, showUSD }: MonthlyChartProps) {
                 <Tooltip content={<CustomTooltip showUSD={showUSD} />} cursor={{ fill: 'rgba(148, 163, 184, 0.05)' }} />
                 <Bar
                     dataKey="ingresos"
-                    fill="var(--income-strong)"
+                    fill={colors.income}
                     radius={[6, 6, 0, 0]}
                     maxBarSize={40}
                 />
                 <Bar
                     dataKey="gastos"
-                    fill="var(--expense-strong)"
+                    fill={colors.expense}
                     radius={[6, 6, 0, 0]}
                     maxBarSize={40}
                 />

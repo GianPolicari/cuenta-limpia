@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
+import { BRAND_PRIMARY_HEX } from '@/lib/theme'
 import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -90,7 +91,7 @@ export default function SettingsClient({
                 <Card>
                     <CardContent className="flex items-center gap-4 py-4">
                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-subtle">
-                            <User className="h-5 w-5 text-primary" />
+                            <User className="h-5 w-5 text-primary" aria-hidden="true" />
                         </div>
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
@@ -110,7 +111,7 @@ export default function SettingsClient({
                     <CardContent className="flex items-center justify-between py-4">
                         <div className="flex items-center gap-3">
                             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-expense-subtle">
-                                <Shield className="h-5 w-5 text-expense" />
+                                <Shield className="h-5 w-5 text-expense" aria-hidden="true" />
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-foreground">Sesión</p>
@@ -131,15 +132,15 @@ export default function SettingsClient({
             <Tabs defaultValue="tarjetas" className="w-full">
                 <TabsList className="mb-6 w-full sm:w-auto">
                     <TabsTrigger value="tarjetas" className="gap-2">
-                        <CreditCard className="h-4 w-4" />
+                        <CreditCard className="h-4 w-4" aria-hidden="true" />
                         Tarjetas
                     </TabsTrigger>
                     <TabsTrigger value="categorias" className="gap-2">
-                        <Tag className="h-4 w-4" />
+                        <Tag className="h-4 w-4" aria-hidden="true" />
                         Categorías
                     </TabsTrigger>
                     <TabsTrigger value="recurrentes" className="gap-2">
-                        <RefreshCw className="h-4 w-4" />
+                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
                         Recurrentes
                     </TabsTrigger>
                 </TabsList>
@@ -323,7 +324,7 @@ function CardForm({ onSubmit, isPending, onCancel, defaults }: {
     onSubmit: (fd: FormData) => void; isPending: boolean; onCancel: () => void; defaults?: CardRow
 }) {
     const [cardType, setCardType] = useState(defaults?.card_type ?? '')
-    const [color, setColor] = useState(defaults?.color ?? '#5B47E0')
+    const [color, setColor] = useState(defaults?.color ?? BRAND_PRIMARY_HEX)
     return (
         <form action={(fd) => {
             fd.set('card_type', cardType)
