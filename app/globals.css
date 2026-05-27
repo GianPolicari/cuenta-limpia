@@ -193,6 +193,90 @@
   }
 }
 
+/* ==================== Vocabulario de animación (CuentaLimpia) ==================== */
+/* Curva de easing compartida: salida suave tipo "ease-out expresivo" */
+@keyframes cl-fade-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cl-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cl-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@layer utilities {
+  /* Entrada de una sección/elemento al montar */
+  .cl-animate-enter {
+    animation: cl-fade-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .cl-animate-fade {
+    animation: cl-fade-in 0.5s ease both;
+  }
+  .cl-animate-scale {
+    animation: cl-scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Entrada escalonada de los hijos directos (grids, listas, KPIs) */
+  .cl-stagger > * {
+    animation: cl-fade-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .cl-stagger > *:nth-child(1) { animation-delay: 0.03s; }
+  .cl-stagger > *:nth-child(2) { animation-delay: 0.07s; }
+  .cl-stagger > *:nth-child(3) { animation-delay: 0.11s; }
+  .cl-stagger > *:nth-child(4) { animation-delay: 0.15s; }
+  .cl-stagger > *:nth-child(5) { animation-delay: 0.19s; }
+  .cl-stagger > *:nth-child(6) { animation-delay: 0.23s; }
+  .cl-stagger > *:nth-child(7) { animation-delay: 0.27s; }
+  .cl-stagger > *:nth-child(8) { animation-delay: 0.31s; }
+  .cl-stagger > *:nth-child(9) { animation-delay: 0.35s; }
+  .cl-stagger > *:nth-child(10) { animation-delay: 0.39s; }
+  .cl-stagger > *:nth-child(n+11) { animation-delay: 0.43s; }
+
+  /* Variante solo-fade (sin translateY) — segura para filas de tabla (<tr>) */
+  .cl-stagger-fade > * {
+    animation: cl-fade-in 0.4s ease both;
+  }
+  .cl-stagger-fade > *:nth-child(1) { animation-delay: 0.03s; }
+  .cl-stagger-fade > *:nth-child(2) { animation-delay: 0.07s; }
+  .cl-stagger-fade > *:nth-child(3) { animation-delay: 0.11s; }
+  .cl-stagger-fade > *:nth-child(4) { animation-delay: 0.15s; }
+  .cl-stagger-fade > *:nth-child(5) { animation-delay: 0.19s; }
+  .cl-stagger-fade > *:nth-child(6) { animation-delay: 0.23s; }
+  .cl-stagger-fade > *:nth-child(7) { animation-delay: 0.27s; }
+  .cl-stagger-fade > *:nth-child(8) { animation-delay: 0.31s; }
+  .cl-stagger-fade > *:nth-child(9) { animation-delay: 0.35s; }
+  .cl-stagger-fade > *:nth-child(10) { animation-delay: 0.39s; }
+  .cl-stagger-fade > *:nth-child(n+11) { animation-delay: 0.43s; }
+
+  /* Hover expresivo para tarjetas/ítems interactivos */
+  .cl-hover-lift {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+  }
+  .cl-hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-brand);
+  }
+
+  /* Presión táctil sutil para botones/ítems clickeables */
+  .cl-press {
+    transition: transform 0.12s ease;
+  }
+  .cl-press:active {
+    transform: scale(0.97);
+  }
+
+  /* Barras de progreso con relleno animado */
+  .cl-progress-fill {
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;

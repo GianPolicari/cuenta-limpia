@@ -18,15 +18,17 @@ export function KpiCard({
   tone = "brand",
   hint,
   children,
+  className,
 }: {
   title: string
   icon: LucideIcon
   tone?: Tone
   hint?: string
   children: React.ReactNode
+  className?: string
 }) {
   return (
-    <Card>
+    <Card className={cn("cl-hover-lift", className)}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", toneClasses[tone])}>

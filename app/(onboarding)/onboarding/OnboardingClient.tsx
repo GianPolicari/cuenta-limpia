@@ -158,7 +158,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                 <CardContent className="space-y-6">
                     {/* ── PASO 1 ── */}
                     {step === 1 && (
-                        <div className="space-y-4">
+                        <div className="cl-animate-enter space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="card-name">Nombre de la tarjeta</Label>
                                 <Input
@@ -202,7 +202,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                             <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row">
                                 <Button
                                     variant="ghost"
-                                    className="flex-1"
+                                    className="cl-press flex-1"
                                     onClick={handleSkipCard}
                                     disabled={isPending}
                                 >
@@ -210,7 +210,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                                 </Button>
                                 <Button
                                     variant="default"
-                                    className="flex-1 gap-2 font-semibold shadow-brand"
+                                    className="cl-press flex-1 gap-2 font-semibold shadow-brand"
                                     onClick={handleCreateCard}
                                     disabled={isPending}
                                 >
@@ -229,7 +229,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
 
                     {/* ── PASO 2 ── */}
                     {step === 2 && (
-                        <div className="space-y-5">
+                        <div className="cl-animate-enter space-y-5">
                             {expenseCategories.length > 0 && (
                                 <div className="space-y-2">
                                     <p className="text-sm font-semibold text-foreground">Gastos</p>
@@ -257,7 +257,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
 
                             <Button
                                 variant="default"
-                                className="w-full font-semibold shadow-brand"
+                                className="cl-press w-full font-semibold shadow-brand"
                                 onClick={handleContinueStep2}
                             >
                                 Continuar
@@ -267,7 +267,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
 
                     {/* ── PASO 3 ── */}
                     {step === 3 && (
-                        <div className="space-y-4">
+                        <div className="cl-animate-enter space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="tx-type">Tipo</Label>
                                 <Select
@@ -344,7 +344,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
 
                             <Button
                                 variant="default"
-                                className="w-full gap-2 font-semibold shadow-brand"
+                                className="cl-press w-full gap-2 font-semibold shadow-brand"
                                 onClick={handleSaveTransaction}
                                 disabled={isPending}
                             >

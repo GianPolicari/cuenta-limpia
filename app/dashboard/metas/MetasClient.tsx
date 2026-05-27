@@ -178,7 +178,7 @@ export default function MetasClient({ initialGoals }: Props) {
     return (
         <div className="min-h-screen p-4 sm:p-6 lg:p-8">
             {/* Header */}
-            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="cl-animate-enter mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
                         Metas de Ahorro
@@ -188,7 +188,7 @@ export default function MetasClient({ initialGoals }: Props) {
                     </p>
                 </div>
                 <Button
-                    className="gap-2 font-semibold"
+                    className="cl-press gap-2 font-semibold"
                     onClick={() => { setFormError(null); setAddOpen(true) }}
                 >
                     <Plus className="h-4 w-4" aria-hidden="true" />
@@ -198,22 +198,24 @@ export default function MetasClient({ initialGoals }: Props) {
 
             {/* Goals grid or empty state */}
             {goals.length === 0 ? (
-                <EmptyState
-                    icon={Target}
-                    title="Sin metas todavía"
-                    description="Creá tu primera meta de ahorro y seguí tu progreso mes a mes."
-                    action={
-                        <Button
-                            className="gap-2"
-                            onClick={() => { setFormError(null); setAddOpen(true) }}
-                        >
-                            <Plus className="h-4 w-4" aria-hidden="true" />
-                            Nueva meta
-                        </Button>
-                    }
-                />
+                <div className="cl-animate-fade">
+                    <EmptyState
+                        icon={Target}
+                        title="Sin metas todavía"
+                        description="Creá tu primera meta de ahorro y seguí tu progreso mes a mes."
+                        action={
+                            <Button
+                                className="cl-press gap-2"
+                                onClick={() => { setFormError(null); setAddOpen(true) }}
+                            >
+                                <Plus className="h-4 w-4" aria-hidden="true" />
+                                Nueva meta
+                            </Button>
+                        }
+                    />
+                </div>
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="cl-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {goals.map((goal) => {
                         const pct = goal.target_amount > 0
                             ? Math.min(100, Math.round((goal.current_amount / goal.target_amount) * 100))
@@ -222,7 +224,7 @@ export default function MetasClient({ initialGoals }: Props) {
                         const daysLeft = calcDaysLeft(goal.deadline)
 
                         return (
-                            <Card key={goal.id} className="flex flex-col">
+                            <Card key={goal.id} className="cl-hover-lift flex flex-col">
                                 <CardHeader className="flex flex-row items-start justify-between gap-3 pb-3">
                                     <div className="flex min-w-0 items-center gap-3">
                                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-subtle">
@@ -268,7 +270,7 @@ export default function MetasClient({ initialGoals }: Props) {
                                     >
                                         <div
                                             className={cn(
-                                                'h-2 rounded-full transition-all',
+                                                'cl-progress-fill h-2 rounded-full',
                                                 completed
                                                     ? 'bg-income'
                                                     : pct >= 75
@@ -313,7 +315,7 @@ export default function MetasClient({ initialGoals }: Props) {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="mt-auto gap-2 font-semibold"
+                                        className="cl-press mt-auto gap-2 font-semibold"
                                         disabled={isPending || completed}
                                         onClick={() => setContributeTarget(goal)}
                                         aria-label={`Contribuir a la meta ${goal.name}`}

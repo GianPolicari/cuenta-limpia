@@ -140,7 +140,7 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
     return (
         <div className="min-h-screen p-6 lg:p-8">
             {/* Header */}
-            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="cl-animate-enter mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
                         Tarjetas
@@ -149,30 +149,32 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                         Tus tarjetas y cuotas activas
                     </p>
                 </div>
-                <Button className="gap-2 font-semibold" onClick={() => { setFormError(null); setAddOpen(true) }}>
+                <Button className="cl-press gap-2 font-semibold" onClick={() => { setFormError(null); setAddOpen(true) }}>
                     <Plus className="h-4 w-4" aria-hidden="true" /> Agregar tarjeta
                 </Button>
             </div>
 
             {/* Cards grid or empty state */}
             {cards.length === 0 ? (
-                <EmptyState
-                    icon={CreditCard}
-                    title="Todavía no agregaste ninguna tarjeta"
-                    description="Sumá tus tarjetas de crédito y débito para hacer seguimiento de cuotas y gastos por tarjeta."
-                    action={
-                        <Button className="gap-2 font-semibold" onClick={() => { setFormError(null); setAddOpen(true) }}>
-                            <Plus className="h-4 w-4" aria-hidden="true" /> Agregar tarjeta
-                        </Button>
-                    }
-                />
+                <div className="cl-animate-scale">
+                    <EmptyState
+                        icon={CreditCard}
+                        title="Todavía no agregaste ninguna tarjeta"
+                        description="Sumá tus tarjetas de crédito y débito para hacer seguimiento de cuotas y gastos por tarjeta."
+                        action={
+                            <Button className="cl-press gap-2 font-semibold" onClick={() => { setFormError(null); setAddOpen(true) }}>
+                                <Plus className="h-4 w-4" aria-hidden="true" /> Agregar tarjeta
+                            </Button>
+                        }
+                    />
+                </div>
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="cl-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {cards.map((card) => {
                         const credit = isCredit(card.card_type)
                         const cardCuotas = cuotas.filter((q) => q.card_id === card.id)
                         return (
-                            <Card key={card.id}>
+                            <Card key={card.id} className="cl-hover-lift">
                                 <CardHeader className="flex flex-row items-start justify-between gap-3 pb-3">
                                     <div className="flex min-w-0 items-center gap-3">
                                         <div

@@ -384,7 +384,7 @@ export default function IngresosEgresosClient({
     return (
         <div className="min-h-screen p-4 sm:p-6 lg:p-8">
             {/* Header */}
-            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="cl-animate-enter mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
                         Ingresos & Egresos
@@ -414,7 +414,7 @@ export default function IngresosEgresosClient({
             </div>
 
             {/* KPI Cards */}
-            <div className="mb-6 grid gap-4 sm:grid-cols-3">
+            <div className="cl-stagger mb-6 grid gap-4 sm:grid-cols-3">
                 <KpiCard title="Ingresos del mes" icon={ArrowUpRight} tone="income">
                     <Amount value={totalIncome} kind="income" />
                 </KpiCard>
@@ -487,15 +487,15 @@ export default function IngresosEgresosClient({
 
             {/* Add button */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
-                <Button variant="outline" onClick={() => setCsvOpen(true)} className="gap-2">
+                <Button variant="outline" onClick={() => setCsvOpen(true)} className="cl-press gap-2">
                     <Upload className="h-4 w-4" aria-hidden="true" /> Importar CSV
                 </Button>
-                <Button variant="outline" onClick={exportToCSV} className="gap-2">
+                <Button variant="outline" onClick={exportToCSV} className="cl-press gap-2">
                     <Download className="h-4 w-4" aria-hidden="true" /> Exportar CSV
                 </Button>
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
-                        <Button className="gap-2 font-semibold">
+                        <Button className="cl-press gap-2 font-semibold">
                             <Plus className="h-4 w-4" /> Nueva operación
                         </Button>
                     </DialogTrigger>
@@ -590,7 +590,7 @@ export default function IngresosEgresosClient({
                                     <TableHead className="w-20 text-muted-foreground"></TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody>
+                            <TableBody className="cl-stagger-fade">
                                 {paginatedTransactions.map((tx: TxRow) => {
                                     const isIncome = tx.transaction_type === 'income'
                                     const linkedCard = cardName(tx.card_id)
@@ -855,7 +855,7 @@ function RecurringBanner({
 
     return (
         <div
-            className="mb-6 rounded-xl border border-pending/40 bg-pending-subtle p-4"
+            className="cl-animate-enter mb-6 rounded-xl border border-pending/40 bg-pending-subtle p-4"
             role="region"
             aria-label="Operaciones recurrentes pendientes"
         >
@@ -969,7 +969,7 @@ function BudgetSection({ budgets, transactions }: { budgets: BudgetRow[]; transa
                                 </div>
                                 <div className="mb-1.5 h-2 w-full overflow-hidden rounded-full bg-secondary">
                                     <div
-                                        className={cn('h-full rounded-full transition-all duration-500', barColor)}
+                                        className={cn('cl-progress-fill h-full rounded-full', barColor)}
                                         style={{ width: `${clampedPct}%` }}
                                         role="progressbar"
                                         aria-valuenow={Math.round(b.pct)}

@@ -132,7 +132,7 @@ export default function DashboardClient({
     return (
         <div className="min-h-screen p-6 lg:p-8">
             {/* Header with Dolar Blue + MEP Toggle */}
-            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="cl-animate-enter mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">Dashboard</h1>
                     <p className="mt-1 text-sm text-muted-foreground">Resumen de tus finanzas personales</p>
@@ -223,7 +223,7 @@ export default function DashboardClient({
             </div>
 
             {/* KPI Cards */}
-            <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="cl-stagger mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <KpiCard title="Ingresos del Mes" icon={ArrowUpRight} tone="income" hint="ingresos registrados">
                     {formatMoney(displayIngresos, currency)}
                 </KpiCard>
@@ -248,7 +248,7 @@ export default function DashboardClient({
 
             {/* Charts Row */}
             <div className="grid gap-6 lg:grid-cols-2">
-                <Card>
+                <Card className="cl-animate-enter cl-hover-lift">
                     <CardHeader>
                         <CardTitle className="text-foreground">Gastos por Categoría</CardTitle>
                         <CardDescription>
@@ -257,7 +257,7 @@ export default function DashboardClient({
                     </CardHeader>
                     <CardContent><CategoryChart data={convertedCategoryData} showUSD={showUSD} /></CardContent>
                 </Card>
-                <Card>
+                <Card className="cl-animate-enter cl-hover-lift">
                     <CardHeader>
                         <CardTitle className="text-foreground">Ingresos vs Gastos</CardTitle>
                         <CardDescription>

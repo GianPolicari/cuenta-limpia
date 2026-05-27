@@ -51,7 +51,7 @@ export default function OlvidePasswordPage() {
                 <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
             </div>
 
-            <Card className="relative w-full max-w-md backdrop-blur-xl">
+            <Card className="cl-animate-scale relative w-full max-w-md backdrop-blur-xl">
                 <CardHeader className="space-y-3 text-center">
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7C6BFF] to-[#5B47E0] shadow-brand">
                         <DollarSign className="h-7 w-7 text-white" aria-hidden />
@@ -84,7 +84,7 @@ export default function OlvidePasswordPage() {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full font-semibold shadow-brand"
+                                className="cl-press w-full font-semibold shadow-brand"
                             >
                                 {isLoading ? 'Enviando enlace...' : 'Enviar enlace de recuperación'}
                             </Button>

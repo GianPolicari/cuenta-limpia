@@ -76,7 +76,7 @@ export default function SettingsClient({
     return (
         <div className="min-h-screen bg-background p-6 lg:p-8">
             {/* Header */}
-            <div className="mb-8">
+            <div className="cl-animate-enter mb-8">
                 <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
                     Configuración
                 </h1>
@@ -218,7 +218,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
             <div className="flex justify-end">
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
-                        <Button className="gap-2">
+                        <Button className="cl-press gap-2">
                             <Plus className="h-4 w-4" /> Agregar tarjeta
                         </Button>
                     </DialogTrigger>
@@ -280,7 +280,7 @@ function TarjetasTab({ initialCards }: { initialCards: CardRow[] }) {
                                     <TableHead className="w-20 text-muted-foreground"></TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody>
+                            <TableBody className="cl-stagger-fade">
                                 {initialCards.map((c) => (
                                     <TableRow key={c.id}>
                                         <TableCell className="font-medium text-foreground">
@@ -464,7 +464,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                 <p className="text-sm text-muted-foreground">Tus categorías para gastos e ingresos</p>
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
-                        <Button className="gap-2">
+                        <Button className="cl-press gap-2">
                             <Plus className="h-4 w-4" /> Agregar categoría
                         </Button>
                     </DialogTrigger>
@@ -543,7 +543,7 @@ function CategoryGroup({ title, items, variant, onEdit, onDelete, isPending, bud
             <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold text-foreground">{title}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="cl-stagger space-y-2">
                 {items.map((c) => (
                     <div key={c.id} className="space-y-2 rounded-lg border border-border bg-secondary/40 px-3 py-2">
                         <div className="flex items-center justify-between">
@@ -792,7 +792,7 @@ function RecurrentesTab({
                 <p className="text-sm text-muted-foreground">Tus gastos e ingresos que se repiten cada mes</p>
                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
                     <DialogTrigger asChild>
-                        <Button className="gap-2">
+                        <Button className="cl-press gap-2">
                             <Plus className="h-4 w-4" /> Nueva recurrente
                         </Button>
                     </DialogTrigger>
@@ -892,7 +892,7 @@ function RecurrentesTab({
                                     <TableHead className="w-20 text-muted-foreground"></TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody>
+                            <TableBody className="cl-stagger-fade">
                                 {recurring.map((r) => (
                                     <TableRow key={r.id}>
                                         <TableCell className="font-medium text-foreground">
