@@ -392,7 +392,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                                     </thead>
                                     <tbody>
                                         {parseResult.validRows.slice(0, 50).map((row, i) => (
-                                            <tr key={i} className="border-b border-border last:border-0 hover:bg-muted/30">
+                                            <tr key={`${row.fecha}-${row.descripcion}-${row.monto}-${i}`} className="border-b border-border last:border-0 hover:bg-muted/30">
                                                 <td className="px-2 py-1.5 text-muted-foreground">{row.fecha}</td>
                                                 <td className="max-w-[160px] truncate px-2 py-1.5 font-medium text-foreground">
                                                     {row.descripcion}
@@ -431,7 +431,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                                 <ul className="mt-2 space-y-1">
                                     {parseResult.errorRows.map((er, i) => (
                                         <li
-                                            key={i}
+                                            key={`${er.reason}-${er.raw.join('|')}-${i}`}
                                             className="flex items-start gap-2 rounded-md border border-expense/20 bg-expense-subtle/40 px-2 py-1.5 text-xs"
                                         >
                                             <span className="shrink-0 font-medium text-expense">Error:</span>

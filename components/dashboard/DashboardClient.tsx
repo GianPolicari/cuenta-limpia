@@ -36,6 +36,7 @@ export default function DashboardClient({
 }: DashboardClientProps) {
     const [showUSD, setShowUSD] = useState(false)
     const [liveMep, setLiveMep] = useState(dolar.venta > 0 ? dolar.venta : 0)
+    const [mepEstimated, setMepEstimated] = useState(false)
     const [transactions, setTransactions] = useState<TxRow[]>(initialTransactions)
     const [isPending, startTransition] = useTransition()
     const dolarPositive = dolar.variacion >= 0
@@ -49,8 +50,19 @@ export default function DashboardClient({
         if (liveMep <= 0) {
             fetch('https://dolarapi.com/v1/dolares/bolsa')
                 .then(r => r.json())
-                .then(d => setLiveMep(d.venta ?? 1400))
-                .catch(() => setLiveMep(1400))
+                .then(d => {
+                    if (d.venta > 0) {
+                        setLiveMep(d.venta)
+                        setMepEstimated(false)
+                    } else {
+                        setLiveMep(1400)
+                        setMepEstimated(true)
+                    }
+                })
+                .catch(() => {
+                    setLiveMep(1400)
+                    setMepEstimated(true)
+                })
         }
     }, [liveMep])
 
@@ -181,6 +193,11 @@ export default function DashboardClient({
                             )}>
                                 Ver en USD MEP
                             </p>
+                            {showUSD && mepEstimated && (
+                                <p className="mt-1 text-[10px] font-medium text-pending">
+                                    Cotización estimada
+                                </p>
+                            )}
                         </div>
                     </button>
 
