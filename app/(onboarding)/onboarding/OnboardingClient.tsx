@@ -53,7 +53,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
 
     function handleCreateCard() {
         if (!cardName.trim() || !cardType) {
-            toast.error('Completá el nombre y el tipo de tarjeta.')
+            toast.error('⚠ Completá el nombre y el tipo de tarjeta.')
             return
         }
         startTransition(async () => {
@@ -76,7 +76,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
 
     function handleSaveTransaction() {
         if (!txDescription.trim() || !txAmount || !txDate) {
-            toast.error('Completá todos los campos obligatorios.')
+            toast.error('⚠ Completá todos los campos obligatorios.')
             return
         }
         startTransition(async () => {
@@ -116,7 +116,7 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
             <Card className="w-full">
                 <CardHeader className="space-y-3 text-center">
                     {/* Brand mark */}
-                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[#5B47E0] shadow-brand">
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-hover shadow-brand">
                         <DollarSign className="h-5 w-5 text-primary-foreground" aria-hidden />
                     </div>
                     <p className="text-xs font-semibold tracking-widest text-primary uppercase">
@@ -139,14 +139,14 @@ export default function OnboardingClient({ expenseCategories, incomeCategories }
                                 Tus categorías por defecto
                             </CardTitle>
                             <CardDescription>
-                                Estas son las categorías con las que podés clasificar tus movimientos. Las podés personalizar en Configuración cuando quieras.
+                                Estas son las categorías con las que podés clasificar tus operaciones. Las podés personalizar en Configuración cuando quieras.
                             </CardDescription>
                         </>
                     )}
                     {step === 3 && (
                         <>
                             <CardTitle className="text-xl font-bold">
-                                Registrá tu primer movimiento
+                                Registrá tu primera operación
                             </CardTitle>
                             <CardDescription>
                                 Ingresá un ingreso o gasto reciente para empezar a ver tus finanzas en acción.

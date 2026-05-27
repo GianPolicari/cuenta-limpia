@@ -73,8 +73,8 @@ export default function ResetPasswordPage() {
 
             <Card className="cl-animate-scale relative w-full max-w-md backdrop-blur-xl">
                 <CardHeader className="space-y-3 text-center">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7C6BFF] to-[#5B47E0] shadow-brand">
-                        <ShieldCheck className="h-7 w-7 text-white" aria-hidden />
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-hover shadow-brand">
+                        <ShieldCheck className="h-7 w-7 text-primary-foreground" aria-hidden />
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
                         Nueva Contraseña

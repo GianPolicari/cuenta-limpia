@@ -185,7 +185,7 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                                             style={card.color ? { backgroundColor: card.color } : undefined}
                                         >
                                             <CreditCard
-                                                className={cn('h-5 w-5', card.color ? 'text-white' : 'text-primary')}
+                                                className={cn('h-5 w-5', card.color ? 'text-primary-foreground' : 'text-primary')}
                                                 aria-hidden="true"
                                             />
                                         </div>
@@ -202,7 +202,7 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 text-muted-foreground hover:text-info"
+                                            className="h-11 w-11 text-muted-foreground hover:text-info"
                                             aria-label={`Editar tarjeta ${card.name}`}
                                             disabled={isPending}
                                             onClick={() => { setFormError(null); setEditTarget(card) }}
@@ -212,7 +212,7 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 text-muted-foreground hover:text-expense"
+                                            className="h-11 w-11 text-muted-foreground hover:text-expense"
                                             aria-label={`Eliminar tarjeta ${card.name}`}
                                             disabled={isPending}
                                             onClick={() => setDeleteTarget(card)}

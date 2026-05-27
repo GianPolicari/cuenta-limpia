@@ -150,7 +150,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
                         <DialogHeader>
                             <DialogTitle>Importar CSV</DialogTitle>
                             <DialogDescription>
-                                Importá tus movimientos desde un archivo CSV de tu banco o app.
+                                Importá tus operaciones desde un archivo CSV de tu banco o app.
                             </DialogDescription>
                         </DialogHeader>
 

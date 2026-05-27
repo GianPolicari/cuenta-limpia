@@ -395,7 +395,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                 setBudgets(prevBudgets)
                 toast.error("No pudimos guardar el presupuesto. Probá de nuevo.", { description: result.error })
             } else {
-                toast.success("Presupuesto guardado")
+                toast.success("✅ Presupuesto guardado")
                 router.refresh()
             }
         })
@@ -731,7 +731,7 @@ function RecurrentesTab({
                 return
             }
             setError(null)
-            toast.success('Recurrente agregada')
+            toast.success('✅ Recurrente agregada')
             router.refresh()
         })
     }
@@ -765,7 +765,7 @@ function RecurrentesTab({
                 return
             }
             setError(null)
-            toast.success('Recurrente actualizada')
+            toast.success('✅ Recurrente actualizada')
             router.refresh()
         })
     }
@@ -781,7 +781,7 @@ function RecurrentesTab({
                 toast.error('No pudimos eliminar la recurrente. Probá de nuevo.', { description: result.error })
                 return
             }
-            toast.success('Recurrente eliminada')
+            toast.success('✅ Recurrente eliminada')
             router.refresh()
         })
     }
@@ -823,7 +823,7 @@ function RecurrentesTab({
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Editar recurrente</DialogTitle>
-                        <DialogDescription>Modificá los datos de la transacción recurrente.</DialogDescription>
+                        <DialogDescription>Modificá los datos de la operación recurrente.</DialogDescription>
                     </DialogHeader>
                     {error && (
                         <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">

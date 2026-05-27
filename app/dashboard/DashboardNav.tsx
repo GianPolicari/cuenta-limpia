@@ -34,13 +34,13 @@ export function DashboardNav({ variant = 'sidebar' }: { variant?: 'sidebar' | 'b
                     <Link
                         key={item.href}
                         href={item.href}
-                        aria-label={item.label}
                         className={cn(
-                            'flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs',
+                            'flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2',
                             isActive(item.href) ? 'text-primary' : 'text-muted-foreground'
                         )}
                     >
                         <item.icon className="h-5 w-5" aria-hidden="true" />
+                        <span className="text-[10px] leading-none">{item.label}</span>
                     </Link>
                 ))}
             </nav>

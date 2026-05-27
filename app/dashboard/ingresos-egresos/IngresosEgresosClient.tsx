@@ -332,7 +332,7 @@ export default function IngresosEgresosClient({
 
     function exportToCSV() {
         if (transactions.length === 0) {
-            toast.error("No hay datos para exportar")
+            toast.error("⚠ No hay datos para exportar")
             return
         }
 
@@ -356,7 +356,7 @@ export default function IngresosEgresosClient({
         const link = document.createElement("a")
         const url = URL.createObjectURL(blob)
         link.setAttribute("href", url)
-        link.setAttribute("download", "movimientos_cuentalimpia.csv")
+        link.setAttribute("download", "operaciones_cuentalimpia.csv")
         link.style.visibility = "hidden"
         document.body.appendChild(link)
         link.click()
@@ -636,11 +636,11 @@ export default function IngresosEgresosClient({
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex gap-1">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-info" aria-label="Editar operación" onClick={() => { fetchCategoriesForType(tx.transaction_type ?? 'expense'); setEditTx(tx) }}>
-                                                        <Pencil className="h-3.5 w-3.5" />
+                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-info" aria-label="Editar operación" onClick={() => { fetchCategoriesForType(tx.transaction_type ?? 'expense'); setEditTx(tx) }}>
+                                                        <Pencil className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-expense" aria-label="Eliminar operación" disabled={isPending} onClick={() => setDeleteTx(tx)}>
-                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-expense" aria-label="Eliminar operación" disabled={isPending} onClick={() => setDeleteTx(tx)}>
+                                                        <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
                                             </TableCell>
@@ -807,7 +807,7 @@ function RecurringBanner({
                 onRevert(r.id)
                 toast.error('No pudimos aplicar la recurrente. Probá de nuevo.', { description: result.error })
             } else {
-                toast.success(`Aplicada: ${r.description}`)
+                toast.success(`✅ Aplicada: ${r.description}`)
             }
         })
     }
@@ -848,7 +848,7 @@ function RecurringBanner({
                 pending.forEach(r => onRevert(r.id))
                 toast.error('Algunas recurrentes no pudieron aplicarse.', { description: result.error })
             } else {
-                toast.success(`${pending.length} recurrente${pending.length !== 1 ? 's' : ''} aplicada${pending.length !== 1 ? 's' : ''}`)
+                toast.success(`✅ ${pending.length} recurrente${pending.length !== 1 ? 's' : ''} aplicada${pending.length !== 1 ? 's' : ''}`)
             }
         })
     }
@@ -1101,7 +1101,7 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                         <button
                             type="button"
                             onClick={() => setNewCardOpen(true)}
-                            className="text-xs text-primary hover:underline"
+                            className="min-h-[44px] px-1 text-xs text-primary hover:underline"
                         >
                             + Nueva tarjeta
                         </button>

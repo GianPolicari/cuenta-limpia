@@ -169,6 +169,7 @@ export default function DashboardClient({
 
                     {/* USD MEP Toggle */}
                     <button
+                        type="button"
                         onClick={() => setShowUSD(!showUSD)}
                         className={cn(
                             'group flex items-center gap-2.5 rounded-xl border px-4 py-2.5 transition-all duration-300',
@@ -228,7 +229,7 @@ export default function DashboardClient({
                     {formatMoney(displayIngresos, currency)}
                 </KpiCard>
 
-                <KpiCard title="Gastos del Mes" icon={TrendingDown} tone="expense" hint={`${monthExpensesCount} transacciones este mes`}>
+                <KpiCard title="Gastos del Mes" icon={TrendingDown} tone="expense" hint={`${monthExpensesCount} operaciones este mes`}>
                     {formatMoney(displayGastos, currency)}
                 </KpiCard>
 
@@ -241,7 +242,7 @@ export default function DashboardClient({
                     />
                 </KpiCard>
 
-                <KpiCard title="Transacciones" icon={CreditCard} tone="brand" hint={`registradas en ${selectedYear}`}>
+                <KpiCard title="Operaciones" icon={CreditCard} tone="brand" hint={`registradas en ${selectedYear}`}>
                     {transactions.length}
                 </KpiCard>
             </div>

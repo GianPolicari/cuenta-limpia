@@ -96,7 +96,7 @@ export default function MetasClient({ initialGoals }: Props) {
             const result = await addSavingsGoal(formData)
             if (result.error || !result.goal) {
                 setGoals(previousGoals)
-                toast.error('No pudimos agregar la meta. Probá de nuevo.')
+                toast.error('⚠ No pudimos agregar la meta. Probá de nuevo.')
                 setFormError(result.error ?? 'Error inesperado')
                 setAddOpen(true)
                 return
@@ -132,7 +132,7 @@ export default function MetasClient({ initialGoals }: Props) {
                 setGoals(previousGoals)
                 setFormError(result.error)
                 setEditTarget(savedEditTarget)
-                toast.error('No pudimos guardar los cambios. Probá de nuevo.')
+                toast.error('⚠ No pudimos guardar los cambios. Probá de nuevo.')
                 return
             }
             toast.success('✅ Meta actualizada')
@@ -148,7 +148,7 @@ export default function MetasClient({ initialGoals }: Props) {
             const result = await deleteSavingsGoal(id)
             if (result.error) {
                 setGoals(previousGoals)
-                toast.error('No pudimos eliminar la meta. Probá de nuevo.')
+                toast.error('⚠ No pudimos eliminar la meta. Probá de nuevo.')
                 return
             }
             toast.success('✅ Meta eliminada')
@@ -168,7 +168,7 @@ export default function MetasClient({ initialGoals }: Props) {
             const result = await contributeToGoal(id, amount)
             if (result.error) {
                 setGoals(previousGoals)
-                toast.error('No pudimos registrar la contribucion. Probá de nuevo.')
+                toast.error('⚠ No pudimos registrar la contribución. Probá de nuevo.')
                 return
             }
             toast.success('✅ Contribución registrada')
