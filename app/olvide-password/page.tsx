@@ -19,7 +19,7 @@ export default function OlvidePasswordPage() {
         e.preventDefault()
 
         if (!email) {
-            toast.error('Por favor, ingresá un correo electrónico válido')
+            toast.error('⚠ Por favor, ingresá un correo electrónico válido')
             return
         }
 
@@ -33,11 +33,11 @@ export default function OlvidePasswordPage() {
             if (error) {
                 toast.error(error.message)
             } else {
-                toast.success('✅ Si el correo existe, recibirás un enlace para recuperar tu cuenta.')
+                toast.success('✅ Si el correo existe, vas a recibir un enlace para recuperar tu cuenta.')
                 setEmail('')
             }
         } catch {
-            toast.error('Ocurrió un error al intentar enviar el correo.')
+            toast.error('⚠ Ocurrió un error al intentar enviar el correo.')
         } finally {
             setIsLoading(false)
         }

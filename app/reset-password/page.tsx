@@ -34,12 +34,12 @@ export default function ResetPasswordPage() {
         e.preventDefault()
 
         if (status !== 'ready') {
-            toast.error('El enlace de recuperación es inválido o expiró.')
+            toast.error('⚠ El enlace de recuperación es inválido o expiró.')
             return
         }
 
         if (!newPassword || newPassword.length < 6) {
-            toast.error('La contraseña debe tener al menos 6 caracteres.')
+            toast.error('⚠ La contraseña debe tener al menos 6 caracteres.')
             return
         }
 
@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
                 router.push('/dashboard')
             }
         } catch {
-            toast.error('Ocurrió un error al actualizar la contraseña.')
+            toast.error('⚠ Ocurrió un error al actualizar la contraseña.')
         } finally {
             setIsLoading(false)
         }

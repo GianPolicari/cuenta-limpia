@@ -85,7 +85,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
         if (file && (file.name.endsWith('.csv') || file.name.endsWith('.txt'))) {
             handleFileRead(file)
         } else {
-            toast.error('Seleccioná un archivo .csv o .txt')
+            toast.error('⚠ Seleccioná un archivo .csv o .txt')
         }
     }
 

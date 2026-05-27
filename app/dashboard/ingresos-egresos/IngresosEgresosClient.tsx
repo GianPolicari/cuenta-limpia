@@ -457,6 +457,7 @@ export default function IngresosEgresosClient({
                     />
                     {searchQuery && (
                         <button
+                            type="button"
                             onClick={() => setSearchQuery('')}
                             className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground"
                             aria-label="Limpiar búsqueda"
@@ -805,7 +806,7 @@ function RecurringBanner({
             setLoadingId(null)
             if (result.error) {
                 onRevert(r.id)
-                toast.error('No pudimos aplicar la recurrente. Probá de nuevo.', { description: result.error })
+                toast.error('⚠ No pudimos aplicar la recurrente. Probá de nuevo.', { description: result.error })
             } else {
                 toast.success(`✅ Aplicada: ${r.description}`)
             }
@@ -846,7 +847,7 @@ function RecurringBanner({
             setLoadingAll(false)
             if (result.error) {
                 pending.forEach(r => onRevert(r.id))
-                toast.error('Algunas recurrentes no pudieron aplicarse.', { description: result.error })
+                toast.error('⚠ Algunas recurrentes no pudieron aplicarse.', { description: result.error })
             } else {
                 toast.success(`✅ ${pending.length} recurrente${pending.length !== 1 ? 's' : ''} aplicada${pending.length !== 1 ? 's' : ''}`)
             }

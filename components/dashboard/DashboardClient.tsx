@@ -205,7 +205,7 @@ export default function DashboardClient({
                     {/* Dolar MEP Ticker */}
                     <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-2">
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-income-subtle">
-                            <DollarSign className="h-5 w-5 text-income" />
+                            <DollarSign className="h-5 w-5 text-income" aria-hidden="true" />
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground">Dólar MEP</p>
@@ -214,7 +214,7 @@ export default function DashboardClient({
                                     ${liveMep.toLocaleString('es-AR')}
                                 </span>
                                 <Badge variant={dolarPositive ? 'income' : 'expense'}>
-                                    {dolarPositive ? <ArrowUpRight /> : <ArrowDownRight />}
+                                    {dolarPositive ? <ArrowUpRight aria-hidden="true" /> : <ArrowDownRight aria-hidden="true" />}
                                     {Math.abs(dolar.variacion).toFixed(2)}%
                                 </Badge>
                             </div>

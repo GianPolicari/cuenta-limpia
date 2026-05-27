@@ -393,7 +393,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
             const result = await upsertBudget(categoryName, amount)
             if (result.error) {
                 setBudgets(prevBudgets)
-                toast.error("No pudimos guardar el presupuesto. Probá de nuevo.", { description: result.error })
+                toast.error("⚠ No pudimos guardar el presupuesto. Probá de nuevo.", { description: result.error })
             } else {
                 toast.success("✅ Presupuesto guardado")
                 router.refresh()
@@ -409,7 +409,7 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
             const result = await deleteBudget(categoryName)
             if (result.error) {
                 setBudgets(prevBudgets)
-                toast.error("No pudimos eliminar el presupuesto. Probá de nuevo.", { description: result.error })
+                toast.error("⚠ No pudimos eliminar el presupuesto. Probá de nuevo.", { description: result.error })
             } else {
                 router.refresh()
             }
@@ -726,7 +726,7 @@ function RecurrentesTab({
             if (result.error) {
                 setRecurring(prevRecurring)
                 setError(result.error)
-                toast.error('No pudimos agregar la recurrente. Probá de nuevo.', { description: result.error })
+                toast.error('⚠ No pudimos agregar la recurrente. Probá de nuevo.', { description: result.error })
                 setAddOpen(true)
                 return
             }
@@ -760,7 +760,7 @@ function RecurrentesTab({
             if (result.error) {
                 setRecurring(prevRecurring)
                 setError(result.error)
-                toast.error('No pudimos guardar los cambios. Probá de nuevo.', { description: result.error })
+                toast.error('⚠ No pudimos guardar los cambios. Probá de nuevo.', { description: result.error })
                 setEditRec(editRec)
                 return
             }
@@ -778,7 +778,7 @@ function RecurrentesTab({
             const result = await deleteRecurring(id)
             if (result?.error) {
                 setRecurring(prevRecurring)
-                toast.error('No pudimos eliminar la recurrente. Probá de nuevo.', { description: result.error })
+                toast.error('⚠ No pudimos eliminar la recurrente. Probá de nuevo.', { description: result.error })
                 return
             }
             toast.success('✅ Recurrente eliminada')
