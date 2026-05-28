@@ -621,7 +621,7 @@ export default function IngresosEgresosClient({
                                         </button>
                                     </TableHead>
                                     <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-10 w-full cursor-pointer items-center justify-end gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('monto')}>
+                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center justify-end gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('monto')}>
                                             Monto {renderSortArrow('monto')}
                                         </button>
                                     </TableHead>
@@ -1170,8 +1170,9 @@ function TxForm({ onSubmit, isPending, onCancel, cards, defaults, onTypeChange, 
                         </div>
                         {isInstallment && (
                             <div className="space-y-2">
-                                <Label>Cantidad de cuotas</Label>
+                                <Label htmlFor="tx-installments">Cantidad de cuotas</Label>
                                 <Input
+                                    id="tx-installments"
                                     type="number"
                                     min="2"
                                     max="24"

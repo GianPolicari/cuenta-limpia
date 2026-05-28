@@ -1104,7 +1104,6 @@ function RecurringForm({
                     id="rec-active"
                     checked={isActive}
                     onCheckedChange={setIsActive}
-                    aria-label="Recurrente activa"
                 />
                 <Label htmlFor="rec-active" className="cursor-pointer text-sm">
                     {isActive ? 'Activa — se va a sugerir cada mes' : 'Inactiva — no se va a sugerir'}
