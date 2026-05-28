@@ -347,3 +347,84 @@ export async function applyAllPendingRecurring(
     return { error: null }
 }
 
+// ==================== ALERT PREFERENCES ====================
+
+export async function getAlertPreferences() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { data: null, error: 'No autenticado' }
+
+    const { data, error } = await supabase
+        .from('user_alert_preferences')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+    if (error) return { data: null, error: error.message }
+    return { data, error: null }
+}
+
+export async function upsertAlertPreferences(
+    enabled: boolean,
+    threshold75: boolean,
+    threshold100: boolean
+) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
+    const { error } = await supabase
+        .from('user_alert_preferences')
+        .upsert(
+            {
+                user_id: user.id,
+                email_alerts_enabled: enabled,
+                threshold_75: threshold75,
+                threshold_100: threshold100,
+                updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'user_id' }
+        )
+
+    if (error) return { error: error.message }
+    revalidatePath('/dashboard/configuracion')
+    return { error: null }
+}
+
+// ==================== ALERT OVERRIDES ====================
+
+export async function getAlertOverrides() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { data: null, error: 'No autenticado' }
+
+    const { data, error } = await supabase
+        .from('budget_alert_overrides')
+        .select('*')
+        .eq('user_id', user.id)
+
+    if (error) return { data: null, error: error.message }
+    return { data: data ?? [], error: null }
+}
+
+export async function upsertAlertOverride(categoryName: string, alertsEnabled: boolean) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'No autenticado' }
+
+    const { error } = await supabase
+        .from('budget_alert_overrides')
+        .upsert(
+            {
+                user_id: user.id,
+                category_name: categoryName,
+                alerts_enabled: alertsEnabled,
+            },
+            { onConflict: 'user_id,category_name' }
+        )
+
+    if (error) return { error: error.message }
+    revalidatePath('/dashboard/configuracion')
+    return { error: null }
+}
+

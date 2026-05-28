@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
-import { BRAND_PRIMARY_HEX, MUTED_FG_LIGHT_HEX } from '@/lib/theme'
+import { BRAND_PRIMARY_HEX } from '@/lib/theme'
 import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,7 +23,7 @@ import { Amount } from '@/components/ui/amount'
 import { cn } from '@/lib/utils'
 import {
     User, CreditCard, Tag, Mail, Calendar, Shield,
-    LogOut, Plus, Trash2, Pencil, Loader2, Check, RefreshCw,
+    LogOut, Plus, Trash2, Pencil, Loader2, Check, RefreshCw, Bell, BellOff,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -32,6 +32,7 @@ import {
     addCategory, updateCategory, deleteCategory,
     upsertBudget, deleteBudget,
     addRecurring, updateRecurring, deleteRecurring,
+    upsertAlertPreferences, upsertAlertOverride,
 } from './actions'
 
 // ==================== TYPES ====================
@@ -50,6 +51,22 @@ type RecurringRow = {
     is_active: boolean
     cards: { name: string } | null
 }
+type AlertPrefsRow = {
+    id: string
+    user_id: string
+    email_alerts_enabled: boolean
+    threshold_75: boolean
+    threshold_100: boolean
+    created_at: string
+    updated_at: string
+} | null
+type AlertOverrideRow = {
+    id: string
+    user_id: string
+    category_name: string
+    alerts_enabled: boolean
+    created_at: string
+}
 
 
 // ==================== MAIN COMPONENT ====================
@@ -62,9 +79,12 @@ interface SettingsClientProps {
     initialCategories: CategoryRow[]
     initialBudgets: BudgetRow[]
     initialRecurring: RecurringRow[]
+    initialAlertPrefs: AlertPrefsRow
+    initialAlertOverrides: AlertOverrideRow[]
 }
 
 const CARD_TYPES = ['Crédito', 'Débito']
+
 export default function SettingsClient({
     email,
     createdAt,
@@ -73,7 +93,11 @@ export default function SettingsClient({
     initialCategories,
     initialBudgets,
     initialRecurring,
+    initialAlertPrefs,
+    initialAlertOverrides,
 }: SettingsClientProps) {
+    const [activeTab, setActiveTab] = useState('tarjetas')
+
     return (
         <div className="min-h-screen bg-background p-6 lg:p-8">
             {/* Header */}
@@ -129,8 +153,8 @@ export default function SettingsClient({
             </div>
 
             {/* Tabs */}
-            <Tabs defaultValue="tarjetas" className="w-full">
-                <TabsList className="mb-6 w-full sm:w-auto">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="mb-6 h-auto w-full flex-wrap sm:w-auto sm:flex-nowrap">
                     <TabsTrigger value="tarjetas" className="gap-2">
                         <CreditCard className="h-4 w-4" aria-hidden="true" />
                         Tarjetas
@@ -143,16 +167,32 @@ export default function SettingsClient({
                         <RefreshCw className="h-4 w-4" aria-hidden="true" />
                         Recurrentes
                     </TabsTrigger>
+                    <TabsTrigger value="alertas" className="gap-2">
+                        <Bell className="h-4 w-4" aria-hidden="true" />
+                        Alertas
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="tarjetas">
                     <TarjetasTab initialCards={initialCards} />
                 </TabsContent>
                 <TabsContent value="categorias">
-                    <CategoriasTab initialCategories={initialCategories} initialBudgets={initialBudgets} />
+                    <CategoriasTab
+                        initialCategories={initialCategories}
+                        initialBudgets={initialBudgets}
+                        alertPrefs={initialAlertPrefs}
+                        onGoToAlerts={() => setActiveTab('alertas')}
+                    />
                 </TabsContent>
                 <TabsContent value="recurrentes">
                     <RecurrentesTab initialRecurring={initialRecurring} initialCards={initialCards} />
+                </TabsContent>
+                <TabsContent value="alertas">
+                    <AlertasTab
+                        initialAlertPrefs={initialAlertPrefs}
+                        initialAlertOverrides={initialAlertOverrides}
+                        budgets={initialBudgets}
+                    />
                 </TabsContent>
             </Tabs>
         </div>
@@ -371,21 +411,33 @@ function CardForm({ onSubmit, isPending, onCancel, defaults }: {
 
 // ==================== TAB: CATEGORÍAS ====================
 
-function CategoriasTab({ initialCategories, initialBudgets }: { initialCategories: CategoryRow[]; initialBudgets: BudgetRow[] }) {
+function CategoriasTab({
+    initialCategories,
+    initialBudgets,
+    alertPrefs,
+    onGoToAlerts,
+}: {
+    initialCategories: CategoryRow[]
+    initialBudgets: BudgetRow[]
+    alertPrefs: AlertPrefsRow
+    onGoToAlerts: () => void
+}) {
     const [addOpen, setAddOpen] = useState(false)
     const [editCat, setEditCat] = useState<CategoryRow | null>(null)
     const [deleteTarget, setDeleteTarget] = useState<CategoryRow | null>(null)
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
     const [budgets, setBudgets] = useState<BudgetRow[]>(initialBudgets)
+    const [activatingAlerts, setActivatingAlerts] = useState(false)
     const router = useRouter()
 
     const expenseCats = initialCategories.filter((c) => c.type === 'expense')
     const incomeCats = initialCategories.filter((c) => c.type === 'income')
 
+    const showNudge = budgets.length > 0 && !alertPrefs?.email_alerts_enabled
+
     function handleUpsertBudget(categoryName: string, amount: number) {
         const prevBudgets = budgets
-        // Optimistic update
         setBudgets((prev) => {
             const exists = prev.find((b) => b.category_name === categoryName)
             if (exists) return prev.map((b) => b.category_name === categoryName ? { ...b, monthly_amount: amount } : b)
@@ -405,7 +457,6 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
 
     function handleDeleteBudget(categoryName: string) {
         const prevBudgets = budgets
-        // Optimistic update
         setBudgets((prev) => prev.filter((b) => b.category_name !== categoryName))
         startTransition(async () => {
             const result = await deleteBudget(categoryName)
@@ -456,6 +507,21 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
             }
             setDeleteTarget(null)
             toast.success("✅ Categoría eliminada")
+            router.refresh()
+        })
+    }
+
+    function handleActivateAlertsNudge() {
+        setActivatingAlerts(true)
+        startTransition(async () => {
+            const result = await upsertAlertPreferences(true, true, true)
+            setActivatingAlerts(false)
+            if (result.error) {
+                toast.error("⚠ No pudimos activar las alertas. Probá de nuevo.", { description: result.error })
+                return
+            }
+            toast.success("✅ Alertas activadas")
+            onGoToAlerts()
             router.refresh()
         })
     }
@@ -520,10 +586,41 @@ function CategoriasTab({ initialCategories, initialBudgets }: { initialCategorie
                     }
                 />
             ) : (
-                <div className="grid gap-4 lg:grid-cols-2">
-                    <CategoryGroup title="Gastos" items={expenseCats} variant="expense" onEdit={setEditCat} onDelete={setDeleteTarget} isPending={isPending} budgets={budgets} onUpsertBudget={handleUpsertBudget} onDeleteBudget={handleDeleteBudget} />
-                    <CategoryGroup title="Ingresos" items={incomeCats} variant="income" onEdit={setEditCat} onDelete={setDeleteTarget} isPending={isPending} />
-                </div>
+                <>
+                    <div className="grid gap-4 lg:grid-cols-2">
+                        <CategoryGroup title="Gastos" items={expenseCats} variant="expense" onEdit={setEditCat} onDelete={setDeleteTarget} isPending={isPending} budgets={budgets} onUpsertBudget={handleUpsertBudget} onDeleteBudget={handleDeleteBudget} />
+                        <CategoryGroup title="Ingresos" items={incomeCats} variant="income" onEdit={setEditCat} onDelete={setDeleteTarget} isPending={isPending} />
+                    </div>
+
+                    {/* Nudge para activar alertas */}
+                    {showNudge && (
+                        <div
+                            className="flex items-center justify-between gap-3 rounded-lg border border-info/20 bg-info-subtle p-3"
+                            role="region"
+                            aria-label="Sugerencia de alertas de presupuesto"
+                        >
+                            <div className="flex items-center gap-2 min-w-0">
+                                <Bell className="h-4 w-4 shrink-0 text-info" aria-hidden="true" />
+                                <p className="text-sm text-foreground">
+                                    ¿Querés que te avisemos cuando te acercás al límite mensual?
+                                </p>
+                            </div>
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="shrink-0 border-info/30 text-info hover:bg-info-subtle"
+                                onClick={handleActivateAlertsNudge}
+                                disabled={activatingAlerts || isPending}
+                            >
+                                {activatingAlerts
+                                    ? <><Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Activando...</>
+                                    : 'Activar alertas'
+                                }
+                            </Button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     )
@@ -586,11 +683,12 @@ function BudgetInput({ categoryName, currentBudget, onSave, onClear, isPending }
     const [value, setValue] = useState(currentBudget !== null ? String(currentBudget) : '')
     const [dirty, setDirty] = useState(false)
 
-    // Sync if parent updates (e.g. after refresh)
+    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         setValue(currentBudget !== null ? String(currentBudget) : '')
         setDirty(false)
     }, [currentBudget])
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     function handleSave() {
         const num = parseFloat(value.replace(',', '.'))
@@ -1119,5 +1217,244 @@ function RecurringForm({
                 </Button>
             </DialogFooter>
         </form>
+    )
+}
+
+// ==================== TAB: ALERTAS ====================
+
+function AlertasTab({
+    initialAlertPrefs,
+    initialAlertOverrides,
+    budgets,
+}: {
+    initialAlertPrefs: AlertPrefsRow
+    initialAlertOverrides: AlertOverrideRow[]
+    budgets: BudgetRow[]
+}) {
+    const [prefs, setPrefs] = useState({
+        enabled: initialAlertPrefs?.email_alerts_enabled ?? false,
+        threshold75: initialAlertPrefs?.threshold_75 ?? true,
+        threshold100: initialAlertPrefs?.threshold_100 ?? true,
+    })
+    const [overrides, setOverrides] = useState<AlertOverrideRow[]>(initialAlertOverrides)
+    const [isPending, startTransition] = useTransition()
+    const router = useRouter()
+
+    // Cuando se activa el global también hace upsert con los valores actuales
+    function handleToggleGlobal(enabled: boolean) {
+        const prev = prefs
+        setPrefs((p) => ({ ...p, enabled }))
+        startTransition(async () => {
+            const result = await upsertAlertPreferences(enabled, prefs.threshold75, prefs.threshold100)
+            if (result.error) {
+                setPrefs(prev)
+                toast.error('⚠ No pudimos guardar tus preferencias. Probá de nuevo.', { description: result.error })
+                return
+            }
+            toast.success(enabled ? '✅ Alertas activadas' : '✅ Alertas desactivadas')
+            router.refresh()
+        })
+    }
+
+    function handleToggleThreshold(field: 'threshold75' | 'threshold100', value: boolean) {
+        const prev = prefs
+        const newPrefs = { ...prefs, [field]: value }
+        setPrefs(newPrefs)
+        startTransition(async () => {
+            const result = await upsertAlertPreferences(newPrefs.enabled, newPrefs.threshold75, newPrefs.threshold100)
+            if (result.error) {
+                setPrefs(prev)
+                toast.error('⚠ No pudimos guardar tus preferencias. Probá de nuevo.', { description: result.error })
+            }
+        })
+    }
+
+    function handleToggleOverride(categoryName: string, alertsEnabled: boolean) {
+        const prevOverrides = overrides
+        // Optimistic: si se activa y había override deshabilitado, lo removemos del estado local
+        // si se desactiva, lo agregamos / actualizamos
+        setOverrides((prev) => {
+            const exists = prev.find((o) => o.category_name === categoryName)
+            if (alertsEnabled) {
+                // alertsEnabled=true significa "no silenciar" → eliminamos el override (o lo marcamos true)
+                return prev.map((o) =>
+                    o.category_name === categoryName ? { ...o, alerts_enabled: true } : o
+                )
+            }
+            // alertsEnabled=false → silenciar
+            if (exists) {
+                return prev.map((o) =>
+                    o.category_name === categoryName ? { ...o, alerts_enabled: false } : o
+                )
+            }
+            return [
+                ...prev,
+                {
+                    id: `temp-${Date.now()}`,
+                    user_id: '',
+                    category_name: categoryName,
+                    alerts_enabled: false,
+                    created_at: new Date().toISOString(),
+                },
+            ]
+        })
+
+        startTransition(async () => {
+            const result = await upsertAlertOverride(categoryName, alertsEnabled)
+            if (result.error) {
+                setOverrides(prevOverrides)
+                toast.error('⚠ No pudimos guardar la configuración. Probá de nuevo.', { description: result.error })
+            }
+        })
+    }
+
+    // Para una categoría, está activa si no hay override con alerts_enabled=false
+    function isCategoryEnabled(categoryName: string): boolean {
+        const override = overrides.find((o) => o.category_name === categoryName)
+        if (!override) return true // sin override → activo por defecto
+        return override.alerts_enabled
+    }
+
+    const budgetsWithCategory = budgets.filter((b) => b.category_name)
+
+    return (
+        <div className="space-y-6">
+            {/* Toggle global */}
+            <Card>
+                <CardContent className="py-4">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-3">
+                            <div
+                                className={cn(
+                                    'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
+                                    prefs.enabled ? 'bg-info-subtle' : 'bg-secondary'
+                                )}
+                            >
+                                {prefs.enabled
+                                    ? <Bell className="h-5 w-5 text-info" aria-hidden="true" />
+                                    : <BellOff className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                                }
+                            </div>
+                            <div>
+                                <Label
+                                    htmlFor="global-alerts-toggle"
+                                    className="cursor-pointer text-sm font-medium text-foreground"
+                                >
+                                    Recibir alertas de presupuesto por email
+                                </Label>
+                                <p className="mt-0.5 text-xs text-muted-foreground">
+                                    Te avisamos al 75% y al 100% de cada límite mensual
+                                </p>
+                            </div>
+                        </div>
+                        <Switch
+                            id="global-alerts-toggle"
+                            checked={prefs.enabled}
+                            onCheckedChange={handleToggleGlobal}
+                            disabled={isPending}
+                            aria-label="Activar o desactivar alertas de presupuesto por email"
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Sección umbrales — solo visible si global activo */}
+            {prefs.enabled && (
+                <Card>
+                    <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-semibold text-foreground">
+                            Umbrales de aviso
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-1">
+                        <div className="flex h-11 items-center justify-between rounded-lg px-1">
+                            <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-pending" aria-hidden="true" />
+                                <Label
+                                    htmlFor="threshold-75"
+                                    className="cursor-pointer text-sm text-foreground"
+                                >
+                                    Avisar al 75%
+                                </Label>
+                            </div>
+                            <Switch
+                                id="threshold-75"
+                                checked={prefs.threshold75}
+                                onCheckedChange={(v) => handleToggleThreshold('threshold75', v)}
+                                disabled={isPending}
+                                aria-label="Recibir alerta cuando el gasto alcance el 75% del presupuesto"
+                            />
+                        </div>
+                        <div className="flex h-11 items-center justify-between rounded-lg px-1">
+                            <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-expense" aria-hidden="true" />
+                                <Label
+                                    htmlFor="threshold-100"
+                                    className="cursor-pointer text-sm text-foreground"
+                                >
+                                    Avisar al 100%
+                                </Label>
+                            </div>
+                            <Switch
+                                id="threshold-100"
+                                checked={prefs.threshold100}
+                                onCheckedChange={(v) => handleToggleThreshold('threshold100', v)}
+                                disabled={isPending}
+                                aria-label="Recibir alerta cuando el gasto supere el 100% del presupuesto"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Lista de categorías con presupuesto — solo visible si global activo */}
+            {prefs.enabled && (
+                budgetsWithCategory.length === 0 ? (
+                    <EmptyState
+                        icon={Bell}
+                        title="Sin presupuestos configurados"
+                        description="Primero configurá un presupuesto en el tab Categorías."
+                    />
+                ) : (
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-semibold text-foreground">
+                                Categorías con presupuesto
+                            </CardTitle>
+                            <p className="text-xs text-muted-foreground">
+                                Desactivá las categorías de las que no querés recibir alertas.
+                            </p>
+                        </CardHeader>
+                        <CardContent className="space-y-1">
+                            {budgetsWithCategory.map((b) => {
+                                const enabled = isCategoryEnabled(b.category_name)
+                                return (
+                                    <div
+                                        key={b.category_name}
+                                        className="flex h-11 items-center justify-between rounded-lg px-1"
+                                    >
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <Badge variant="expense" className="shrink-0">
+                                                {b.category_name}
+                                            </Badge>
+                                            <span className="text-xs text-muted-foreground truncate">
+                                                límite ${b.monthly_amount.toLocaleString('es-AR')}
+                                            </span>
+                                        </div>
+                                        <Switch
+                                            id={`cat-alert-${b.category_name}`}
+                                            checked={enabled}
+                                            onCheckedChange={(v) => handleToggleOverride(b.category_name, v)}
+                                            disabled={isPending}
+                                            aria-label={`${enabled ? 'Desactivar' : 'Activar'} alertas para ${b.category_name}`}
+                                        />
+                                    </div>
+                                )
+                            })}
+                        </CardContent>
+                    </Card>
+                )
+            )}
+        </div>
     )
 }

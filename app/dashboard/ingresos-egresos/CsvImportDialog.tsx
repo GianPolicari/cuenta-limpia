@@ -78,7 +78,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
         e.target.value = ''
     }
 
-    function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    function handleDrop(e: React.DragEvent<HTMLElement>) {
         e.preventDefault()
         setIsDragging(false)
         const file = e.dataTransfer.files?.[0]
@@ -89,7 +89,7 @@ export function CsvImportDialog({ open, onOpenChange, categories, onImported }: 
         }
     }
 
-    function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    function handleDragOver(e: React.DragEvent<HTMLElement>) {
         e.preventDefault()
         setIsDragging(true)
     }

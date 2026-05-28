@@ -214,6 +214,90 @@ export interface Database {
                 Relationships: []
             }
 
+            user_alert_preferences: {
+                Row: {
+                    id: string
+                    user_id: string
+                    email_alerts_enabled: boolean
+                    threshold_75: boolean
+                    threshold_100: boolean
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    email_alerts_enabled?: boolean
+                    threshold_75?: boolean
+                    threshold_100?: boolean
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    email_alerts_enabled?: boolean
+                    threshold_75?: boolean
+                    threshold_100?: boolean
+                    created_at?: string
+                    updated_at?: string
+                }
+                Relationships: []
+            }
+
+            budget_alert_overrides: {
+                Row: {
+                    id: string
+                    user_id: string
+                    category_name: string
+                    alerts_enabled: boolean
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    category_name: string
+                    alerts_enabled?: boolean
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    category_name?: string
+                    alerts_enabled?: boolean
+                    created_at?: string
+                }
+                Relationships: []
+            }
+
+            alert_log: {
+                Row: {
+                    id: string
+                    user_id: string
+                    category_name: string
+                    month: string
+                    threshold: '75' | '100'
+                    sent_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    category_name: string
+                    month: string
+                    threshold: '75' | '100'
+                    sent_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    category_name?: string
+                    month?: string
+                    threshold?: '75' | '100'
+                    sent_at?: string
+                }
+                Relationships: []
+            }
+
         }
         Views: {
             [_ in never]: never
