@@ -428,3 +428,35 @@ export async function upsertAlertOverride(categoryName: string, alertsEnabled: b
     return { error: null }
 }
 
+// ==================== DEV RESET ====================
+
+export async function resetDevDatabase() {
+  if (process.env.NODE_ENV !== 'development') {
+    return { error: 'Solo disponible en entorno de desarrollo' }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  // Orden respeta FK constraints:
+  // recurring_applied → transactions → recurring_transactions
+  // → savings_goals → budgets → custom_categories → cards
+  const tables = [
+    'recurring_applied',
+    'transactions',
+    'recurring_transactions',
+    'savings_goals',
+    'budgets',
+    'custom_categories',
+    'cards',
+  ] as const
+
+  for (const table of tables) {
+    const { error } = await supabase.from(table).delete().eq('user_id', user.id)
+    if (error) return { error: `Error limpiando ${table}: ${error.message}` }
+  }
+
+  revalidatePath('/dashboard', 'layout')
+  return { error: null }
+}

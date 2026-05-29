@@ -48,6 +48,7 @@ export default async function ConfiguracionPage() {
             }
             initialAlertPrefs={alertPrefsRes.data ?? null}
             initialAlertOverrides={alertOverridesRes.data ?? []}
+            isDev={process.env.NODE_ENV === 'development'}
         />
     )
 }

@@ -33,6 +33,7 @@ import {
     upsertBudget, deleteBudget,
     addRecurring, updateRecurring, deleteRecurring,
     upsertAlertPreferences, upsertAlertOverride,
+    resetDevDatabase,
 } from './actions'
 
 // ==================== TYPES ====================
@@ -81,6 +82,7 @@ interface SettingsClientProps {
     initialRecurring: RecurringRow[]
     initialAlertPrefs: AlertPrefsRow
     initialAlertOverrides: AlertOverrideRow[]
+    isDev?: boolean
 }
 
 const CARD_TYPES = ['Crédito', 'Débito']
@@ -95,8 +97,23 @@ export default function SettingsClient({
     initialRecurring,
     initialAlertPrefs,
     initialAlertOverrides,
+    isDev = false,
 }: SettingsClientProps) {
     const [activeTab, setActiveTab] = useState('tarjetas')
+    const [resetOpen, setResetOpen] = useState(false)
+    const [isResetting, startResetTransition] = useTransition()
+
+    function handleReset() {
+        startResetTransition(async () => {
+            const result = await resetDevDatabase()
+            if (result.error) {
+                toast.error(`❌ ${result.error}`)
+                return
+            }
+            setResetOpen(false)
+            toast.success('✅ Base de datos reseteada')
+        })
+    }
 
     return (
         <div className="cl-animate-enter min-h-screen bg-background p-6 lg:p-8">
@@ -195,6 +212,51 @@ export default function SettingsClient({
                     />
                 </TabsContent>
             </Tabs>
+
+            {/* Dev Zone — solo visible en NODE_ENV=development */}
+            {isDev && (
+                <section className="mt-12 rounded-xl border border-expense/20 bg-expense-subtle p-6">
+                    <h2 className="mb-1 text-base font-semibold text-expense">Zona de desarrollo</h2>
+                    <p className="mb-4 text-sm text-muted-foreground">
+                        Borra todos los datos de tu cuenta. Solo visible en entorno de desarrollo.
+                    </p>
+                    <Button
+                        variant="destructive"
+                        className="gap-2"
+                        onClick={() => setResetOpen(true)}
+                    >
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
+                        Resetear base de datos
+                    </Button>
+
+                    <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+                        <DialogContent className="sm:max-w-sm">
+                            <DialogHeader>
+                                <DialogTitle>¿Estás seguro?</DialogTitle>
+                                <DialogDescription>
+                                    Esto eliminará todas tus transacciones, tarjetas, metas, presupuestos y configuraciones. Esta acción no se puede deshacer.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter className="pt-2">
+                                <Button variant="outline" onClick={() => setResetOpen(false)}>
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    disabled={isResetting}
+                                    onClick={handleReset}
+                                >
+                                    {isResetting ? (
+                                        <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Reseteando...</>
+                                    ) : (
+                                        <><Trash2 className="h-4 w-4" aria-hidden="true" /> Confirmar reset</>
+                                    )}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </section>
+            )}
         </div>
     )
 }
