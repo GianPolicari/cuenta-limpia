@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CreditCardVisual } from '@/components/ui/credit-card-visual'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,21 +14,12 @@ import {
     DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import { Amount } from '@/components/ui/amount'
-import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { formatCuota } from '@/lib/format'
-import { cn } from '@/lib/utils'
 import { CreditCard, Plus, Trash2, Pencil, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createCard, updateCard, deleteCard } from './actions'
-import { BRAND_PRIMARY_HEX, CONTRAST_ON_DARK, CONTRAST_ON_LIGHT } from '@/lib/theme'
-
-function getIconContrast(hex: string): string {
-    const r = parseInt(hex.slice(1, 3), 16)
-    const g = parseInt(hex.slice(3, 5), 16)
-    const b = parseInt(hex.slice(5, 7), 16)
-    return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5 ? CONTRAST_ON_LIGHT : CONTRAST_ON_DARK
-}
+import { BRAND_PRIMARY_HEX } from '@/lib/theme'
 
 // ==================== TYPES ====================
 
@@ -52,10 +43,6 @@ type CuotaRow = {
 interface Props {
     initialCards: CardRow[]
     cuotas: CuotaRow[]
-}
-
-function isCredit(cardType: string) {
-    return cardType.toLowerCase().startsWith('cr')
 }
 
 // ==================== MAIN COMPONENT ====================
@@ -177,92 +164,107 @@ export default function TarjetasClient({ initialCards, cuotas }: Props) {
                     />
                 </div>
             ) : (
-                <div className="cl-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {cards.map((card) => {
-                        const credit = isCredit(card.card_type)
-                        const cardCuotas = cuotas.filter((q) => q.card_id === card.id)
-                        return (
-                            <Card key={card.id} className="cl-hover-lift">
-                                <CardHeader className="flex flex-row items-start justify-between gap-3 pb-3">
-                                    <div className="flex min-w-0 items-center gap-3">
-                                        <div
-                                            className={cn(
-                                                'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
-                                                card.color ? '' : 'bg-primary-subtle'
-                                            )}
-                                            style={card.color ? { backgroundColor: card.color } : undefined}
-                                        >
-                                            <CreditCard
-                                                className={cn('h-5 w-5', !card.color && 'text-primary')}
-                                                style={card.color ? { color: getIconContrast(card.color) } : undefined}
-                                                aria-hidden="true"
-                                            />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <CardTitle className="truncate text-base font-semibold text-foreground">
-                                                {card.name}
-                                            </CardTitle>
-                                            <Badge variant={credit ? 'info' : 'neutral'} className="mt-1">
-                                                {credit ? 'Crédito' : 'Débito'}
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                    <div className="flex shrink-0 gap-1">
+                <>
+                    {/* Grid de tarjetas visuales */}
+                    <div className="cl-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {cards.map((card) => {
+                            const cardCuotas = cuotas.filter((q) => q.card_id === card.id)
+                            return (
+                                <div key={card.id} className="group relative">
+                                    <CreditCardVisual
+                                        name={card.name}
+                                        card_type={card.card_type}
+                                        color={card.color}
+                                        activeCuotas={cardCuotas.length}
+                                        className="w-full"
+                                    />
+                                    {/* Botones flotantes sobre la card */}
+                                    <div className="absolute right-3 top-3 flex gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-11 w-11 text-muted-foreground hover:text-info"
+                                            className="h-8 w-8 text-white hover:text-white"
+                                            style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)' }}
                                             aria-label={`Editar tarjeta ${card.name}`}
                                             disabled={isPending}
                                             onClick={() => { setFormError(null); setEditTarget(card) }}
                                         >
-                                            <Pencil className="h-4 w-4" aria-hidden="true" />
+                                            <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                                         </Button>
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-11 w-11 text-muted-foreground hover:text-expense"
+                                            className="h-8 w-8 text-white hover:text-white"
+                                            style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)' }}
                                             aria-label={`Eliminar tarjeta ${card.name}`}
                                             disabled={isPending}
                                             onClick={() => setDeleteTarget(card)}
                                         >
-                                            <Trash2 className="h-4 w-4" aria-hidden="true" />
+                                            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                                         </Button>
                                     </div>
-                                </CardHeader>
-                                <CardContent>
-                                    {cardCuotas.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">Sin cuotas activas</p>
-                                    ) : (
-                                        <ul className="space-y-3">
-                                            {cardCuotas.map((q) => {
-                                                const cuota = formatCuota(q.cuota_actual, q.total_cuotas)
-                                                return (
-                                                    <li key={q.id} className="flex items-center justify-between gap-3">
-                                                        <div className="min-w-0">
-                                                            <p className="truncate text-sm font-medium text-foreground">
-                                                                {q.description ?? '—'}
-                                                            </p>
-                                                            {cuota && (
-                                                                <Badge variant="pending" className="mt-1">{cuota}</Badge>
-                                                            )}
-                                                        </div>
-                                                        <Amount
-                                                            value={q.amount}
-                                                            kind="expense"
-                                                            showIcon={false}
-                                                            className="shrink-0 text-sm font-semibold"
-                                                        />
-                                                    </li>
-                                                )
-                                            })}
-                                        </ul>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        )
-                    })}
-                </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                    {/* Sección de cuotas activas del mes */}
+                    {cuotas.length > 0 && (
+                        <section className="mt-8">
+                            <div className="mb-3 flex items-baseline justify-between">
+                                <h2 className="text-lg font-semibold text-foreground">Cuotas activas del mes</h2>
+                                <span className="text-sm text-muted-foreground">
+                                    {cuotas.length} en curso
+                                </span>
+                            </div>
+                            <div className="space-y-2">
+                                {cuotas.map((q) => {
+                                    const card = cards.find((c) => c.id === q.card_id)
+                                    const cuotaLabel = formatCuota(q.cuota_actual, q.total_cuotas)
+                                    const pct =
+                                        q.cuota_actual && q.total_cuotas
+                                            ? Math.round((q.cuota_actual / q.total_cuotas) * 100)
+                                            : 0
+                                    return (
+                                        <div
+                                            key={q.id}
+                                            className="grid grid-cols-[1fr_140px_auto] items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-xs"
+                                        >
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-semibold text-foreground">
+                                                    {q.description ?? '—'}
+                                                </p>
+                                                <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                    <CreditCard className="h-3 w-3" aria-hidden="true" />
+                                                    {card?.name ?? '—'}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                                                    <div
+                                                        className="cl-progress-fill h-full rounded-full bg-pending-strong"
+                                                        style={{ width: `${pct}%` }}
+                                                    />
+                                                </div>
+                                                {cuotaLabel && (
+                                                    <p className="mt-1 text-right text-[11px] text-muted-foreground">
+                                                        {cuotaLabel}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <Amount
+                                                value={q.amount}
+                                                kind="expense"
+                                                showIcon={false}
+                                                className="shrink-0 text-sm font-semibold"
+                                            />
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </section>
+                    )}
+                </>
             )}
 
             {/* Add card dialog */}
