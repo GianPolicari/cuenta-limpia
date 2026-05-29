@@ -408,9 +408,9 @@ export default function IngresosEgresosClient({
     const paginatedTransactions = sortedTransactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
     return (
-        <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+        <div className="cl-animate-enter min-h-screen p-4 sm:p-6 lg:p-8">
             {/* Header */}
-            <div className="cl-animate-enter mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
                         Ingresos & Egresos
@@ -843,9 +843,9 @@ function RecurringBanner({
 
     function handleApplyOne(r: RecurringRow) {
         const tempTxId = `temp-tx-${r.id}`
-        const daysInMonth = new Date(year, month + 1, 0).getDate()
+        const daysInMonth = new Date(year, month, 0).getDate()
         const day = Math.min(r.day_of_month, daysInMonth)
-        const mm = String(month + 1).padStart(2, '0')
+        const mm = String(month).padStart(2, '0')
         const dd = String(day).padStart(2, '0')
         const optimisticTx: TxRow = {
             id: tempTxId,
@@ -881,8 +881,8 @@ function RecurringBanner({
     }
 
     function handleApplyAll() {
-        const daysInMonth = new Date(year, month + 1, 0).getDate()
-        const mm = String(month + 1).padStart(2, '0')
+        const daysInMonth = new Date(year, month, 0).getDate()
+        const mm = String(month).padStart(2, '0')
         pending.forEach(r => {
             const day = Math.min(r.day_of_month, daysInMonth)
             const dd = String(day).padStart(2, '0')
@@ -931,7 +931,7 @@ function RecurringBanner({
                 <div className="flex items-center gap-2">
                     <RefreshCw className="h-4 w-4 shrink-0 text-pending" aria-hidden="true" />
                     <span className="text-sm font-semibold text-foreground">
-                        {pending.length} operación{pending.length !== 1 ? 'es' : ''} recurrente{pending.length !== 1 ? 's' : ''} pendiente{pending.length !== 1 ? 's' : ''} para {MONTHS_BANNER[month]} {year}
+                        {pending.length} operación{pending.length !== 1 ? 'es' : ''} recurrente{pending.length !== 1 ? 's' : ''} pendiente{pending.length !== 1 ? 's' : ''} para {MONTHS_BANNER[month - 1]} {year}
                     </span>
                 </div>
                 <Button

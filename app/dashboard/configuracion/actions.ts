@@ -450,6 +450,8 @@ export async function resetDevDatabase() {
     'budgets',
     'custom_categories',
     'cards',
+    'budget_alert_overrides',
+    'user_alert_preferences',
   ] as const
 
   for (const table of tables) {
