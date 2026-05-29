@@ -1,5 +1,5 @@
 import { signOut } from '@/app/login/actions'
-import { LogOut, DollarSign } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DashboardNav } from './DashboardNav'
 
@@ -13,13 +13,21 @@ export default function DashboardLayout({
             {/* Sidebar (desktop) */}
             <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
                 {/* Logo */}
-                <div className="flex h-16 items-center gap-3 border-b border-sidebar-border px-6">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-hover shadow-brand">
-                        <DollarSign className="h-5 w-5 text-primary-foreground" aria-hidden="true" />
-                    </div>
-                    <span className="text-lg font-bold tracking-tight text-foreground">
-                        CuentaLimpia
-                    </span>
+                <div className="flex h-16 items-center border-b border-sidebar-border px-6">
+                    <img
+                        src="/assets/logo-wordmark.svg"
+                        alt="CuentaLimpia"
+                        width={140}
+                        height={40}
+                        className="dark:hidden"
+                    />
+                    <img
+                        src="/assets/logo-wordmark-dark.svg"
+                        alt="CuentaLimpia"
+                        width={140}
+                        height={40}
+                        className="hidden dark:block"
+                    />
                 </div>
 
                 <DashboardNav />
