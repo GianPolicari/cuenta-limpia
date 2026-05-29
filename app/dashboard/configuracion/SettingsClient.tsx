@@ -99,9 +99,9 @@ export default function SettingsClient({
     const [activeTab, setActiveTab] = useState('tarjetas')
 
     return (
-        <div className="min-h-screen bg-background p-6 lg:p-8">
+        <div className="cl-animate-enter min-h-screen bg-background p-6 lg:p-8">
             {/* Header */}
-            <div className="cl-animate-enter mb-8">
+            <div className="mb-8">
                 <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
                     Configuración
                 </h1>
