@@ -17,6 +17,7 @@ import { Amount } from '@/components/ui/amount'
 import { Badge } from '@/components/ui/badge'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { formatARS, formatCuota } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import {
@@ -419,7 +420,7 @@ export default function IngresosEgresosClient({
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Select value={month} onValueChange={setMonth}>
+                    <Select value={month} onValueChange={setMonth} disabled={isLoadingTransactions}>
                         <SelectTrigger className="w-36 text-sm">
                             <SelectValue />
                         </SelectTrigger>
@@ -427,7 +428,7 @@ export default function IngresosEgresosClient({
                             {MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    <Select value={year} onValueChange={setYear}>
+                    <Select value={year} onValueChange={setYear} disabled={isLoadingTransactions}>
                         <SelectTrigger className="w-24 text-sm">
                             <SelectValue />
                         </SelectTrigger>
@@ -439,17 +440,31 @@ export default function IngresosEgresosClient({
             </div>
 
             {/* KPI Cards */}
-            <div className="cl-stagger mb-6 grid gap-4 sm:grid-cols-3">
-                <KpiCard title="Ingresos del mes" icon={ArrowUpRight} tone="income">
-                    <Amount value={totalIncome} kind="income" />
-                </KpiCard>
-                <KpiCard title="Gastos del mes" icon={ArrowDownRight} tone="expense">
-                    <Amount value={totalExpense} kind="expense" />
-                </KpiCard>
-                <KpiCard title="Balance" icon={Wallet} tone={balance >= 0 ? 'income' : 'expense'}>
-                    <Amount value={balance} kind={balance >= 0 ? 'income' : 'expense'} showIcon={false} />
-                </KpiCard>
-            </div>
+            {isLoadingTransactions ? (
+                <div className="mb-6 grid gap-4 sm:grid-cols-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="rounded-xl border border-border bg-card p-5">
+                            <div className="mb-3 flex items-center justify-between">
+                                <Skeleton className="h-4 w-28" />
+                                <Skeleton className="h-8 w-8 rounded-lg" />
+                            </div>
+                            <Skeleton className="h-7 w-32" />
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="cl-stagger mb-6 grid gap-4 sm:grid-cols-3">
+                    <KpiCard title="Ingresos del mes" icon={ArrowUpRight} tone="income">
+                        <Amount value={totalIncome} kind="income" />
+                    </KpiCard>
+                    <KpiCard title="Gastos del mes" icon={ArrowDownRight} tone="expense">
+                        <Amount value={totalExpense} kind="expense" />
+                    </KpiCard>
+                    <KpiCard title="Balance" icon={Wallet} tone={balance >= 0 ? 'income' : 'expense'}>
+                        <Amount value={balance} kind={balance >= 0 ? 'income' : 'expense'} showIcon={false} />
+                    </KpiCard>
+                </div>
+            )}
 
             {/* Banner recurrentes pendientes */}
             <RecurringBanner
@@ -470,227 +485,242 @@ export default function IngresosEgresosClient({
             {/* Budget progress section */}
             <BudgetSection budgets={initialBudgets} transactions={transactions} />
 
-            {/* Search + type filter */}
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-                    <Input
-                        placeholder="Buscar por descripción o categoría..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9 pr-9"
-                    />
-                    {searchQuery && (
-                        <button
-                            type="button"
-                            onClick={() => setSearchQuery('')}
-                            className="absolute right-1 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground"
-                            aria-label="Limpiar búsqueda"
+            {isLoadingTransactions ? (
+                <div className="rounded-xl border border-border bg-card">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="grid grid-cols-[40px_1fr_auto] items-center gap-4 border-b border-border p-3 last:border-0"
                         >
-                            <X className="h-4 w-4" />
-                        </button>
-                    )}
-                </div>
-                <div className="flex gap-2">
-                    {(['all', 'income', 'expense'] as const).map((t) => (
-                        <Button
-                            key={t}
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            aria-pressed={t === filterType}
-                            onClick={() => setFilterType(t)}
-                            className={cn(
-                                t === filterType && t === 'all' && 'border-primary/40 bg-primary-subtle text-primary',
-                                t === filterType && t === 'income' && 'border-income/40 bg-income-subtle text-income',
-                                t === filterType && t === 'expense' && 'border-expense/40 bg-expense-subtle text-expense',
-                            )}
-                        >
-                            {t === 'all' ? 'Todos' : t === 'income' ? 'Ingresos' : 'Gastos'}
-                        </Button>
+                            <Skeleton className="h-10 w-10 rounded-xl" />
+                            <div>
+                                <Skeleton className="mb-1.5 h-4 w-48" />
+                                <Skeleton className="h-3 w-32" />
+                            </div>
+                            <Skeleton className="h-5 w-20" />
+                        </div>
                     ))}
                 </div>
-            </div>
-
-            {/* Add button */}
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
-                <Button variant="outline" onClick={() => setCsvOpen(true)} className="cl-press gap-2">
-                    <Upload className="h-4 w-4" aria-hidden="true" /> Importar CSV
-                </Button>
-                <Button variant="outline" onClick={exportToCSV} className="cl-press gap-2">
-                    <Download className="h-4 w-4" aria-hidden="true" /> Exportar CSV
-                </Button>
-                <Dialog open={addOpen} onOpenChange={setAddOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="cl-press gap-2 font-semibold">
-                            <Plus className="h-4 w-4" aria-hidden="true" /> Nueva operación
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
-                        <DialogHeader>
-                            <DialogTitle>Nueva operación</DialogTitle>
-                            <DialogDescription>Registrá un ingreso o gasto.</DialogDescription>
-                        </DialogHeader>
-                        {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
-                        <TxForm onSubmit={handleAdd} isPending={isPending} onCancel={() => setAddOpen(false)} cards={cards} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} onCardCreated={handleCardCreated} />
-                    </DialogContent>
-                </Dialog>
-            </div>
-
-            {/* Edit Dialog */}
-            <Dialog open={!!editTx} onOpenChange={o => !o && setEditTx(null)}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Editar operación</DialogTitle>
-                        <DialogDescription>Modificá los datos de la operación.</DialogDescription>
-                    </DialogHeader>
-                    {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
-                    {editTx && <TxForm onSubmit={handleEdit} isPending={isPending} onCancel={() => setEditTx(null)} cards={cards} defaults={editTx} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} onCardCreated={handleCardCreated} />}
-                </DialogContent>
-            </Dialog>
-
-            {/* Delete confirmation */}
-            <Dialog open={!!deleteTx} onOpenChange={o => !o && setDeleteTx(null)}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>{deleteTx?.transaction_type === 'income' ? '¿Eliminar este ingreso?' : '¿Eliminar este gasto?'}</DialogTitle>
-                        <DialogDescription>Esta acción no se puede deshacer.</DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="pt-2">
-                        <Button type="button" variant="outline" onClick={() => setDeleteTx(null)}>Cancelar</Button>
-                        <Button type="button" variant="destructive" disabled={isPending} onClick={() => deleteTx && handleDelete(deleteTx.id)}>
-                            <Trash2 className="h-4 w-4" aria-hidden="true" /> Eliminar
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            {/* Table */}
-            {isLoadingTransactions ? (
-                <Card className="flex min-h-[400px] flex-col items-center justify-center p-20">
-                    <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" aria-hidden="true" />
-                    <p className="font-medium text-muted-foreground">Cargando operaciones...</p>
-                </Card>
-            ) : sortedTransactions.length === 0 ? (
-                <EmptyState
-                    icon={Inbox}
-                    title={transactions.length === 0 ? 'Sin operaciones todavía' : 'Sin resultados'}
-                    description={
-                        transactions.length === 0
-                            ? 'Registrá tu primer ingreso o gasto y empezá a ver a dónde va tu plata.'
-                            : 'Probá con otra búsqueda o cambiá los filtros.'
-                    }
-                    action={
-                        transactions.length === 0 ? (
-                            <Button className="gap-2 font-semibold" onClick={() => setAddOpen(true)}>
-                                <Plus className="h-4 w-4" /> Nueva operación
-                            </Button>
-                        ) : (
-                            <Button variant="outline" onClick={() => { setSearchQuery(''); setFilterType('all') }}>
-                                Limpiar filtros
-                            </Button>
-                        )
-                    }
-                />
             ) : (
-                <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                        <Table className="min-w-[700px]">
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('fecha')}>
-                                            Fecha {renderSortArrow('fecha')}
-                                        </button>
-                                    </TableHead>
-                                    <TableHead className="text-muted-foreground">Descripción</TableHead>
-                                    <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('categoria')}>
-                                            Categoría {renderSortArrow('categoria')}
-                                        </button>
-                                    </TableHead>
-                                    <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tarjeta')}>
-                                            Tarjeta {renderSortArrow('tarjeta')}
-                                        </button>
-                                    </TableHead>
-                                    <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tipo')}>
-                                            Tipo {renderSortArrow('tipo')}
-                                        </button>
-                                    </TableHead>
-                                    <TableHead className="p-0 text-muted-foreground">
-                                        <button type="button" className="flex h-11 w-full cursor-pointer items-center justify-end gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('monto')}>
-                                            Monto {renderSortArrow('monto')}
-                                        </button>
-                                    </TableHead>
-                                    <TableHead className="w-20 text-muted-foreground"><span className="sr-only">Acciones</span></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody className="cl-stagger-fade">
-                                {paginatedTransactions.map((tx: TxRow) => {
-                                    const isIncome = tx.transaction_type === 'income'
-                                    const linkedCard = cardName(tx.card_id)
-                                    return (
-                                        <TableRow key={tx.id} className="hover:bg-muted/50">
-                                            <TableCell className="text-muted-foreground">{formatDate(tx.transaction_date)}</TableCell>
-                                            <TableCell className="font-medium text-foreground">
-                                                <span>{tx.description ?? '—'}</span>
-                                                {formatCuota(tx.cuota_actual, tx.total_cuotas) && (
-                                                    <Badge variant="pending" className="ml-2">{formatCuota(tx.cuota_actual, tx.total_cuotas)}</Badge>
-                                                )}
-                                            </TableCell>
-                                            <TableCell>
-                                                {tx.category ? (
-                                                    <Badge variant="neutral">{tx.category}</Badge>
-                                                ) : '—'}
-                                            </TableCell>
-                                            <TableCell>
-                                                {linkedCard ? (
-                                                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                                        <CreditCard className="h-3 w-3" aria-hidden="true" /> {linkedCard}
-                                                    </span>
-                                                ) : tx.card_id ? (
-                                                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                                        <CreditCard className="h-3 w-3" aria-hidden="true" /> Eliminada
-                                                    </span>
-                                                ) : <span className="text-muted-foreground">—</span>}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={isIncome ? 'income' : 'expense'}>
-                                                    {isIncome
-                                                        ? <><ArrowUpRight className="h-3 w-3" /> Ingreso</>
-                                                        : <><ArrowDownRight className="h-3 w-3" /> Gasto</>}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Amount
-                                                    value={tx.amount}
-                                                    kind={isIncome ? 'income' : 'expense'}
-                                                    showIcon={false}
-                                                    className="justify-end text-sm font-semibold"
-                                                />
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex gap-1">
-                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-info" aria-label={`Editar operación: ${tx.description ?? formatDate(tx.transaction_date)}`} onClick={() => { fetchCategoriesForType(tx.transaction_type ?? 'expense'); setEditTx(tx) }}>
-                                                        <Pencil className="h-4 w-4" aria-hidden="true" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-expense" aria-label={`Eliminar operación: ${tx.description ?? formatDate(tx.transaction_date)}`} disabled={isPending} onClick={() => setDeleteTx(tx)}>
-                                                        <Trash2 className="h-4 w-4" aria-hidden="true" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    )
-                                })}
-                            </TableBody>
-                        </Table>
+                <>
+                    {/* Search + type filter */}
+                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                            <Input
+                                placeholder="Buscar por descripción o categoría..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-9 pr-9"
+                            />
+                            {searchQuery && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+                                    aria-label="Limpiar búsqueda"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                            )}
                         </div>
-                    </CardContent>
-                </Card>
-)}
+                        <div className="flex gap-2">
+                            {(['all', 'income', 'expense'] as const).map((t) => (
+                                <Button
+                                    key={t}
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    aria-pressed={t === filterType}
+                                    onClick={() => setFilterType(t)}
+                                    className={cn(
+                                        t === filterType && t === 'all' && 'border-primary/40 bg-primary-subtle text-primary',
+                                        t === filterType && t === 'income' && 'border-income/40 bg-income-subtle text-income',
+                                        t === filterType && t === 'expense' && 'border-expense/40 bg-expense-subtle text-expense',
+                                    )}
+                                >
+                                    {t === 'all' ? 'Todos' : t === 'income' ? 'Ingresos' : 'Gastos'}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Add button */}
+                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                        <Button variant="outline" onClick={() => setCsvOpen(true)} className="cl-press gap-2">
+                            <Upload className="h-4 w-4" aria-hidden="true" /> Importar CSV
+                        </Button>
+                        <Button variant="outline" onClick={exportToCSV} className="cl-press gap-2">
+                            <Download className="h-4 w-4" aria-hidden="true" /> Exportar CSV
+                        </Button>
+                        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="cl-press gap-2 font-semibold">
+                                    <Plus className="h-4 w-4" aria-hidden="true" /> Nueva operación
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle>Nueva operación</DialogTitle>
+                                    <DialogDescription>Registrá un ingreso o gasto.</DialogDescription>
+                                </DialogHeader>
+                                {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
+                                <TxForm onSubmit={handleAdd} isPending={isPending} onCancel={() => setAddOpen(false)} cards={cards} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} onCardCreated={handleCardCreated} />
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+
+                    {/* Edit Dialog */}
+                    <Dialog open={!!editTx} onOpenChange={o => !o && setEditTx(null)}>
+                        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle>Editar operación</DialogTitle>
+                                <DialogDescription>Modificá los datos de la operación.</DialogDescription>
+                            </DialogHeader>
+                            {error && <div className="rounded-lg border border-expense/20 bg-expense-subtle p-3 text-center text-sm text-expense">{error}</div>}
+                            {editTx && <TxForm onSubmit={handleEdit} isPending={isPending} onCancel={() => setEditTx(null)} cards={cards} defaults={editTx} onTypeChange={fetchCategoriesForType} dynamicCats={dynamicCats} onCardCreated={handleCardCreated} />}
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* Delete confirmation */}
+                    <Dialog open={!!deleteTx} onOpenChange={o => !o && setDeleteTx(null)}>
+                        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle>{deleteTx?.transaction_type === 'income' ? '¿Eliminar este ingreso?' : '¿Eliminar este gasto?'}</DialogTitle>
+                                <DialogDescription>Esta acción no se puede deshacer.</DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter className="pt-2">
+                                <Button type="button" variant="outline" onClick={() => setDeleteTx(null)}>Cancelar</Button>
+                                <Button type="button" variant="destructive" disabled={isPending} onClick={() => deleteTx && handleDelete(deleteTx.id)}>
+                                    <Trash2 className="h-4 w-4" aria-hidden="true" /> Eliminar
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* Table */}
+                    {sortedTransactions.length === 0 ? (
+                        <EmptyState
+                            icon={Inbox}
+                            title={transactions.length === 0 ? 'Sin operaciones todavía' : 'Sin resultados'}
+                            description={
+                                transactions.length === 0
+                                    ? 'Registrá tu primer ingreso o gasto y empezá a ver a dónde va tu plata.'
+                                    : 'Probá con otra búsqueda o cambiá los filtros.'
+                            }
+                            action={
+                                transactions.length === 0 ? (
+                                    <Button className="gap-2 font-semibold" onClick={() => setAddOpen(true)}>
+                                        <Plus className="h-4 w-4" /> Nueva operación
+                                    </Button>
+                                ) : (
+                                    <Button variant="outline" onClick={() => { setSearchQuery(''); setFilterType('all') }}>
+                                        Limpiar filtros
+                                    </Button>
+                                )
+                            }
+                        />
+                    ) : (
+                        <Card>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                <Table className="min-w-[700px]">
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="p-0 text-muted-foreground">
+                                                <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('fecha')}>
+                                                    Fecha {renderSortArrow('fecha')}
+                                                </button>
+                                            </TableHead>
+                                            <TableHead className="text-muted-foreground">Descripción</TableHead>
+                                            <TableHead className="p-0 text-muted-foreground">
+                                                <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('categoria')}>
+                                                    Categoría {renderSortArrow('categoria')}
+                                                </button>
+                                            </TableHead>
+                                            <TableHead className="p-0 text-muted-foreground">
+                                                <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tarjeta')}>
+                                                    Tarjeta {renderSortArrow('tarjeta')}
+                                                </button>
+                                            </TableHead>
+                                            <TableHead className="p-0 text-muted-foreground">
+                                                <button type="button" className="flex h-11 w-full cursor-pointer items-center gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('tipo')}>
+                                                    Tipo {renderSortArrow('tipo')}
+                                                </button>
+                                            </TableHead>
+                                            <TableHead className="p-0 text-muted-foreground">
+                                                <button type="button" className="flex h-11 w-full cursor-pointer items-center justify-end gap-1 px-2 transition-colors hover:bg-muted" onClick={() => handleSort('monto')}>
+                                                    Monto {renderSortArrow('monto')}
+                                                </button>
+                                            </TableHead>
+                                            <TableHead className="w-20 text-muted-foreground"><span className="sr-only">Acciones</span></TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody className="cl-stagger-fade">
+                                        {paginatedTransactions.map((tx: TxRow) => {
+                                            const isIncome = tx.transaction_type === 'income'
+                                            const linkedCard = cardName(tx.card_id)
+                                            return (
+                                                <TableRow key={tx.id} className="hover:bg-muted/50">
+                                                    <TableCell className="text-muted-foreground">{formatDate(tx.transaction_date)}</TableCell>
+                                                    <TableCell className="font-medium text-foreground">
+                                                        <span>{tx.description ?? '—'}</span>
+                                                        {formatCuota(tx.cuota_actual, tx.total_cuotas) && (
+                                                            <Badge variant="pending" className="ml-2">{formatCuota(tx.cuota_actual, tx.total_cuotas)}</Badge>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {tx.category ? (
+                                                            <Badge variant="neutral">{tx.category}</Badge>
+                                                        ) : '—'}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {linkedCard ? (
+                                                            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                                <CreditCard className="h-3 w-3" aria-hidden="true" /> {linkedCard}
+                                                            </span>
+                                                        ) : tx.card_id ? (
+                                                            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                                <CreditCard className="h-3 w-3" aria-hidden="true" /> Eliminada
+                                                            </span>
+                                                        ) : <span className="text-muted-foreground">—</span>}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant={isIncome ? 'income' : 'expense'}>
+                                                            {isIncome
+                                                                ? <><ArrowUpRight className="h-3 w-3" /> Ingreso</>
+                                                                : <><ArrowDownRight className="h-3 w-3" /> Gasto</>}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Amount
+                                                            value={tx.amount}
+                                                            kind={isIncome ? 'income' : 'expense'}
+                                                            showIcon={false}
+                                                            className="justify-end text-sm font-semibold"
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex gap-1">
+                                                            <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-info" aria-label={`Editar operación: ${tx.description ?? formatDate(tx.transaction_date)}`} onClick={() => { fetchCategoriesForType(tx.transaction_type ?? 'expense'); setEditTx(tx) }}>
+                                                                <Pencil className="h-4 w-4" aria-hidden="true" />
+                                                            </Button>
+                                                            <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:text-expense" aria-label={`Eliminar operación: ${tx.description ?? formatDate(tx.transaction_date)}`} disabled={isPending} onClick={() => setDeleteTx(tx)}>
+                                                                <Trash2 className="h-4 w-4" aria-hidden="true" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        })}
+                                    </TableBody>
+                                </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                </>
+            )}
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
