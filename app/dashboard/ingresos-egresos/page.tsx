@@ -4,7 +4,7 @@ import { seedDefaultCategories, getBudgets, getRecurringTransactions, getRecurri
 
 export default async function IngresosEgresosPage() {
     const now = new Date()
-    const month = now.getMonth()
+    const month = now.getMonth() + 1
     const year = now.getFullYear()
 
     await seedDefaultCategories()

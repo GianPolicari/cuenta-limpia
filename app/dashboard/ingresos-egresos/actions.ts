@@ -7,8 +7,8 @@ import { createClient } from '@/utils/supabase/server'
 
 export async function getTransactions(month: number, year: number) {
     const supabase = await createClient()
-    const mm = String(month + 1).padStart(2, '0')
-    const lastDay = new Date(year, month + 1, 0).getDate()
+    const mm = String(month).padStart(2, '0')
+    const lastDay = new Date(year, month, 0).getDate()
     const startDate = `${year}-${mm}-01`
     const endDate = `${year}-${mm}-${String(lastDay).padStart(2, '0')}`
 

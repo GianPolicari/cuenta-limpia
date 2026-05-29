@@ -299,9 +299,9 @@ export async function applyRecurring(recurringId: string, month: number, year: n
     if (recError || !rec) return { error: recError?.message ?? 'Recurrente no encontrada.' }
 
     // Calcular la fecha: si el día no existe en ese mes, usar el último día del mes
-    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const daysInMonth = new Date(year, month, 0).getDate()
     const day = Math.min(rec.day_of_month, daysInMonth)
-    const mm = String(month + 1).padStart(2, '0')
+    const mm = String(month).padStart(2, '0')
     const dd = String(day).padStart(2, '0')
     const transaction_date = `${year}-${mm}-${dd}`
 
